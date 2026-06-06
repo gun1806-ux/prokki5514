@@ -266,9 +266,9 @@ const Header = ({ currentPath, navigate, user, isAdmin, onLogout }) => {
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between py-3 gap-3 md:gap-0">
           <div className="flex justify-between items-center w-full md:w-auto">
-            <div className="flex items-center gap-3 text-xl md:text-2xl font-black tracking-tight cursor-pointer text-[#FF8A00] hover:text-[#FFC16A] transition-colors" onClick={() => navigate('/') }>
-              <img src="assets-icons/5.png" alt="logo" className="w-8 h-8 md:w-9 md:h-9 object-contain" />
-              <span>돈버는 똘기</span>
+            <div className="flex items-center gap-3 text-xl md:text-2xl font-black tracking-tight cursor-pointer group" onClick={() => navigate('/') }>
+              <img src="assets/icons/5.png" alt="logo" className="w-8 h-8 md:w-9 md:h-9 object-contain rounded-full" />
+              <span className="bg-gradient-to-r from-[#FF8A00] to-[#FF5000] bg-clip-text text-transparent group-hover:opacity-80 transition-opacity">브랜드빌더, 돈버는 똘기</span>
             </div>
             <div className="md:hidden flex items-center gap-2">
               {user ? <Button variant="outline" size="sm" onClick={() => navigate('/mypage')}>마이페이지</Button> : <Button variant="primary" size="sm" onClick={() => navigate('/login')}>로그인</Button>}
@@ -277,7 +277,7 @@ const Header = ({ currentPath, navigate, user, isAdmin, onLogout }) => {
           
           <div className="flex items-center justify-between md:justify-end w-full md:w-auto overflow-x-auto pb-1 md:pb-0 hide-scroll">
             <nav className="flex items-center gap-3 md:gap-6 text-xs md:text-sm font-bold text-gray-700 min-w-max tracking-tight">
-              <button onClick={() => handleNav('#courses')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">수강신청</button>
+              <button onClick={() => handleNav('/enrollment')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">수강신청</button>
               <button onClick={() => navigate('/reviews')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">수강생후기</button>
               <button onClick={() => navigate('/revenues')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">수익인증</button>
               <button onClick={() => handleNav('/community')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">커뮤니티</button>
@@ -321,7 +321,7 @@ const Footer = ({ showModal, onAdminSecretLogin }) => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid md:grid-cols-4 gap-10 mb-12">
           <div className="md:col-span-2">
-            <div className="text-3xl font-black mb-6 text-[#FF8A00] tracking-tight">돈버는 똘기</div>
+            <div className="text-3xl font-black mb-6 text-[#FF8A00] tracking-tight">브랜드빌더, 돈버는 똘기</div>
             <p className="text-sm md:text-base leading-relaxed mb-6 word-keep text-gray-600">
               무작정 열심히 하는 시대는 끝났습니다.<br/>
               빚 독촉과 건강 악화라는 절망의 늪에서 4억 스토어 매각까지.<br/>
@@ -350,9 +350,9 @@ const Footer = ({ showModal, onAdminSecretLogin }) => {
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-t border-gray-100 pt-8 text-xs md:text-sm mt-4 relative z-10 text-gray-500 gap-4 md:gap-0">
           <div>
-            <p className="mb-2 word-keep">주식회사 돈버는똘기 | 대표: 현역 유튜버 | 사업자등록번호: 123-45-67890</p>
+            <p className="mb-2 word-keep">주식회사 브랜드빌더 돈버는똘기 | 대표: 현역 유튜버 | 사업자등록번호: 123-45-67890</p>
             <p className="mb-4 word-keep">서울특별시 강남구 테헤란로 123 | 개인정보보호책임자: 돈버는똘기</p>
-            <p>© 2026 돈버는 똘기. All rights reserved.</p>
+            <p>© 2026 브랜드빌더, 돈버는 똘기. All rights reserved.</p>
           </div>
           
           <button onClick={handleHiddenAdmin} className="text-[#FF8A00] hover:text-[#c96a00] text-sm font-black transition-colors cursor-pointer px-4 py-2 pointer-events-auto focus:outline-none">
@@ -381,8 +381,8 @@ const ReviewsPage = ({ reviewsData, navigate, showModal }) => {
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {reviewsData.map(review => (
-            <div key={review.id} className="p-8 rounded-[2rem] bg-[#111111] border border-gray-800 shadow-sm hover:shadow-lg transition-shadow flex flex-col h-[380px]">
-              {review.image && <img src={review.image} className="w-full h-32 object-cover rounded-2xl mb-6 shadow-sm" />}
+            <div key={review.id} className="p-8 rounded-[2rem] bg-[#111111] border border-gray-800 shadow-sm hover:shadow-lg transition-shadow flex flex-col h-[380px] md:h-[420px]">
+              {review.image && <img src={review.image} className="w-full h-32 md:h-40 object-cover rounded-2xl mb-6 shadow-sm" />}
               <div className="flex justify-between items-start mb-4">
                 <div className="flex text-yellow-400">{[...Array(review.rating)].map((_, j) => <Icon key={j} path={ICONS.Star} fill="#facc15" className="w-4 h-4" />)}</div>
                 <span className="text-[10px] md:text-xs font-extrabold text-[#FF8A00] bg-white/5 px-2.5 py-1 rounded-md word-keep tracking-tight">{review.tag}</span>
@@ -471,19 +471,11 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
             <span className="block text-center text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-black text-white whitespace-nowrap tracking-tighter">빡세게 4주동안, 내 브랜드 제품 런칭 목표 🔥</span>
           </h1>
           <p className="max-w-2xl mx-auto text-sm sm:text-base md:text-lg text-white/80 leading-relaxed mb-8 word-keep">
-            실패의 무서움을 너무 잘 압니다.<br/>
-            진짜 이커머스를 배워, 평생 이커머스 같이 합시다.
+            실패의 무서움을 너무 잘 알기에, 진짜 이커머스를 배워 평생 이커머스 같이 합시다.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 mb-10">
-            <Button size="lg" className="w-full sm:w-auto py-4 px-10 text-base sm:text-lg bg-[#FF8A00] text-black shadow-xl shadow-[#FF8A00]/25" onClick={() => {
-              const el = document.getElementById('courses');
-              if(el) window.scrollTo({top: el.getBoundingClientRect().top + window.pageYOffset - 80, behavior: 'smooth'});
-            }}>지금 바로 멱살 잡히기 🔥</Button>
-            <Button variant="secondary" size="lg" className="w-full sm:w-auto py-4 px-10 text-base sm:text-lg border border-[#FF8A00] bg-white/5 hover:bg-[#FF8A00]/10" style={{ color: '#000' }} onClick={() => {
-              navigate('/reviews');
-            }}>수강생 성과 먼저 확인하기 👀</Button>
+            <Button size="lg" className="w-full sm:w-auto py-4 px-10 text-base sm:text-lg bg-[#FF8A00] text-black shadow-xl shadow-[#FF8A00]/25" onClick={() => navigate('/enrollment')}>지원서 접수 하기 🔥</Button>
           </div>
-
           <div className="mt-12 rounded-[2rem] md:border md:border-[#4b2a15] md:bg-[#111111] px-5 py-6 md:py-8 md:shadow-[0_8px_30px_rgb(0,0,0,0.24)]">
             <div className="grid grid-cols-2 gap-4 text-center md:grid-cols-4 md:gap-5">
               {[
@@ -502,28 +494,56 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
         </div>
       </section>
 
-      <section id="stats" className="py-24 bg-[#0B0B0B] text-white relative">
+      <section id="stats" className="py-24 bg-[#EDEDED] text-gray-900 relative">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center mb-16"><h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">직접 만들고, 팔고, 매각했습니다</h2></div>
+          <div className="text-center mb-16 space-y-3">
+            <p className="text-[#FF8A00] text-lg sm:text-xl md:text-2xl font-bold">아래 내용만으로 월200만원은 충분합니다.</p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 leading-tight tracking-tight word-keep">
+              그럼에도 불구하고 압도적인 성과를 원하신다면
+            </h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 leading-tight tracking-tight word-keep">
+              강의 신청서를 접수 해 주세요!
+            </h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
             {[
-              { image: "2.png", label: "스토어매각(Exit)", value: "4.5억 수익", link: "[https://newneek.co/@windly/article/38837](https://newneek.co/@windly/article/38837)" },
-              { image: "3.png", label: "CEO 저널", value: "언론 인터뷰", link: "[https://www.ceojhn.com/news/articleView.html?idxno=9181](https://www.ceojhn.com/news/articleView.html?idxno=9181)" },
-              { image: "4.png", label: "@156cmm", value: "유튜브채널", link: "[https://www.youtube.com/@156cmm](https://www.youtube.com/@156cmm)" }
-            ].map((stat, i) => (
-              <a key={i} href={stat.link} target="_blank" rel="noopener noreferrer" className="block text-center px-4 hover:-translate-y-2 transition-transform duration-300 group">
+              { src: 'assets/images/6.webp', title: '권리금 수익만 4.5억 + 이상', desc: <>찐 이커머스 판에서 검증 완료된<br/>전문가</>, link: 'https://newneek.co/@windly/article/38837' },
+              { src: 'assets/images/7.webp', title: 'CEO저널 언론사 인터뷰', desc: '돈버는 똘기의 철학과 가치관이 담겨있어요.', link: 'https://www.ceojhn.com/news/articleView.html?idxno=9181' },
+              { src: 'assets/images/8.png', title: '시작하신다면 위 영상 정주행!', desc: '시리즈 정주행이면 월200충분', link: 'https://www.youtube.com/@156cmm' }
+            ].map((item, i) => (
+              <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className="block text-center px-4 hover:-translate-y-2 transition-transform duration-300 group">
                 <div className="flex justify-center mb-6">
-                  <div className="w-full h-32 md:h-48 rounded-3xl bg-gray-800 flex items-center justify-center shadow-inner border border-gray-700 overflow-hidden">
-                    <img src={stat.image} alt={stat.value} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="w-full h-36 md:h-48 rounded-3xl bg-white flex items-center justify-center shadow-md border border-gray-200 overflow-hidden">
+                    <img src={item.src} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
                 </div>
-                <div className="text-2xl md:text-3xl font-black mb-2 text-white word-keep tracking-tight">{stat.value}</div>
-                <div className="text-sm md:text-base text-gray-400 font-medium word-keep">{stat.label}</div>
+                <div className="text-lg md:text-xl font-bold mb-2 text-gray-900 word-keep tracking-normal">{item.title}</div>
+                <div className="text-sm text-gray-500 font-medium word-keep leading-relaxed tracking-normal">{item.desc}</div>
               </a>
             ))}
           </div>
         </div>
       </section>
+
+
+      <section id="courses" className="py-16 md:py-24 bg-[#fff7f0] border-b border-[#ffe5c8]">
+        <div className="max-w-7xl mx-auto px-6">
+          <p className="text-lg md:text-xl font-bold text-[#FF8A00] mb-3 flex items-center gap-1">
+            이 강의는 지속되지 않습니다 ⚠️
+          </p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#111827] leading-tight mb-8 word-keep">
+            단 4주, 성과 위주 실전압축 강의
+          </h2>
+          <div
+            className="inline-block rounded-2xl overflow-hidden shadow-xl cursor-pointer hover:scale-[1.02] transition-transform duration-300"
+            onClick={() => navigate('/enrollment')}
+          >
+            <img src="assets/images/5.png" alt="수강신청 바로가기" className="w-auto max-w-xs sm:max-w-sm md:max-w-md h-auto object-cover block" />
+          </div>
+          <p className="text-xs md:text-sm text-gray-400 font-medium mt-3">쿠팡부터, 스마트스토어, 브랜드까지</p>
+        </div>
+      </section>
+
 
       <section className="py-24 bg-[#fff7f0] border-b border-[#ffe5c8]">
         <div className="max-w-7xl mx-auto px-6">
@@ -555,62 +575,7 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
         </div>
       </section>
 
-      {/* Courses */}
-      <section id="courses" className="relative py-20 bg-gradient-to-b from-[#FFF7F0] to-[#FFF2E0] text-[#111827]">
-        <div className="absolute inset-x-0 top-0 h-16 pointer-events-none" id="강의신청"></div>
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            <div className="lg:col-span-2 flex flex-col items-start">
-              <p className="text-sm md:text-sm font-bold text-[#FF8A00] mb-3">이 강의는 지속되지 않습니다 <span className="ml-2">⚠️</span></p>
-              <h2 className="text-3xl md:text-4xl font-black text-[#111827] leading-tight mb-6">단 4주, 성과 위주 실전압축 강의</h2>
 
-              <div className="w-full max-w-md mt-6">
-                {courses.slice(0,1).map(course => (
-                  <div key={course.id} className="rounded-xl overflow-hidden shadow-lg border border-[#111827]">
-                    <a href="#courses-enrollment" onClick={(e) => { e.preventDefault(); navigate('#courses-enrollment'); const el = document.getElementById('courses-enrollment'); if(el) window.scrollTo({top: el.getBoundingClientRect().top + window.pageYOffset - 80, behavior: 'smooth'}); }} className="block w-full">
-                      <img src={'assets/images/5.png'} alt="instructor" className="w-full h-auto object-cover cursor-pointer hover:opacity-90 transition-opacity" />
-                    </a>
-                  </div>
-                ))}
-                <p className="text-sm text-[#8b8b8b] mt-4">쿠팡부터, 스마트스토어, 브랜드까지</p>
-              </div>
-            </div>
-
-            <div className="hidden lg:block">&nbsp;</div>
-          </div>
-        </div>
-      </section>
-
-      {/* Enrollment Tab */}
-      <section id="courses-enrollment" className="relative py-24 bg-white text-[#111827]">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black mb-4">수강신청</h2>
-            <p className="text-lg text-gray-600">강의에 신청하고 성과를 만들어보세요</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {courses.map(course => (
-              <div key={course.id} className="bg-gray-50 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow border border-gray-200">
-                <div className="h-48 bg-gradient-to-br from-[#FF8A00] to-[#FF6C00] flex items-center justify-center">
-                  <span className="text-white text-6xl">📚</span>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-black mb-3">{course.title}</h3>
-                  <p className="text-sm text-gray-600 mb-4">{course.summary}</p>
-                  <div className="text-2xl font-black text-[#FF8A00] mb-4">{formatPrice(course.price)}</div>
-                  <Button size="md" variant="primary" className="w-full" onClick={() => {
-                    if (!user) {
-                      showModal('alert', '로그인 필요', '로그인 후 수강신청 및 결제가 가능합니다.', () => navigate('/login'));
-                    } else {
-                      handleEnrollment(course);
-                    }
-                  }}>수강신청하기</Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Reviews Slider */}
       <section className="py-24 bg-[#0B0B0B] text-white">
@@ -634,6 +599,109 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
           )} />
         </div>
       </section>
+    </div>
+  );
+};
+
+const EnrollmentPage = ({ user, enrolledCourses, materials, navigate, showModal }) => {
+  const isEnrolled = enrolledCourses && enrolledCourses.length > 0;
+
+  const handleApplyClick = () => {
+    showModal('alert', '지원서 접수 완료', '무료 상담 신청 및 지원서 접수가 완료되었습니다. 담당자가 빠른 시일 내에 연락드리겠습니다.');
+  };
+
+  const handleDownloadClick = (mat) => {
+    if (!user) {
+      showModal('alert', '로그인 필요', '로그인 후 이용이 가능합니다.', () => navigate('/login'));
+    } else if (!isEnrolled) {
+      showModal('alert', '수강 권한 없음', '수강생 전용 자료입니다. 실전 압축 강의 수강 후 다운로드가 가능합니다.');
+    } else {
+      showModal('alert', '다운로드 진행', `'${mat.title}' 다운로드가 시작되었습니다.`);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#050608] text-white">
+
+      {/* Video Hero Section */}
+      <section className="relative w-full h-screen flex items-end overflow-hidden pb-14 md:pb-20">
+        {/* Background Video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        >
+          <source src="assets/videos/8.mp4" type="video/mp4" />
+        </video>
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 bg-black/45" />
+        {/* Text Overlay */}
+        <div className="relative z-10 w-full px-8 md:px-16">
+          <p className="text-white/75 text-sm md:text-base font-semibold mb-2 tracking-wide">
+            {'\uc18c\uaddc\ubaa8\uc5d0 \uc9d1\ucc29\ud569\ub2c8\ub2e4!'}
+          </p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white leading-tight word-keep drop-shadow-lg">
+            {'\uc81c\ub300\ub85c \ub41c \uc774\ucee4\uba38\uc2a4,'}<br />
+            {'\uc9c0\uae08 \uc2dc\uc791\ud558\uc138\uc694!'}
+          </h1>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <div className="pt-16 pb-24">
+      <div className="max-w-4xl mx-auto px-6 flex flex-col items-center">
+        
+        {/* Premium Benefits Header */}
+        <div className="text-center mb-10">
+          <h2 className="text-2xl md:text-3xl font-black text-white flex items-center justify-center gap-2 tracking-tight">
+             수강생 혜택 프리미엄 서비스 💎
+          </h2>
+          <p className="text-gray-400 text-sm md:text-base mt-3 font-medium">압도적 성장을 위해 제공되는 시크릿 템플릿 및 자료집입니다.</p>
+        </div>
+
+        {/* Materials List */}
+        <div className="w-full grid md:grid-cols-2 gap-6 mb-16">
+          {materials.map((mat) => (
+            <div key={mat.id} className="bg-[#111111] p-6 rounded-[2rem] border border-gray-800 shadow-lg flex items-center justify-between hover:border-[#FF8A00]/30 hover:shadow-[0_0_20px_rgba(255,138,0,0.05)] transition-all cursor-pointer" onClick={() => handleDownloadClick(mat)}>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gray-800 rounded-2xl flex items-center justify-center text-[#FF8A00] shadow-inner flex-shrink-0">
+                  <Icon path={ICONS.FileText} className="w-5 h-5" />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-bold text-white word-keep mb-1 tracking-tight text-base">{mat.title}</h3>
+                  <span className="text-[10px] bg-gray-800 text-gray-400 px-2 py-0.5 rounded font-extrabold">{mat.type}</span>
+                </div>
+              </div>
+              <Button size="sm" variant="outline" className="border-gray-800 text-gray-400 hover:border-[#FF8A00] hover:text-[#FF8A00] ml-4 flex-shrink-0">
+                {isEnrolled ? '다운로드' : '🔒 전용'}
+              </Button>
+            </div>
+          ))}
+        </div>
+
+        {/* Section Divider */}
+        <div className="w-full border-t border-gray-800 my-4"></div>
+
+        {/* Page Title */}
+        <h1 className="text-3xl md:text-4xl font-black mt-16 mb-8 text-center tracking-tight text-[#FF8A00]">수강신청</h1>
+        
+        {/* Large Image Button */}
+        <div className="w-full max-w-2xl bg-[#111111] rounded-[2rem] p-6 border border-[#FF8A00]/30 shadow-[0_0_30px_rgba(255,138,0,0.15)] flex flex-col items-center hover:scale-[1.01] transition-transform duration-300">
+          <button onClick={handleApplyClick} className="block w-full focus:outline-none">
+            <img src="assets/images/5.png" alt="지원서 접수하기" className="w-full h-auto object-cover rounded-2xl cursor-pointer shadow-md hover:opacity-95 transition-opacity" />
+          </button>
+          <div className="mt-6 text-center w-full">
+            <p className="text-xs text-[#FF8A00] font-bold mb-4">★ 1:1 밀착 코칭 및 실전 압축 실습 ★</p>
+            <Button size="lg" onClick={handleApplyClick} className="w-full sm:w-auto px-12 py-4 text-base md:text-lg bg-[#FF8A00] text-black font-black shadow-xl shadow-orange-500/20 hover:scale-105 active:scale-95 transition-all">
+              지원서 접수 하기 🔥
+            </Button>
+          </div>
+        </div>
+
+      </div> {/* /max-w-4xl */}
+      </div> {/* /pt-16 pb-24 */}
     </div>
   );
 };
@@ -971,50 +1039,113 @@ const MyPage = ({ user, enrolledCourses, navigate }) => (
 // ============================================================================
 // 관리자 대시보드
 // ============================================================================
-const AdminDashboard = ({ courses, materials, community, usersDB, updateDB, navigate, showModal }) => {
-  const [tab, setTab] = useState('courses');
+const AdminDashboard = ({ courses, materials, community, reviewsData, revenuesData, usersDB, updateDB, navigate, showModal }) => {
+  const [tab, setTab] = useState('reviews');
 
   const handleAdd = () => {
-    showModal(
-      'custom',
-      '새 데이터 추가',
-      '제목, 내용, 파일, 이미지, 동영상 업로드가 가능합니다.',
-      (data) => {
-        if(!data.title?.trim()) return showModal('alert', '안내', '제목을 입력해야 합니다.');
-        const newItem = {
-          id: `item-${Date.now()}`,
-          title: data.title,
-          content: data.content || '',
-          attachment: data.attachment || '',
-          image: data.image || '',
-          video: data.video || ''
-        };
-        if(tab === 'courses') {
-          newItem.price = 199000;
-          newItem.category = '신규강의';
-          updateDB('courses', [...courses, newItem]);
-        }
-        if(tab === 'materials') {
-          newItem.type = '일반문서';
-          updateDB('materials', [...materials, newItem]);
-        }
-        if(tab === 'community') {
-          newItem.author = '관리자';
-          newItem.date = new Date().toISOString().split('T')[0];
-          updateDB('community', [newItem, ...community]);
-        }
-        showModal('alert', '등록 성공', '데이터가 성공적으로 등록되었습니다.');
-      },
-      '',
-      false,
-      [
-        { name: 'title', type: 'text', placeholder: '게시글 제목' },
-        { name: 'content', type: 'textarea', placeholder: '게시글 내용' },
-        { name: 'attachment', type: 'file', placeholder: '파일 업로드' },
-        { name: 'image', type: 'file', placeholder: '이미지 업로드', accept: 'image/*' },
-        { name: 'video', type: 'file', placeholder: '동영상 업로드', accept: 'video/*' }
-      ]
-    );
+    if (tab === 'reviews') {
+      showModal(
+        'custom',
+        '새 후기 등록',
+        '수강생의 리얼 후기 데이터를 입력해 주세요.',
+        (data) => {
+          if(!data.name?.trim()) return showModal('alert', '안내', '작성자 이름을 입력해야 합니다.');
+          if(!data.comment?.trim()) return showModal('alert', '안내', '후기 내용을 입력해야 합니다.');
+          const newItem = {
+            id: `review-${Date.now()}`,
+            name: data.name,
+            rating: Number(data.rating || 5),
+            tag: data.tag || '실전셀러',
+            image: data.image?.trim() || null,
+            comment: data.comment
+          };
+          updateDB('reviews', [newItem, ...reviewsData]);
+          showModal('alert', '등록 성공', '후기가 성공적으로 등록되었습니다.');
+        },
+        '',
+        false,
+        [
+          { name: 'name', type: 'text', placeholder: '작성자 이름 (예: 실전셀러99)' },
+          { name: 'rating', type: 'number', placeholder: '평점 (1 ~ 5)' },
+          { name: 'tag', type: 'text', placeholder: '핵심 키워드/태그 (예: 월 매출 3배 상승)' },
+          { name: 'image', type: 'text', placeholder: '이미지 URL (선택사항)' },
+          { name: 'comment', type: 'textarea', placeholder: '후기 내용' }
+        ]
+      );
+    } else if (tab === 'revenues') {
+      showModal(
+        'custom',
+        '새 수익인증 등록',
+        '수강생의 수익 인증 사례를 입력해 주세요.',
+        (data) => {
+          if(!data.title?.trim()) return showModal('alert', '안내', '제목을 입력해야 합니다.');
+          if(!data.amount?.trim()) return showModal('alert', '안내', '달성 금액/성과를 입력해야 합니다.');
+          
+          const contentHTML = `<div class="space-y-6 text-gray-800 leading-relaxed text-sm md:text-base">
+            ${(data.content || '').split('\n').map(p => `<p>${p}</p>`).join('')}
+          </div>`;
+
+          const newItem = {
+            id: `rev-${Date.now()}`,
+            title: data.title,
+            amount: data.amount,
+            author: data.author || '수강생',
+            date: data.date || new Date().toISOString().split('T')[0],
+            thumbnail: data.thumbnail || 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+            content: contentHTML
+          };
+          const newRevenues = [newItem, ...revenuesData];
+          updateDB('revenues', newRevenues);
+          showModal('alert', '등록 성공', '수익인증 글이 성공적으로 등록되었습니다.');
+        },
+        '',
+        false,
+        [
+          { name: 'title', type: 'text', placeholder: '제목 (예: 그로스 21기 월 1000만 달성 후기)' },
+          { name: 'amount', type: 'text', placeholder: '달성 성과 (예: 월 1000만 달성)' },
+          { name: 'author', type: 'text', placeholder: '작성자 (예: 로켓트원)' },
+          { name: 'date', type: 'text', placeholder: '작성 날짜 (YYYY-MM-DD, 미입력시 오늘)' },
+          { name: 'thumbnail', type: 'text', placeholder: '썸네일 이미지 URL (미입력시 기본이미지)' },
+          { name: 'content', type: 'textarea', placeholder: '상세 후기 내용 (줄바꿈 지원)' }
+        ]
+      );
+    } else {
+      showModal(
+        'custom',
+        '새 데이터 추가',
+        '제목, 내용, 파일, 이미지, 동영상 업로드가 가능합니다.',
+        (data) => {
+          if(!data.title?.trim()) return showModal('alert', '안내', '제목을 입력해야 합니다.');
+          const newItem = {
+            id: `item-${Date.now()}`,
+            title: data.title,
+            content: data.content || '',
+            attachment: data.attachment || '',
+            image: data.image || '',
+            video: data.video || ''
+          };
+          if(tab === 'materials') {
+            newItem.type = '일반문서';
+            updateDB('materials', [...materials, newItem]);
+          }
+          if(tab === 'community') {
+            newItem.author = '관리자';
+            newItem.date = new Date().toISOString().split('T')[0];
+            updateDB('community', [newItem, ...community]);
+          }
+          showModal('alert', '등록 성공', '데이터가 성공적으로 등록되었습니다.');
+        },
+        '',
+        false,
+        [
+          { name: 'title', type: 'text', placeholder: '게시글 제목' },
+          { name: 'content', type: 'textarea', placeholder: '게시글 내용' },
+          { name: 'attachment', type: 'file', placeholder: '파일 업로드' },
+          { name: 'image', type: 'file', placeholder: '이미지 업로드', accept: 'image/*' },
+          { name: 'video', type: 'file', placeholder: '동영상 업로드', accept: 'video/*' }
+        ]
+      );
+    }
   };
 
   const handleDelete = (id, list, key) => {
@@ -1025,20 +1156,105 @@ const AdminDashboard = ({ courses, materials, community, usersDB, updateDB, navi
   };
 
   const handleEdit = (id, list, key) => {
-    const item = list.find(i => i.id === id);
-    showModal('prompt', '데이터 수정', '수정할 제목을 입력하세요.', (newTitle) => {
-      if(newTitle) {
-        updateDB(key, list.map(i => i.id === id ? { ...i, title: newTitle } : i));
-        showModal('alert', '수정 완료', '성공적으로 수정되었습니다.');
-      }
-    }, '제목 입력');
+    if (key === 'reviews') {
+      const review = list.find(i => i.id === id);
+      showModal(
+        'custom',
+        '후기 수정',
+        '후기 데이터를 수정합니다.',
+        (data) => {
+          if(!data.name?.trim()) return showModal('alert', '안내', '작성자 이름을 입력해야 합니다.');
+          if(!data.comment?.trim()) return showModal('alert', '안내', '후기 내용을 입력해야 합니다.');
+          updateDB('reviews', list.map(i => i.id === id ? {
+            ...i,
+            name: data.name,
+            rating: Number(data.rating || 5),
+            tag: data.tag || '실전셀러',
+            image: data.image?.trim() || null,
+            comment: data.comment
+          } : i));
+          showModal('alert', '수정 완료', '성공적으로 수정되었습니다.');
+        },
+        '',
+        false,
+        [
+          { name: 'name', type: 'text', placeholder: '작성자 이름', value: review.name },
+          { name: 'rating', type: 'number', placeholder: '평점 (1 ~ 5)', value: review.rating },
+          { name: 'tag', type: 'text', placeholder: '핵심 키워드/태그', value: review.tag },
+          { name: 'image', type: 'text', placeholder: '이미지 URL', value: review.image || '' },
+          { name: 'comment', type: 'textarea', placeholder: '후기 내용', value: review.comment }
+        ]
+      );
+    } else if (key === 'revenues') {
+      const rev = list.find(i => i.id === id);
+      const getRawContent = (html) => {
+        if (!html) return '';
+        let text = html.replace(/<p>/g, '').replace(/<\/p>/g, '\n');
+        text = text.replace(/<div[^>]*>/g, '').replace(/<\/div>/g, '');
+        text = text.replace(/<[^>]*>/g, '');
+        return text.trim();
+      };
+      showModal(
+        'custom',
+        '수익인증 수정',
+        '수익 인증 데이터를 수정합니다.',
+        (data) => {
+          if(!data.title?.trim()) return showModal('alert', '안내', '제목을 입력해야 합니다.');
+          if(!data.amount?.trim()) return showModal('alert', '안내', '달성 금액/성과를 입력해야 합니다.');
+          
+          const contentHTML = `<div class="space-y-6 text-gray-800 leading-relaxed text-sm md:text-base">
+            ${(data.content || '').split('\n').map(p => `<p>${p}</p>`).join('')}
+          </div>`;
+
+          updateDB('revenues', list.map(i => i.id === id ? {
+            ...i,
+            title: data.title,
+            amount: data.amount,
+            author: data.author || '수강생',
+            date: data.date || i.date,
+            thumbnail: data.thumbnail || i.thumbnail,
+            content: contentHTML
+          } : i));
+          showModal('alert', '수정 완료', '성공적으로 수정되었습니다.');
+        },
+        '',
+        false,
+        [
+          { name: 'title', type: 'text', placeholder: '제목', value: rev.title },
+          { name: 'amount', type: 'text', placeholder: '달성 성과', value: rev.amount },
+          { name: 'author', type: 'text', placeholder: '작성자', value: rev.author },
+          { name: 'date', type: 'text', placeholder: '작성 날짜 (YYYY-MM-DD)', value: rev.date },
+          { name: 'thumbnail', type: 'text', placeholder: '썸네일 이미지 URL', value: rev.thumbnail },
+          { name: 'content', type: 'textarea', placeholder: '상세 후기 내용', value: getRawContent(rev.content) }
+        ]
+      );
+    } else {
+      const item = list.find(i => i.id === id);
+      showModal('prompt', '데이터 수정', '수정할 제목을 입력하세요.', (newTitle) => {
+        if(newTitle) {
+          updateDB(key, list.map(i => i.id === id ? { ...i, title: newTitle } : i));
+          showModal('alert', '수정 완료', '성공적으로 수정되었습니다.');
+        }
+      }, '제목 입력');
+    }
   };
 
-  const renderList = (list, key) => (
-    list.length === 0 ? <div className="p-10 text-center text-gray-400 font-bold border rounded-2xl">데이터가 없습니다.</div> :
+  const renderList = (list, key) => {
+    const getDisplayName = (item, k) => {
+      if (k === 'reviews') {
+        const commentSnippet = item.comment && item.comment.length > 30 ? `${item.comment.slice(0, 30)}...` : item.comment;
+        return `[${item.name}] ${commentSnippet}`;
+      }
+      if (k === 'revenues') {
+        return `[${item.amount}] ${item.title}`;
+      }
+      return item.title || item.email || item.name;
+    };
+
+    return list.length === 0 ? <div className="p-10 text-center text-gray-400 font-bold border rounded-2xl">데이터가 없습니다.</div> :
     list.map(item => (
       <div key={item.id} className="p-5 border-b border-gray-50 flex flex-col md:flex-row justify-between items-start md:items-center hover:bg-gray-50/50 gap-3 transition-colors">
-        <span className="font-bold text-gray-800 word-keep text-sm md:text-base">{item.title || item.email || item.name}</span>
+        <span className="font-bold text-gray-800 word-keep text-sm md:text-base">{getDisplayName(item, key)}</span>
         {key !== 'users_db' && (
           <div className="flex gap-4 w-full md:w-auto justify-end">
             <button onClick={() => handleEdit(item.id, list, key)} className="text-indigo-500 text-sm font-bold flex items-center bg-indigo-50 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors"><Icon path={ICONS.Edit} className="w-4 h-4 mr-1"/>수정</button>
@@ -1046,8 +1262,8 @@ const AdminDashboard = ({ courses, materials, community, usersDB, updateDB, navi
           </div>
         )}
       </div>
-    ))
-  );
+    ));
+  };
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
@@ -1057,22 +1273,20 @@ const AdminDashboard = ({ courses, materials, community, usersDB, updateDB, navi
           <button onClick={()=>navigate('/')} className="md:hidden text-gray-400 font-bold text-xs bg-gray-800 px-3 py-1 rounded">EXIT</button>
         </div>
         <nav className="flex flex-row md:flex-col overflow-x-auto p-3 md:p-6 space-x-2 md:space-x-0 md:space-y-2 text-sm hide-scroll font-bold">
-          <button onClick={()=>setTab('courses')} className={`flex-shrink-0 text-left px-5 py-3 rounded-xl transition-colors ${tab==='courses'?'bg-indigo-600 text-white':'text-gray-400 hover:text-white hover:bg-gray-800'}`}>클래스 관리</button>
-          <button onClick={()=>setTab('materials')} className={`flex-shrink-0 text-left px-5 py-3 rounded-xl transition-colors ${tab==='materials'?'bg-indigo-600 text-white':'text-gray-400 hover:text-white hover:bg-gray-800'}`}>자료실 관리</button>
-          <button onClick={()=>setTab('community')} className={`flex-shrink-0 text-left px-5 py-3 rounded-xl transition-colors ${tab==='community'?'bg-indigo-600 text-white':'text-gray-400 hover:text-white hover:bg-gray-800'}`}>커뮤니티 관리</button>
-          <button onClick={()=>setTab('users')} className={`flex-shrink-0 text-left px-5 py-3 rounded-xl transition-colors ${tab==='users'?'bg-indigo-600 text-white':'text-gray-400 hover:text-white hover:bg-gray-800'}`}>수강생 현황</button>
+          <button onClick={()=>setTab('reviews')} className={`flex-shrink-0 text-left px-5 py-3 rounded-xl transition-colors ${tab==='reviews'?'bg-indigo-600 text-white':'text-gray-400 hover:text-white hover:bg-gray-800'}`}>수강생 후기 관리</button>
+          <button onClick={()=>setTab('revenues')} className={`flex-shrink-0 text-left px-5 py-3 rounded-xl transition-colors ${tab==='revenues'?'bg-indigo-600 text-white':'text-gray-400 hover:text-white hover:bg-gray-800'}`}>수익인증 관리</button>
         </nav>
         <div className="p-6 border-t border-gray-800 hidden md:block mt-auto"><button onClick={()=>navigate('/')} className="text-gray-500 font-bold hover:text-white transition-colors text-sm flex items-center"><Icon path={ICONS.LogOut} className="w-4 h-4 mr-2"/>시스템 종료</button></div>
       </div>
       <div className="flex-1 overflow-auto p-4 md:p-10">
-        <h2 className="text-2xl font-black mb-8 text-gray-900 tracking-tight">{tab === 'courses' ? '클래스 및 커리큘럼 관리' : tab === 'materials' ? '프리미엄 자료실 관리' : tab === 'users' ? '가입된 수강생 현황' : '커뮤니티 글 관리'}</h2>
+        <h2 className="text-2xl font-black mb-8 text-gray-900 tracking-tight">
+          {tab === 'reviews' ? '수강생 후기 관리' : '수익인증 관리'}
+        </h2>
         <div className="bg-white rounded-[2rem] p-6 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
-           {tab === 'courses' && renderList(courses, 'courses')}
-           {tab === 'materials' && renderList(materials, 'materials')}
-           {tab === 'community' && renderList(community, 'community')}
-           {tab === 'users' && renderList(usersDB, 'users_db')}
+           {tab === 'reviews' && renderList(reviewsData, 'reviews')}
+           {tab === 'revenues' && renderList(revenuesData, 'revenues')}
            
-           {tab !== 'users' && <Button onClick={handleAdd} className="mt-8 w-full py-4 bg-gray-900 hover:bg-black text-white rounded-xl shadow-lg border-none">새로운 데이터 등록하기</Button>}
+           <Button onClick={handleAdd} className="mt-8 w-full py-4 bg-gray-900 hover:bg-black text-white rounded-xl shadow-lg border-none">새로운 데이터 등록하기</Button>
         </div>
       </div>
     </div>
@@ -1151,6 +1365,7 @@ function App() {
     if(key === 'materials') setMaterials(data);
     if(key === 'community') setCommunity(data);
     if(key === 'reviews') setReviewsData(data);
+    if(key === 'revenues') setRevenuesData(data);
   };
 
   const navigate = (path, state = null) => { window.scrollTo(0, 0); setCurrentPath(path); setRouteState(state); };
@@ -1171,6 +1386,7 @@ function App() {
   let View;
   switch (currentPath) {
     case '/': View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
+    case '/enrollment': View = <EnrollmentPage user={user} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} />; break;
     case '/course': View = <CourseDetailPage course={courses.find(c=>c.id===routeState?.courseId)} user={user} onEnroll={handleEnroll} navigate={navigate} showModal={showModal} />; break;
     case '/login': View = <AuthPage navigate={navigate} onLoginSuccess={() => { setUser(FirebaseAuth.getCurrentUser()); navigate('/'); }} showModal={showModal} />; break;
     case '/write-review': View = <WriteReviewPage user={user} reviewsData={reviewsData} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
@@ -1179,7 +1395,7 @@ function App() {
     case '/mypage': View = <MyPage user={user} enrolledCourses={enrolledCourses} navigate={navigate} />; break;
     case '/community': View = <CommunityPage communityPosts={community} user={user} onAddPost={(p)=>updateDB('community', [p, ...community])} showModal={showModal} />; break;
     case '/materials': View = <MaterialsPage enrolledCourses={enrolledCourses} materials={materials} showModal={showModal} />; break;
-    case '/admin': View = isAdminSession ? <AdminDashboard courses={courses} materials={materials} community={community} usersDB={usersDB} updateDB={updateDB} navigate={navigate} showModal={showModal} /> : <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
+    case '/admin': View = isAdminSession ? <AdminDashboard courses={courses} materials={materials} community={community} reviewsData={reviewsData} revenuesData={revenuesData} usersDB={usersDB} updateDB={updateDB} navigate={navigate} showModal={showModal} /> : <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
     default: View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />;
   }
 
@@ -1211,8 +1427,8 @@ function App() {
                 <div className="space-y-4 mb-8" id="modal-custom-form">
                   {modal.fields.map((f, i) => (
                     f.type === 'textarea' ? 
-                    <textarea key={i} name={f.name} placeholder={f.placeholder} className="w-full border border-gray-200 rounded-xl p-4 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 outline-none transition-shadow font-medium" rows="4"></textarea> :
-                    <input key={i} type={f.type} name={f.name} placeholder={f.placeholder} accept={f.accept || undefined} className="w-full border border-gray-200 rounded-xl p-4 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 outline-none transition-shadow font-bold" />
+                    <textarea key={i} name={f.name} placeholder={f.placeholder} defaultValue={f.value !== undefined ? f.value : ''} className="w-full border border-gray-200 rounded-xl p-4 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 outline-none transition-shadow font-medium" rows="4"></textarea> :
+                    <input key={i} type={f.type} name={f.name} placeholder={f.placeholder} defaultValue={f.value !== undefined ? f.value : ''} accept={f.accept || undefined} className="w-full border border-gray-200 rounded-xl p-4 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 outline-none transition-shadow font-bold" />
                   ))}
                 </div>
               )}
