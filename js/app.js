@@ -155,6 +155,30 @@ const Button = ({ children, variant = 'primary', size = 'md', className = "", on
   return <button type={type} onClick={onClick} disabled={disabled} style={style} className={`${base} ${sz} ${vars[variant] || ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}>{children}</button>;
 };
 
+const AnimatedCount = ({ target, suffix = '', format }) => {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let start = 0;
+    const duration = 1400;
+    const stepTime = 30;
+    const steps = Math.ceil(duration / stepTime);
+    const increment = target / steps;
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= target) {
+        setCount(target);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, stepTime);
+    return () => clearInterval(timer);
+  }, [target]);
+
+  const display = format ? format(count) : `${count}${suffix}`;
+  return <p className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-[#FF8A00]">{display}</p>;
+};
+
 const HERO_VIDEO_SRC = new URL('assets/videos/1.mp4', document.baseURI).href;
 const HERO_VIDEO_FALLBACK_IMAGE = new URL('assets/images/2.png', document.baseURI).href;
 
@@ -408,7 +432,6 @@ const RevenuesPage = ({ revenuesData, navigate, showModal }) => {
 // 메인 페이지 뷰
 // ============================================================================
 const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) => {
-  const [heroVideoError, setHeroVideoError] = useState(true);
   const handleCounseling = () => { showModal('alert', '상담 신청 완료', '무료 상담 신청이 완료되었습니다. 담당자가 업무 시간 내에 입력하신 번호로 연락드리겠습니다.'); };
   
   const top10Reviews = reviewsData.slice(0, 10);
@@ -417,48 +440,24 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
   return (
     <div className="bg-main text-main">
       {/* Hero Section */}
-      <section
-        className="relative pt-28 pb-16 overflow-hidden bg-transparent text-white text-center lg:text-left"
-        style={
-          heroVideoError
-            ? {
-                backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.95)), url('${HERO_VIDEO_FALLBACK_IMAGE}')`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center center'
-              }
-            : { background: 'transparent' }
-        }
-      >
-        {!heroVideoError && (
+      <section className="relative flex flex-col md:block min-h-[auto] md:min-h-screen pt-24 md:pt-0 overflow-hidden bg-[#050608] text-white text-center">
+        {/* Video & Overlay Wrapper */}
+        <div className="relative w-full aspect-video md:absolute md:inset-0 md:h-full md:aspect-auto z-0">
           <video
             autoPlay
             loop
             muted
             playsInline
-            poster={HERO_VIDEO_FALLBACK_IMAGE}
-            preload="auto"
-            className="absolute inset-0 w-full h-full object-cover opacity-100 object-center filter brightness-125 contrast-110 -z-10"
-            onError={() => setHeroVideoError(true)}
-            onLoadedData={() => setHeroVideoError(false)}
+            className="w-full h-full object-cover object-center"
           >
-            <source src={HERO_VIDEO_SRC} type="video/mp4" />
+            <source src={new URL('assets/videos/6.mp4', document.baseURI).href} type="video/mp4" />
           </video>
-        )}
-        <div className="absolute inset-0 bg-white/60 -z-10"></div>
-        <div className="max-w-5xl mx-auto px-5 relative z-10">
-          <div className="inline-flex items-center justify-center lg:justify-start rounded-full bg-[#FF8A00]/15 text-[#FF8A00] px-4 py-2 text-sm sm:text-base font-bold mb-6">
-              온라인 판매 5년 · 사업체 3개 매각 경험 <span className="text-lg">👑</span>
-          </div>
-          <h1 className="mx-auto lg:mx-0 max-w-3xl text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-[1.02] text-[#111827] mb-6 sm:mb-8">
-            <span className="block text-[#FF8A00]">대 브랜드의 시대</span>
-            <span className="block text-3xl sm:text-4xl md:text-5xl">오래 팔리는 브랜드를 만듭니다💸</span>
-          </h1>
-          <p className="mx-auto lg:mx-0 max-w-xl text-base sm:text-lg md:text-xl text-gray-700 leading-8 mb-8 sm:mb-10">
-            상품 소싱부터 상세페이지, 광고, 브랜딩까지⭐<br/>
-            직접 만들고 팔아 본 셀러의 기준으로<br/>
-            매출이 남는 온라인 사업의 구조를 알려드립니다💎
-          </p>
-          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 sm:gap-5 mb-10">
+          <div className="absolute inset-0 bg-white/30"></div>
+        </div>
+        
+        {/* Content Wrapper */}
+        <div className="w-full max-w-5xl mx-auto px-5 py-8 md:py-0 relative z-20 md:absolute md:bottom-12 md:left-1/2 md:-translate-x-1/2">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 mb-10">
             <Button size="lg" className="w-full sm:w-auto py-4 px-10 text-base sm:text-lg bg-[#FF8A00] text-black shadow-xl shadow-[#FF8A00]/25" onClick={() => {
               const el = document.getElementById('courses');
               if(el) window.scrollTo({top: el.getBoundingClientRect().top + window.pageYOffset - 80, behavior: 'smooth'});
@@ -471,13 +470,13 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
           <div className="mt-12 rounded-[2rem] border border-[#4b2a15] bg-[#111111] px-5 py-8 shadow-[0_8px_30px_rgb(0,0,0,0.24)]">
             <div className="grid grid-cols-2 gap-4 text-center md:grid-cols-4 md:gap-5">
               {[
-                { label: '누적 수강생', value: '1,000+' },
-                { label: '누적 후기', value: '400+' },
-                { label: '구독자', value: '13만+' },
-                { label: '누적 조회수', value: '9300K+' }
+                { label: '누적 브랜드 매각', target: 4, suffix: '+' },
+                { label: '신규 운영 브랜드', target: 3, suffix: '+' },
+                { label: '이커머스 수익', target: 20, suffix: '억+' },
+                { label: '수강생 성공확률', target: 50, suffix: '%+' }
               ].map((item, index) => (
                 <div key={index} className="space-y-2">
-                  <p className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-[#FF8A00]">{item.value}</p>
+                  <AnimatedCount target={item.target} suffix={item.suffix} />
                   <p className="text-xs sm:text-sm text-gray-600 font-medium uppercase tracking-[0.2em]">{item.label}</p>
                 </div>
               ))}
@@ -540,32 +539,55 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
       </section>
 
       {/* Courses */}
-      <section id="courses" className="relative py-24 bg-[#FFF2E0] text-[#111827]">
+      <section id="courses" className="relative py-20 bg-gradient-to-b from-[#FFF7F0] to-[#FFF2E0] text-[#111827]">
         <div className="absolute inset-x-0 top-0 h-16 pointer-events-none" id="강의신청"></div>
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <div className="mx-auto max-w-4xl rounded-[2rem] bg-white border border-[#FFCF9F] p-10 shadow-[0_24px_60px_rgba(255,140,0,0.16)]">
-              <Badge className="mb-4 bg-[#FF7A00] text-white">SUSTAINABLE E-COMMERCE</Badge>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#111827] tracking-tight whitespace-pre-line">상품 하나를 파는 방법부터,<br/>매각 가능한 브랜드를 만드는 법</h2>
-              <p className="mt-6 text-base md:text-lg text-[#4A4A4A] leading-8 whitespace-pre-line">지금 필요한 단계부터 시작하세요<br/>상품 소싱, 상세페이지, 브랜드 구조화까지 직접 판매하고 사업체를 매각하며 검증한 실전 과정입니다</p>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div className="lg:col-span-2 flex flex-col items-start">
+              <p className="text-sm md:text-sm font-bold text-[#FF8A00] mb-3">이 강의는 지속되지 않습니다 <span className="ml-2">⚠️</span></p>
+              <h2 className="text-3xl md:text-4xl font-black text-[#111827] leading-tight mb-6">단 4주, 성과 위주 실전압축 강의</h2>
+
+              <div className="w-full max-w-md mt-6">
+                {courses.slice(0,1).map(course => (
+                  <div key={course.id} className="rounded-xl overflow-hidden shadow-lg border border-[#111827]">
+                    <a href="#courses-enrollment" onClick={(e) => { e.preventDefault(); navigate('#courses-enrollment'); const el = document.getElementById('courses-enrollment'); if(el) window.scrollTo({top: el.getBoundingClientRect().top + window.pageYOffset - 80, behavior: 'smooth'}); }} className="block w-full">
+                      <img src={'assets/images/5.png'} alt="instructor" className="w-full h-auto object-cover cursor-pointer hover:opacity-90 transition-opacity" />
+                    </a>
+                  </div>
+                ))}
+                <p className="text-sm text-[#8b8b8b] mt-4">쿠팡부터, 스마트스토어, 브랜드까지</p>
+              </div>
             </div>
+
+            <div className="hidden lg:block">&nbsp;</div>
           </div>
-          <div className="flex justify-center">
-            {courses.slice(0, 1).map(course => (
-              <div key={course.id} className="w-full max-w-4xl bg-[#FF8F3F] rounded-[2rem] overflow-hidden border border-[#FFAA72] shadow-lg shadow-[#FF9B4C]/20">
-                <div className="relative overflow-hidden aspect-[16/7] md:aspect-[16/6]">
-                  <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-[#111111]/10"></div>
-                  <div className="absolute top-5 left-5"><Badge className="bg-white/10 backdrop-blur-md text-[#111827] border-none shadow-md">{course.category}</Badge></div>
+        </div>
+      </section>
+
+      {/* Enrollment Tab */}
+      <section id="courses-enrollment" className="relative py-24 bg-white text-[#111827]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-black mb-4">수강신청</h2>
+            <p className="text-lg text-gray-600">강의에 신청하고 성과를 만들어보세요</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {courses.map(course => (
+              <div key={course.id} className="bg-gray-50 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow border border-gray-200">
+                <div className="h-48 bg-gradient-to-br from-[#FF8A00] to-[#FF6C00] flex items-center justify-center">
+                  <span className="text-white text-6xl">📚</span>
                 </div>
-                <div className="p-10 lg:p-12">
-                  <h3 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-5">{course.title}</h3>
-                  <p className="text-white/90 text-lg md:text-xl leading-relaxed mb-6">{course.summary}</p>
-                  <p className="text-white/80 text-base md:text-lg leading-relaxed mb-10">{course.description}</p>
-                  <Button className="w-full md:w-auto px-10 py-5 text-lg bg-black text-white" onClick={() => {
-                    const el = document.getElementById('강의신청');
-                    if(el) window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - 80, behavior: 'smooth' });
-                  }}>강의 신청하기</Button>
+                <div className="p-6">
+                  <h3 className="text-xl font-black mb-3">{course.title}</h3>
+                  <p className="text-sm text-gray-600 mb-4">{course.summary}</p>
+                  <div className="text-2xl font-black text-[#FF8A00] mb-4">{formatPrice(course.price)}</div>
+                  <Button size="md" variant="primary" className="w-full" onClick={() => {
+                    if (!user) {
+                      showModal('alert', '로그인 필요', '로그인 후 수강신청 및 결제가 가능합니다.', () => navigate('/login'));
+                    } else {
+                      handleEnrollment(course);
+                    }
+                  }}>수강신청하기</Button>
                 </div>
               </div>
             ))}
@@ -578,12 +600,8 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
             <div className="text-center md:text-left">
-              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight word-keep mb-4">포기 직전의 셀러들이 만든 기적</h2>
-              <p className="text-gray-400 font-medium text-lg">저와 같은 아픔을 겪던 수많은 분들이 이미 증명하고 있습니다.</p>
-            </div>
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={() => navigate('/write-review')} className="border-[#FF8A00] text-[#FF8A00] hover:bg-white/10">수강후기 작성하기</Button>
-              <Button variant="ghost" onClick={() => navigate('/reviews')} className="hidden md:flex text-[#FF8A00] hover:bg-white/10">전체보기 <Icon path={ICONS.ArrowRight} className="w-4 h-4 ml-1"/></Button>
+              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight word-keep mb-4">혼자 버티던 셀러들의 변화 🔥</h2>
+              <p className="text-gray-400 font-medium text-lg">소싱은 계속하는데, 마진은 줄어들고 광고비는 늘어나고, 포기하지 못해 이어오던 시간들, 새로운 방식으로 재정립해 결과를 만들고 있습니다.</p>
             </div>
           </div>
             <Carousel items={top10Reviews} renderItem={(review) => (
@@ -597,9 +615,6 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
               <div className="border-t border-gray-800 pt-5 mt-auto"><div className="font-bold text-white text-sm word-keep">{review.name} 수강생</div></div>
             </div>
           )} />
-          <div className="mt-8 text-center md:hidden">
-             <Button variant="outline" className="w-full" onClick={()=>navigate('/reviews')}>수강후기 전체보기</Button>
-          </div>
         </div>
       </section>
     </div>
