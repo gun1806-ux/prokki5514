@@ -432,6 +432,14 @@ const RevenuesPage = ({ revenuesData, navigate, showModal }) => {
 // 메인 페이지 뷰
 // ============================================================================
 const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleCounseling = () => { showModal('alert', '상담 신청 완료', '무료 상담 신청이 완료되었습니다. 담당자가 업무 시간 내에 입력하신 번호로 연락드리겠습니다.'); };
   
   const top10Reviews = reviewsData.slice(0, 10);
@@ -440,23 +448,32 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
   return (
     <div className="bg-main text-main">
       {/* Hero Section */}
-      <section className="relative flex flex-col md:block min-h-[auto] md:min-h-screen pt-24 md:pt-0 overflow-hidden bg-[#050608] text-white text-center">
+      <section className="relative flex flex-col justify-center items-center min-h-screen pt-24 pb-12 md:py-0 overflow-hidden bg-[#050608] text-white text-center">
         {/* Video & Overlay Wrapper */}
-        <div className="relative w-full aspect-video md:absolute md:inset-0 md:h-full md:aspect-auto z-0">
+        <div className="absolute inset-0 w-full h-full z-0">
           <video
+            key={isMobile ? 'mobile-video' : 'desktop-video'}
             autoPlay
             loop
             muted
             playsInline
             className="w-full h-full object-cover object-center"
           >
-            <source src={new URL('assets/videos/6.mp4', document.baseURI).href} type="video/mp4" />
+            <source src={new URL(isMobile ? 'assets/videos/7.mp4' : 'assets/videos/6.mp4', document.baseURI).href} type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-white/30"></div>
+          <div className="absolute inset-0 bg-black/50"></div>
         </div>
         
         {/* Content Wrapper */}
-        <div className="w-full max-w-5xl mx-auto px-5 py-8 md:py-0 relative z-20 md:absolute md:bottom-12 md:left-1/2 md:-translate-x-1/2">
+        <div className="w-full max-w-7xl mx-auto px-5 py-8 md:py-0 relative z-20 min-w-0">
+          <h1 className="text-white text-center mb-6 word-keep w-full">
+            <span className="block text-center text-sm sm:text-base md:text-lg lg:text-xl font-extrabold mb-3 text-white/90 tracking-tight">쉽게 접근하면, 쉽게 무너집니다</span>
+            <span className="block text-center text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-black text-white whitespace-nowrap tracking-tighter">빡세게 4주동안, 내 브랜드 제품 런칭 목표 🔥</span>
+          </h1>
+          <p className="max-w-2xl mx-auto text-sm sm:text-base md:text-lg text-white/80 leading-relaxed mb-8 word-keep">
+            실패의 무서움을 너무 잘 압니다.<br/>
+            진짜 이커머스를 배워, 평생 이커머스 같이 합시다.
+          </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 mb-10">
             <Button size="lg" className="w-full sm:w-auto py-4 px-10 text-base sm:text-lg bg-[#FF8A00] text-black shadow-xl shadow-[#FF8A00]/25" onClick={() => {
               const el = document.getElementById('courses');
@@ -467,7 +484,7 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
             }}>수강생 성과 먼저 확인하기 👀</Button>
           </div>
 
-          <div className="mt-12 rounded-[2rem] border border-[#4b2a15] bg-[#111111] px-5 py-8 shadow-[0_8px_30px_rgb(0,0,0,0.24)]">
+          <div className="mt-12 rounded-[2rem] md:border md:border-[#4b2a15] md:bg-[#111111] px-5 py-6 md:py-8 md:shadow-[0_8px_30px_rgb(0,0,0,0.24)]">
             <div className="grid grid-cols-2 gap-4 text-center md:grid-cols-4 md:gap-5">
               {[
                 { label: '누적 브랜드 매각', target: 4, suffix: '+' },
@@ -477,7 +494,7 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
               ].map((item, index) => (
                 <div key={index} className="space-y-2">
                   <AnimatedCount target={item.target} suffix={item.suffix} />
-                  <p className="text-xs sm:text-sm text-gray-600 font-medium uppercase tracking-[0.2em]">{item.label}</p>
+                  <p className="text-xs sm:text-sm text-gray-400 font-medium uppercase tracking-[0.2em]">{item.label}</p>
                 </div>
               ))}
             </div>
