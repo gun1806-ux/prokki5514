@@ -55,10 +55,75 @@ const INITIAL_COMMUNITY = [
   { id: "comm-2", title: "스토어 매각 목표로 달리고 있습니다!", author: "실행력갑", date: "2026-05-21", content: "단기 매출이 아니라 사업으로 접근하라는 말씀, 뼈에 새기고 있습니다. 템플릿 잘 활용하고 있어요." } 
 ];
 const INITIAL_MATERIALS = [
-  { id: "mat-1", title: "\uacbd\uc7c1\uc0ac \ud310\ub9e4\ub7c9 \ubd84\uc11d\ud504\ub85c\uadf8\ub7a8", type: "\ud504\ub85c\uadf8\ub7a8", route: "/material/mat-1", icon: "assets/images/9.png" },
-  { id: "mat-2", title: "\uc678\ubd80\ub9c1\ud06c \ucd94\uc801 \ud504\ub85c\uadf8\ub7a8", type: "\ud504\ub85c\uadf8\ub7a8", route: "/material/mat-2", icon: "assets/images/10.png" },
-  { id: "mat-3", title: "AI \uc591\ubc29\ud5a5 \uc790\ub3d9\ubc88\uc5ed\uae30 + 1688 LV6 \uc544\uc774\ub514 + \uccb4\ud5d8\ub2e8 \uc5c5\uccb4", type: "\ub9ac\uc18c\uc2a4", route: "/material/mat-3", icon: "assets/images/11.png" },
-  { id: "mat-4", title: "\uc218\uc785\ub300\ud589 & 3PL \ub3d9\uc2dc\uc6b4\uc601 \uc5c5\uccb4", type: "\uc5c5\uccb4\uc815\ubcf4", route: "/material/mat-4", icon: "assets/images/12.png" },
+  {
+    id: "mat-1",
+    title: "경쟁사 판매량 분석프로그램",
+    type: "프로그램",
+    icon: "assets/images/9.png",
+    desc: "쿠팡, 스마트스토어에서 경쟁 셀러의 실제 판매량을 추적하는 프로그램입니다. 상위 노출 상품의 월별 매출량을 일일이 확인하여 안정적인 아이템을 선별할 수 있습니다.",
+    steps: [
+      "프로그램 다운로드 후 실행",
+      "쿠팡 or 스마트스토어 탭 선택",
+      "분석할 키워드 입력",
+      "월별/주별 매출 실적 확인",
+      "제품 등록 여부 판단에 활용"
+    ],
+    downloadLabel: "프로그램 다운로드",
+    downloadUrl: "#"
+  },
+  {
+    id: "mat-2",
+    title: "외부링크 추적 프로그램",
+    type: "프로그램",
+    icon: "assets/images/10.png",
+    desc: "외부 링크(블로그, SNS, 카페 등)에서 유입되는 트래фик을 추적하는 툴입니다. 어떤 링크가 실제 매출로 이어지는지 데이터로 확인할 수 있습니다.",
+    steps: [
+      "프로그램 설치 후 실행",
+      "자신의 스토어 URL 입력",
+      "추적할 외부 링크 URL 입력",
+      "유입 명수 / 전환율 확인",
+      "링크별 ROI 연산하여 마케팅 최적화"
+    ],
+    downloadLabel: "프로그램 다운로드",
+    downloadUrl: "#"
+  },
+  {
+    id: "mat-3",
+    title: "AI 양방향 자동번역기 + 1688 LV6 아이디 + 체험단 업체",
+    type: "리소스",
+    icon: "assets/images/11.png",
+    desc: "3가지 리소스 패키지입니다. AI를 이용한 한중 양방향 자동 번역기, 1688 고등급(LV6) 바이어 아이디, 실제 체험단 연계 업체 리스트가 포함되어 있습니다.",
+    steps: [
+      "[자동번역기] 크롬 확장프로그램 설치 후 사용",
+      "[리스크] 1688 LV6 아이디로 도매가 할인율 확인",
+      "[체험단] 리스트에서 업체 컨택후 조건 협의",
+      "문의는 업체별 맞춤지는 양식 활용 구체적 방식 안내서 포함"
+    ],
+    downloadLabel: "리소스 패키지 다운로드",
+    downloadUrl: "#"
+  },
+  {
+    id: "mat-4",
+    title: "수입대행 & 3PL 동시운영 업체",
+    type: "업체정보",
+    icon: "assets/images/12.png",
+    desc: "중국산 제품 수입 대행과 3PL(창고/배송) 업무를 동시에 운영하는 업체 리스트입니다. 똘기가 직접 겪어보고 신뢰할 수 있는 파트너입니다.",
+    steps: [
+      "업체 리스트 다운로드",
+      "담당자에게 견적 단가 요청",
+      "동대문 vs 3PL 조건 비교후 선택",
+      "시제품 발주 후 품질 확인 절차 안내"
+    ],
+    downloadLabel: "업체 리스트 다운로드",
+    downloadUrl: "#"
+  }
+];
+
+const INITIAL_QNA = [
+  { id: "qna-1", question: "초보자도 수업을 따라갈 수 있나요?", answer: "네, 가능합니다. 본 강의는 아이템 소싱의 본질부터 시장 분석, 브랜딩 설계까지 단계별 실전 과정으로 구성되어 있습니다. 완전 초보자분들도 단계적으로 실천하며 성과를 낼 수 있도록 1:1 밀착 피드백을 제공합니다.", date: "2026-06-10", author: "관리자" },
+  { id: "qna-2", question: "자료실에 있는 프로그램과 자료들은 언제까지 이용할 수 있나요?", answer: "수강신청을 완료한 수강생분들에게는 평생 소장 권한이 부여되며, 업데이트되는 자료실의 프로그램과 리소스도 기간 제한 없이 무료로 계속 이용하실 수 있습니다.", date: "2026-06-10", author: "관리자" },
+  { id: "qna-3", question: "노트북 사양이 좋아야 하나요?", answer: "일반적인 인터넷 검색 및 문서 작업이 가능한 수준의 노트북이나 PC라면 사양에 관계없이 수업 참여와 소싱 프로그램 구동이 가능합니다.", date: "2026-06-10", author: "관리자" },
+  { id: "qna-4", question: "중도 환불이 가능한가요?", answer: "환불 규정에 의거하여 강의 시작 전에는 100% 환불이 가능하며, 시작 이후에는 수강 진행률에 따라 정산 후 환불이 진행됩니다. 자세한 환불 문의는 고객센터로 연락 주시기 바랍니다.", date: "2026-06-10", author: "관리자" }
 ];
 
 const formatPrice = (price) => price === 0 ? '무료' : new Intl.NumberFormat('ko-KR').format(price) + '원';
@@ -200,8 +265,8 @@ const Header = ({ currentPath, navigate, user, isAdmin, onLogout }) => {
               <button onClick={() => handleNav('/enrollment')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">수강신청</button>
               <button onClick={() => navigate('/reviews')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">수강생후기</button>
               <button onClick={() => navigate('/revenues')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">수익인증</button>
-              <button onClick={() => handleNav('/community')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">커뮤니티</button>
               <button onClick={() => handleNav('/materials')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">자료실</button>
+              <button onClick={() => handleNav('/qna')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">Q&A</button>
               <button onClick={() => handleNav('/mypage')} className="hover:text-[#FF8A00] transition-colors py-2 px-1 md:hidden">마이페이지</button>
               
               <div className="hidden md:block w-px h-4 bg-gray-200 mx-1"></div>
@@ -323,15 +388,15 @@ const RevenuesPage = ({ revenuesData, navigate, showModal }) => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="mb-12">
           <Badge className="bg-gray-800 text-indigo-400 border-gray-700 mb-4">수익인증</Badge>
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight word-keep mb-3">수익 인증 전체보기</h1>
-          <p className="text-gray-400 font-medium text-lg">철저하게 계산된 전략이 만들어낸 실제 계좌 입금 내역입니다.</p>
+          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight word-keep mb-3">더 이상 매출 자랑에 속지마세요</h1>
+          <p className="text-gray-400 font-medium text-lg">진짜 사업은 마진율에 있습니다.</p>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {revenuesData.map(rev => (
             <div key={rev.id} className="bg-[#111111] rounded-3xl overflow-hidden border border-gray-800 shadow-lg hover:shadow-xl transition-shadow flex flex-col h-[360px] cursor-pointer" onClick={() => showModal('postView', rev.title, rev.content)}>
                <div className="h-48 overflow-hidden relative border-b border-gray-800">
                   <img src={rev.thumbnail} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute top-4 left-4 bg-[#FF8A00] text-black font-black px-3 py-1 rounded-lg shadow-md word-keep text-xs">{rev.amount}</div>
+                  <div className="absolute top-4 left-4 bg-[#FF8A00] text-black font-black px-3 py-1 rounded-lg shadow-md word-keep text-xs">{rev.cohort || rev.amount}</div>
                </div>
                <div className="p-6 flex-1 flex flex-col justify-between bg-[#111111]">
                   <h3 className="font-bold text-base md:text-lg text-white mb-2 line-clamp-2 word-keep">{rev.title}</h3>
@@ -411,6 +476,16 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
               ))}
             </div>
           </div>
+          <div className="mt-8 flex flex-col items-center gap-3">
+            <div className="bg-[#5f6e8f]/90 backdrop-blur-sm rounded-xl px-6 py-3 border border-gray-600 shadow-md">
+              <p className="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight word-keep">
+                강의가 끝나면 더 연락하세요. 개인폰번호 공개 합니다!
+              </p>
+            </div>
+            <p className="text-sm sm:text-base font-black text-white tracking-tight word-keep">
+              365일 24시간 보는 즉시 답장
+            </p>
+          </div>
         </div>
       </section>
 
@@ -469,8 +544,8 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-12">
             <div>
-              <h2 className="text-3xl md:text-5xl font-black text-[#111827] mb-4 tracking-tight word-keep">수강생들이 직접 증명하는 생존 공식</h2>
-              <p className="text-lg md:text-xl text-[#5b5b5b] font-medium word-keep">철저하게 계산된 전략이 만들어낸 실제 계좌 입금 내역입니다.</p>
+              <h2 className="text-3xl md:text-5xl font-black text-[#111827] mb-4 tracking-tight word-keep">더 이상 매출 자랑에 속지마세요</h2>
+              <p className="text-lg md:text-xl text-[#5b5b5b] font-medium word-keep">진짜 사업은 마진율에 있습니다.</p>
             </div>
             <Button variant="ghost" className="hidden md:flex text-[#FF8A00] hover:bg-[#ffe8d0]" onClick={()=>navigate('/revenues')}>전체보기 <Icon path={ICONS.ArrowRight} className="w-4 h-4 ml-1"/></Button>
           </div>
@@ -478,7 +553,7 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
             <div className="bg-white rounded-3xl overflow-hidden border border-[#f4e4ce] shadow-lg hover:shadow-xl transition-shadow flex flex-col h-[360px] cursor-pointer" onClick={() => showModal('postView', rev.title, rev.content)}>
                <div className="h-48 overflow-hidden relative border-b border-[#f4e4ce]">
                   <img src={rev.thumbnail} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute top-4 left-4 bg-[#FF8A00] text-black font-black px-3 py-1 rounded-lg shadow-md word-keep text-xs">{rev.amount}</div>
+                  <div className="absolute top-4 left-4 bg-[#FF8A00] text-black font-black px-3 py-1 rounded-lg shadow-md word-keep text-xs">{rev.cohort || rev.amount}</div>
                </div>
                <div className="p-6 flex-1 flex flex-col justify-between bg-white">
                   <h3 className="font-bold text-base md:text-lg text-[#111827] mb-2 line-clamp-2 word-keep">{rev.title}</h3>
@@ -895,6 +970,113 @@ const CommunityPage = ({ communityPosts, user, onAddPost, showModal }) => {
   );
 };
 
+const QnaPage = ({ qnaList, user, updateDB, navigate, showModal }) => {
+  const [expandedId, setExpandedId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredQna = (qnaList || []).filter(q => 
+    (q.question || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (q.answer && q.answer.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  const handleWriteQuestion = () => {
+    if(!user) return showModal('alert', '로그인 필요', '질문을 등록하려면 로그인이 필요합니다.', () => navigate('/login'));
+    showModal('custom', '새로운 Q&A 질문하기', '질문을 입력하시면 강사가 직접 답변해 드립니다.', (data) => {
+      if(!data.question?.trim()) return showModal('alert', '안내', '질문 내용을 입력해주세요.');
+      const newQuestion = {
+        id: `qna-${Date.now()}`,
+        question: data.question,
+        answer: '',
+        author: user.name || user.email || '수강생',
+        date: new Date().toISOString().split('T')[0]
+      };
+      updateDB('qna', [newQuestion, ...qnaList]);
+      showModal('alert', '등록 완료', '질문이 등록되었습니다. 관리자가 답변을 등록한 후 확인할 수 있습니다.');
+    }, '', false, [
+      { name: 'question', type: 'textarea', placeholder: '이커머스 소싱, 브랜딩 등 궁금한 내용을 상세하게 입력해주세요. (줄바꿈 지원)' }
+    ]);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#050608] text-white pt-32 pb-20">
+      <div className="max-w-4xl mx-auto px-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+          <div>
+            <Badge className="mb-4">Q&A 게시판</Badge>
+            <h1 className="text-3xl md:text-5xl font-black tracking-tight word-keep mb-3 text-[#FF8A00]">질문 & 답변</h1>
+            <p className="text-gray-400 font-medium text-sm md:text-base">궁금한 점이 있으신가요? 자주 묻는 질문을 확인하거나 직접 질문해보세요.</p>
+          </div>
+          <Button onClick={handleWriteQuestion} className="flex-shrink-0 bg-[#FF8A00] text-black font-black">
+            질문 등록하기 🔥
+          </Button>
+        </div>
+
+        {/* 검색바 */}
+        <div className="relative mb-10">
+          <input 
+            type="text" 
+            placeholder="궁금한 내용을 검색해 보세요..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[#111111] border border-gray-800 rounded-2xl px-6 py-4 text-white text-base placeholder-gray-500 focus:outline-none focus:border-[#FF8A00] focus:ring-2 focus:ring-[#FF8A00]/20 transition-all shadow-lg"
+          />
+          <div className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500">
+            <Icon path={ICONS.Search} className="w-6 h-6" />
+          </div>
+        </div>
+
+        {/* 아코디언 목록 */}
+        <div className="space-y-4">
+          {filteredQna.map((q) => {
+            const isExpanded = expandedId === q.id;
+            const hasAnswer = !!q.answer?.trim();
+            return (
+              <div key={q.id} className="bg-[#111111] border border-gray-800 rounded-3xl overflow-hidden hover:border-gray-700 transition-all shadow-md">
+                <button 
+                  onClick={() => setExpandedId(isExpanded ? null : q.id)}
+                  className="w-full flex items-center justify-between p-6 md:p-8 text-left transition-colors focus:outline-none"
+                >
+                  <div className="flex-1 min-w-0 pr-4">
+                    <div className="flex items-center gap-3 mb-2 flex-wrap">
+                      <span className={`text-[10px] md:text-xs font-black px-2.5 py-1 rounded-md tracking-tight ${hasAnswer ? 'bg-[#FF8A00]/20 text-[#FF8A00]' : 'bg-gray-800 text-gray-400'}`}>
+                        {hasAnswer ? '답변 완료' : '답변 대기'}
+                      </span>
+                      <span className="text-xs text-gray-500">{q.author} · {q.date}</span>
+                    </div>
+                    <h3 className="text-base md:text-lg font-bold text-white word-keep tracking-tight leading-snug">
+                      {q.question}
+                    </h3>
+                  </div>
+                  <div className={`w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-[#FF8A00]' : ''}`}>
+                    <Icon path={ICONS.ChevronDown} className="w-5 h-5" />
+                  </div>
+                </button>
+
+                {/* 답변 탭 */}
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden border-gray-800 ${isExpanded ? 'max-h-[1000px] border-t p-6 md:p-8 bg-[#161616]' : 'max-h-0'}`}>
+                  <div className="flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-xl bg-[#FF8A00] text-black font-black text-sm flex items-center justify-center flex-shrink-0 mt-0.5">A</div>
+                    <div className="flex-1 text-gray-300 text-sm md:text-base leading-relaxed whitespace-pre-wrap font-medium word-keep">
+                      {hasAnswer ? q.answer : (
+                        <span className="text-gray-500 italic">답변을 준비하고 있습니다. 조금만 기다려주세요.</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          {filteredQna.length === 0 && (
+            <div className="text-center py-20 bg-[#111111] rounded-3xl border border-gray-800 text-gray-500 font-bold">
+              검색 결과가 없거나 등록된 질문이 없습니다.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const MaterialsPage = ({ enrolledCourses, materials, navigate }) => {
   const isEnrolled = enrolledCourses && enrolledCourses.length > 0;
   if (!isEnrolled) {
@@ -920,7 +1102,7 @@ const MaterialsPage = ({ enrolledCourses, materials, navigate }) => {
           {materials.map((mat) => (
             <div
               key={mat.id}
-              onClick={() => navigate(mat.route)}
+              onClick={() => navigate(mat.route || `/material/${mat.id}`)}
               className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm flex items-center justify-between hover:border-[#FF8A00]/40 hover:shadow-lg transition-all cursor-pointer group"
             >
               <div className="flex items-center gap-5">
@@ -942,156 +1124,6 @@ const MaterialsPage = ({ enrolledCourses, materials, navigate }) => {
     </div>
   );
 };
-
-// ============================================================================
-// 자료실 상세 페이지 (각 자료별)
-// ============================================================================
-const MATERIAL_DETAIL_DATA = {
-  'mat-1': {
-    title: '\uacbd\uc7c1\uc0ac \ud310\ub9e4\ub7c9 \ubd84\uc11d\ud504\ub85c\uadf8\ub7a8',
-    type: '\ud504\ub85c\uadf8\ub7a8',
-    icon: 'assets/images/9.png',
-    desc: '\ucfe0\ud321, \uc2a4\ub9c8\ud2b8\uc2a4\ud1a0\uc5b4\uc5d0\uc11c \uacbd\uc7c1 \uc140\ub7ec\uc758 \uc2e4\uc81c \ud310\ub9e4\ub7c9\uc744 \ucd94\uc801\ud558\ub294 \ud504\ub85c\uadf8\ub7a8\uc785\ub2c8\ub2e4. \uc0c1\uc704 \ub178\ucd9c \uc0c1\ud488\uc758 \uc6d4\ubcc4 \ub9e4\ucd9c\ub7c9\uc744 \uc77c\uc77c\uc774 \ud655\uc778\ud558\uc5ec \uc548\uc815\uc801\uc778 \uc544\uc774\ud15c\uc744 \uc120\ubcc4\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.',
-    steps: [
-      '\ud504\ub85c\uadf8\ub7a8 \ub2e4\uc6b4\ub85c\ub4dc \ud6c4 \uc2e4\ud589',
-      '\ucfe0\ud321 or \uc2a4\ub9c8\ud2b8\uc2a4\ud1a0\uc5b4 \ud0ed \uc120\ud0dd',
-      '\ubd84\uc11d\ud560 \ud0a4\uc6cc\ub4dc \uc785\ub825',
-      '\uc6d4\ubcc4/\uc8fc\ubcc4 \ub9e4\ucd9c \uc2e4\uc801 \ud655\uc778',
-      '\uc81c\ud488 \ub4f1\ub85d \uc5ec\ubd80 \ud310\ub2e8\uc5d0 \ud65c\uc6a9',
-    ],
-    downloadLabel: '\ud504\ub85c\uadf8\ub7a8 \ub2e4\uc6b4\ub85c\ub4dc',
-    downloadUrl: '#',
-  },
-  'mat-2': {
-    title: '\uc678\ubd80\ub9c1\ud06c \ucd94\uc801 \ud504\ub85c\uadf8\ub7a8',
-    type: '\ud504\ub85c\uadf8\ub7a8',
-    icon: 'assets/images/10.png',
-    desc: '\uc678\ubd80 \ub9c1\ud06c(\ube14\ub85c\uadf8, SNS, \uce74\ud398 \ub4f1)\uc5d0\uc11c \uc720\uc785\ub418\ub294 \ud2b8\ub798\ud53d\uc744 \ucd94\uc801\ud558\ub294 \ud234\uc785\ub2c8\ub2e4. \uc5b4\ub5a4 \ub9c1\ud06c\uac00 \uc2e4\uc81c \ub9e4\ucd9c\ub85c \uc774\uc5b4\uc9c0\ub294\uc9c0 \ub370\uc774\ud130\ub85c \ud655\uc778\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.',
-    steps: [
-      '\ud504\ub85c\uadf8\ub7a8 \uc124\uce58 \ud6c4 \uc2e4\ud589',
-      '\uc790\uc2e0\uc758 \uc2a4\ud1a0\uc5b4 URL \uc785\ub825',
-      '\ucd94\uc801\ud560 \uc678\ubd80 \ub9c1\ud06c URL \uc785\ub825',
-      '\uc720\uc785 \uba85\uc218 / \uc804\ud658\uc728 \ud655\uc778',
-      '\ub9c1\ud06c\ubcc4 ROI \uc5f0\uc0b0\ud558\uc5ec \ub9c8\ucf80\ud305 \ucd5c\uc801\ud654',
-    ],
-    downloadLabel: '\ud504\ub85c\uadf8\ub7a8 \ub2e4\uc6b4\ub85c\ub4dc',
-    downloadUrl: '#',
-  },
-  'mat-3': {
-    title: 'AI \uc591\ubc29\ud5a5 \uc790\ub3d9\ubc88\uc5ed\uae30 + 1688 LV6 \uc544\uc774\ub514 + \uccb4\ud5d8\ub2e8 \uc5c5\uccb4',
-    type: '\ub9ac\uc18c\uc2a4',
-    icon: 'assets/images/11.png',
-    desc: '3\uac00\uc9c0 \ub9ac\uc18c\uc2a4 \ud328\ud0a4\uc9c0\uc785\ub2c8\ub2e4. AI\ub97c \uc774\uc6a9\ud55c \ud55c\uc911 \uc591\ubc29\ud5a5 \uc790\ub3d9 \ubc88\uc5ed\uae30, 1688 \uace0\ub4f1\uae09(LV6) \ubc14\uc774\uc5b4 \uc544\uc774\ub514, \uc2e4\uc81c \uccb4\ud5d8\ub2e8 \uc5f0\uacc4 \uc5c5\uccb4 \ub9ac\uc2a4\ud2b8\uac00 \ud3ec\ud568\ub418\uc5b4 \uc788\uc2b5\ub2c8\ub2e4.',
-    steps: [
-      '[\uc790\ub3d9\ubc88\uc5ed\uae30] \ud06c\ub86c \ud655\uc7a5\ud504\ub85c\uadf8\ub7a8 \uc124\uce58 \ud6c4 \uc0ac\uc6a9',
-      '[\ub9ac\uc2a4\ud2b8] 1688 LV6 \uc544\uc774\ub514\ub85c \ub3c4\ub9e4\uac00 \ud560\uc778\uc728 \ud655\uc778',
-      '[\uccb4\ud5d8\ub2e8] \ub9ac\uc2a4\ud2b8\uc5d0\uc11c \uc5c5\uccb4 \ucee4\ud0dd\ud6c4 \uc870\uac74 \ud611\uc758',
-      '\ubb38\uc758\ub294 \uc5c5\uccb4\ubcc4 \ub9de\ucDB4\uc9c0\ub294 \uc591\uc2dd \ud65c\uc6a9 \uad6c\uccb4\uc801 \ubc29\uc2dd \uc548\ub0b4\uc11c \ud3ec\ud568',
-    ],
-    downloadLabel: '\ub9ac\uc18c\uc2a4 \ud328\ud0a4\uc9c0 \ub2e4\uc6b4\ub85c\ub4dc',
-    downloadUrl: '#',
-  },
-  'mat-4': {
-    title: '\uc218\uc785\ub300\ud589 & 3PL \ub3d9\uc2dc\uc6b4\uc601 \uc5c5\uccb4',
-    type: '\uc5c5\uccb4\uc815\ubcf4',
-    icon: 'assets/images/12.png',
-    desc: '\uc911\uad6d\uc0b0 \uc81c\ud488 \uc218\uc785 \ub300\ud589\uacfc 3PL(\ucc3d\uace0/\ubc30\uc1a1) \uc5c5\ubb34\ub97c \ub3d9\uc2dc\uc5d0 \uc6b4\uc601\ud558\ub294 \uc5c5\uccb4 \ub9ac\uc2a4\ud2b8\uc785\ub2c8\ub2e4. \ub3cc\uae30\uac00 \uc9c1\uc811 \uac71\uc5b4\ubcf4\uace0 \uc2e0\ub8b0\ud560 \uc218 \uc788\ub294 \ud30c\ud2b8\ub108\uc785\ub2c8\ub2e4.',
-    steps: [
-      '\uc5c5\uccb4 \ub9ac\uc2a4\ud2b8 \ub2e4\uc6b4\ub85c\ub4dc',
-      '\ub2f4\ub2f9\uc790\uc5d0\uac8c \ud95c\uccb4 \ub2e8\uac00 \uc694\uccad',
-      '\ub3d9\ub300\ubb38 vs 3PL \uc870\uac74 \ube44\uad50\ud6c4 \uc120\ud0dd',
-      '\uc2dc\uc81c\ud488 \ubc1c\uc8fc \ud6c4 \ud488\uc9c8 \ud655\uc778 \uc808\ucc28 \uc548\ub0b4',
-    ],
-    downloadLabel: '\uc5c5\uccb4 \ub9ac\uc2a4\ud2b8 \ub2e4\uc6b4\ub85c\ub4dc',
-    downloadUrl: '#',
-  },
-};
-
-const MaterialDetailPage = ({ matId, enrolledCourses, navigate, showModal }) => {
-  const isEnrolled = enrolledCourses && enrolledCourses.length > 0;
-  const data = MATERIAL_DETAIL_DATA[matId];
-
-  if (!data) return <div className="pt-48 text-center font-bold">{'\uc790\ub8cc\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.'}</div>;
-
-  const handleDownload = () => {
-    if (!isEnrolled) {
-      showModal('alert', '\uc218\uac15\uc0dd \uc804\uc6a9', '\uc218\uac15 \ub4f1\ub85d \ud6c4 \ub2e4\uc6b4\ub85c\ub4dc\uac00 \uac00\ub2a5\ud569\ub2c8\ub2e4.');
-      return;
-    }
-    if (data.downloadUrl === '#') {
-      showModal('alert', '\uc900\ube44 \uc911', '\ub2e4\uc6b4\ub85c\ub4dc \ud30c\uc77c\uc744 \uc900\ube44 \uc911\uc785\ub2c8\ub2e4. \uc870\ub9cc \uae30\ub2e4\ub824\uc8fc\uc138\uc694!');
-    } else {
-      window.open(data.downloadUrl, '_blank');
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50 pt-32 pb-20">
-      <div className="max-w-3xl mx-auto px-6">
-        {/* 뒤로 가기 */}
-        <button onClick={() => navigate('/materials')} className="flex items-center gap-2 text-gray-500 hover:text-gray-800 font-bold mb-8 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-          {'\uc790\ub8cc\uc2e4\ub85c \ub3cc\uc544\uac00\uae30'}
-        </button>
-
-        {/* 헤더 */}
-        <div className="bg-white rounded-[2rem] p-8 md:p-12 border border-gray-100 shadow-sm mb-6">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 shadow-sm">
-              <img src={data.icon} alt={data.title} className="w-full h-full object-cover" />
-            </div>
-            <div>
-              <span className="text-xs bg-orange-50 text-[#FF8A00] px-3 py-1 rounded-full font-bold">{data.type}</span>
-              <h1 className="text-xl md:text-2xl font-black text-gray-900 mt-2 word-keep tracking-tight">{data.title}</h1>
-            </div>
-          </div>
-          <p className="text-gray-600 leading-relaxed font-medium">{data.desc}</p>
-        </div>
-
-        {/* 사용 방법 */}
-        <div className="bg-white rounded-[2rem] p-8 md:p-12 border border-gray-100 shadow-sm mb-6">
-          <h2 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
-            <span className="w-1.5 h-6 bg-[#FF8A00] rounded-full inline-block"></span>
-            {'\uc0ac\uc6a9 \ubc29\ubc95'}
-          </h2>
-          <ol className="space-y-4">
-            {data.steps.map((step, i) => (
-              <li key={i} className="flex items-start gap-4">
-                <span className="w-7 h-7 bg-[#FF8A00] text-black text-xs font-black rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">{i + 1}</span>
-                <p className="text-gray-700 font-medium leading-relaxed word-keep">{step}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-
-        {/* 다운로드 버튼 */}
-        <div className="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-          {isEnrolled ? (
-            <>
-              <p className="text-gray-600 font-medium">{'\uc218\uac15\uc0dd \uc804\uc6a9 \ud30c\uc77c\uc785\ub2c8\ub2e4. \uc544\ub798\uc5d0\uc11c \ub2e4\uc6b4\ub85c\ub4dc\ud558\uc138\uc694.'}</p>
-              <Button onClick={handleDownload} className="w-full sm:w-auto bg-[#FF8A00] text-black border-none font-black">
-                {'\u2b07\ufe0f '}{data.downloadLabel}
-              </Button>
-            </>
-          ) : (
-            <>
-              <div className="flex items-center gap-3">
-                <Icon path={ICONS.Lock} className="w-5 h-5 text-gray-400" />
-                <p className="text-gray-500 font-medium">{'\uc218\uac15 \ub4f1\ub85d \uc774\ud6c4 \ub2e4\uc6b4\ub85c\ub4dc \uac00\ub2a5\ud569\ub2c8\ub2e4.'}</p>
-              </div>
-              <Button onClick={() => navigate('/enrollment')} className="w-full sm:w-auto bg-gray-900 text-white border-none">
-                {'\uc218\uac15\uc2e0\uccad \ud558\ub7ec\uac00\uae30'}
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-
-
 const MyPage = ({ user, enrolledCourses, navigate }) => (
   <div className="min-h-screen bg-gray-50 pt-32 pb-20">
     <div className="max-w-4xl mx-auto px-6">
@@ -1130,13 +1162,14 @@ const MyPage = ({ user, enrolledCourses, navigate }) => (
 // ============================================================================
 // 관리자 대시보드
 // ============================================================================
-const AdminDashboard = ({ courses, materials, community, reviewsData, revenuesData, usersDB, updateDB, navigate, showModal }) => {
+const AdminDashboard = ({ courses, materials, community, qna, reviewsData, revenuesData, usersDB, updateDB, navigate, showModal }) => {
   const [tab, setTab] = useState('reviews');
   const [form, setForm] = useState({});
   const [previewUrl, setPreviewUrl] = useState('');
   const [previewThumb, setPreviewThumb] = useState('');
+  const [previewIcon, setPreviewIcon] = useState('');
 
-  const resetForm = () => { setForm({}); setPreviewUrl(''); setPreviewThumb(''); };
+  const resetForm = () => { setForm({}); setPreviewUrl(''); setPreviewThumb(''); setPreviewIcon(''); };
 
   const fileToBase64 = (file) => new Promise((resolve) => {
     const reader = new FileReader();
@@ -1150,192 +1183,454 @@ const AdminDashboard = ({ courses, materials, community, reviewsData, revenuesDa
     const b64 = await fileToBase64(file);
     if (field === 'image') setPreviewUrl(b64);
     if (field === 'thumbnail') setPreviewThumb(b64);
+    if (field === 'icon') setPreviewIcon(b64);
     setForm(f => ({ ...f, [field]: b64 }));
   };
 
   const handleAddReview = () => {
-    if (!form.name?.trim()) return showModal('alert', '\uc548\ub0b4', '\uc791\uc131\uc790 \uc774\ub984\uc744 \uc785\ub825\ud558\uc138\uc694.');
-    if (!form.comment?.trim()) return showModal('alert', '\uc548\ub0b4', '\ud6c4\uae30 \ub0b4\uc6a9\uc744 \uc785\ub825\ud558\uc138\uc694.');
+    if (!form.name?.trim()) return showModal('alert', '안내', '작성자 이름을 입력하세요.');
+    if (!form.comment?.trim()) return showModal('alert', '안내', '후기 내용을 입력하세요.');
     const newItem = {
       id: `review-${Date.now()}`,
       name: form.name,
       rating: Number(form.rating || 5),
-      tag: form.tag || '\uc2e4\uc804\uc140\ub7ec',
+      tag: form.tag || '실전셀러',
       image: form.image || null,
       comment: form.comment
     };
     updateDB('reviews', [newItem, ...reviewsData]);
-    showModal('alert', '\ub4f1\ub85d \uc131\uacf5', '\ud6c4\uae30\uac00 \ub4f1\ub85d\ub418\uc5c8\uc2b5\ub2c8\ub2e4.');
+    showModal('alert', '등록 성공', '후기가 등록되었습니다.');
     resetForm();
   };
 
   const handleAddRevenue = () => {
-    if (!form.title?.trim()) return showModal('alert', '\uc548\ub0b4', '\uc81c\ubaa9\uc744 \uc785\ub825\ud558\uc138\uc694.');
-    if (!form.amount?.trim()) return showModal('alert', '\uc548\ub0b4', '\ub2ec\uc131 \uc131\uacfc\ub97c \uc785\ub825\ud558\uc138\uc694.');
+    if (!form.cohort?.trim()) return showModal('alert', '안내', '기수를 선택해주세요.');
+    if (!form.title?.trim()) return showModal('alert', '안내', '제목을 입력해주세요.');
+    if (!form.author?.trim()) return showModal('alert', '안내', '작성자를 입력해주세요.');
     const contentHTML = `<div class="space-y-6 text-gray-800 leading-relaxed text-sm md:text-base">
       ${(form.content || '').split('\n').map(p => `<p>${p}</p>`).join('')}
-      ${form.thumbnail ? `<img src="${form.thumbnail}" class="w-full rounded-2xl border border-gray-200 shadow-sm" alt="\uc218\uc775\uc778\uc99d" />` : ''}
+      ${form.thumbnail ? `<img src="${form.thumbnail}" class="w-full rounded-2xl border border-gray-200 shadow-sm" alt="수익인증" />` : ''}
     </div>`;
     const newItem = {
       id: `rev-${Date.now()}`,
-      title: form.title,
-      amount: form.amount,
-      author: form.author || '\uc218\uac15\uc0dd',
-      date: form.date || new Date().toISOString().split('T')[0],
+      title: `[${form.cohort}] ${form.title}`,
+      cohort: form.cohort,
+      author: form.author,
+      date: new Date().toISOString().split('T')[0],
       thumbnail: form.thumbnail || '',
-      content: contentHTML
+      content: contentHTML,
+      views: 0
     };
     updateDB('revenues', [newItem, ...revenuesData]);
-    showModal('alert', '\ub4f1\ub85d \uc131\uacf5', '\uc218\uc775\uc778\uc99d\uc774 \ub4f1\ub85d\ub418\uc5c8\uc2b5\ub2c8\ub2e4.');
+    showModal('alert', '등록 성공', '수익인증이 등록되었습니다.');
     resetForm();
   };
 
+  const handleAddCourse = () => {
+    if (!form.title?.trim()) return showModal('alert', '안내', '강의 제목을 입력하세요.');
+    if (!form.category?.trim()) return showModal('alert', '안내', '카테고리를 입력하세요.');
+    const newItem = {
+      id: `course-${Date.now()}`,
+      title: form.title,
+      category: form.category,
+      summary: form.summary || '',
+      description: form.description || '',
+      price: Number(form.price || 0),
+      studentCount: Number(form.studentCount || 0),
+      thumbnail: form.thumbnail || 'assets/images/5.jpg',
+      curriculum: (form.curriculum || '').split('\n').map(l => l.trim()).filter(Boolean)
+    };
+    updateDB('courses', [...courses, newItem]);
+    showModal('alert', '등록 성공', '강의가 성공적으로 등록되었습니다.');
+    resetForm();
+  };
+
+  const handleAddMaterial = () => {
+    if (!form.title?.trim()) return showModal('alert', '안내', '자료 제목을 입력하세요.');
+    if (!form.type?.trim()) return showModal('alert', '안내', '구분을 선택하세요.');
+    const newItem = {
+      id: `mat-${Date.now()}`,
+      title: form.title,
+      type: form.type,
+      desc: form.desc || '',
+      steps: (form.steps || '').split('\n').map(l => l.trim()).filter(Boolean),
+      downloadLabel: form.downloadLabel || '다운로드',
+      downloadUrl: form.downloadUrl || '#',
+      icon: form.icon || 'assets/images/9.png'
+    };
+    updateDB('materials', [...materials, newItem]);
+    showModal('alert', '등록 성공', '자료가 성공적으로 등록되었습니다.');
+    resetForm();
+  };
+
+  const handleAddQna = () => {
+    if (!form.question?.trim()) return showModal('alert', '안내', '질문을 입력하세요.');
+    const newItem = {
+      id: `qna-${Date.now()}`,
+      question: form.question,
+      answer: form.answer || '',
+      author: '관리자',
+      date: new Date().toISOString().split('T')[0]
+    };
+    updateDB('qna', [newItem, ...qna]);
+    showModal('alert', '등록 성공', 'Q&A가 등록되었습니다.');
+    resetForm();
+  };
+
+  const handleAnswerQnaItem = (qnaItem) => {
+    showModal('custom', '답변 등록 / 수정', '질문에 대한 답변 내용을 작성하세요.', (data) => {
+      const updatedList = qna.map(item => {
+        if (item.id === qnaItem.id) {
+          return { ...item, question: data.question || item.question, answer: data.answer };
+        }
+        return item;
+      });
+      updateDB('qna', updatedList);
+      showModal('alert', '저장 완료', '답변이 등록/수정되었습니다.');
+    }, '', false, [
+      { name: 'question', type: 'textarea', placeholder: '질문 내용', value: qnaItem.question },
+      { name: 'answer', type: 'textarea', placeholder: '답변 내용', value: qnaItem.answer }
+    ]);
+  };
+
   const handleDelete = (type, id) => {
-    showModal('confirm', '\uc0ad\uc81c \ud655\uc778', '\uc774 \ud56d\ubaa9\uc744 \uc0ad\uc81c\ud558\uc2dc\uaca0\uc2b5\ub2c8\uae4c?', () => {
+    showModal('confirm', '삭제 확인', '이 항목을 삭제하시겠습니까?', () => {
       if (type === 'reviews') updateDB('reviews', reviewsData.filter(r => r.id !== id));
       if (type === 'revenues') updateDB('revenues', revenuesData.filter(r => r.id !== id));
+      if (type === 'courses') updateDB('courses', courses.filter(c => c.id !== id));
+      if (type === 'materials') updateDB('materials', materials.filter(m => m.id !== id));
+      if (type === 'qna') updateDB('qna', qna.filter(q => q.id !== id));
     });
   };
 
-  const inp = "w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100";
+  const inp = "w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-[#FF8A00] focus:ring-2 focus:ring-[#FF8A00]/20 transition-all";
   const lbl = "block text-xs font-black text-gray-600 mb-1.5 uppercase tracking-wide";
 
   const ReviewForm = () => (
     <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-200">
-      <h3 className="font-black text-gray-900 mb-5 text-sm tracking-tight">{'\uc0c8 \ud6c4\uae30 \ub4f1\ub85d'}</h3>
+      <h3 className="font-black text-gray-900 mb-5 text-sm tracking-tight">새 후기 등록</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
         <div>
-          <label className={lbl}>{'\uc791\uc131\uc790 \uc774\ub984'}</label>
-          <input className={inp} placeholder="\uc608: \uc2e4\uc804\uc140\ub7ec99" value={form.name||''} onChange={e=>setForm(f=>({...f,name:e.target.value}))} />
+          <label className={lbl}>작성자 이름</label>
+          <input className={inp} placeholder="예: 실전셀러99" value={form.name||''} onChange={e=>setForm(f=>({...f,name:e.target.value}))} />
         </div>
         <div>
-          <label className={lbl}>{'\ud3c9\uc810 (1~5)'}</label>
+          <label className={lbl}>평점 (1~5)</label>
           <input className={inp} type="number" min="1" max="5" placeholder="5" value={form.rating||''} onChange={e=>setForm(f=>({...f,rating:e.target.value}))} />
         </div>
         <div className="md:col-span-2">
-          <label className={lbl}>{'\ud575\uc2ec \ud0dc\uadf8'}</label>
-          <input className={inp} placeholder="\uc608: \uc6d4 \ub9e4\ucd9c 3\ubc30 \uc0c1\uc2b9" value={form.tag||''} onChange={e=>setForm(f=>({...f,tag:e.target.value}))} />
+          <label className={lbl}>핵심 태그</label>
+          <input className={inp} placeholder="예: 월 매출 3배 상승" value={form.tag||''} onChange={e=>setForm(f=>({...f,tag:e.target.value}))} />
         </div>
         <div className="md:col-span-2">
-          <label className={lbl}>{'\uc0ac\uc9c4 \uc5c5\ub85c\ub4dc (\uc120\ud0dd)'}</label>
+          <label className={lbl}>사진 업로드 (선택)</label>
           <div className="flex items-center gap-3">
             <label className="flex-1 flex items-center gap-3 cursor-pointer bg-white border-2 border-dashed border-gray-300 hover:border-indigo-400 rounded-xl px-4 py-3 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              <span className="text-sm text-gray-500 font-medium">{previewUrl ? '\uc774\ubbf8\uc9c0 \uc120\ud0dd\ub428' : '\uc774\ubbf8\uc9c0 \ud30c\uc77c \uc120\ud0dd'}</span>
+              <span className="text-sm text-gray-500 font-medium">{previewUrl ? '이미지 선택됨' : '이미지 파일 선택'}</span>
               <input type="file" accept="image/*" className="hidden" onChange={e=>handleImageFile(e,'image')} />
             </label>
             {previewUrl && <img src={previewUrl} className="w-16 h-16 rounded-xl object-cover border border-gray-200 flex-shrink-0" alt="preview" />}
           </div>
         </div>
         <div className="md:col-span-2">
-          <label className={lbl}>{'\ud6c4\uae30 \ub0b4\uc6a9'}</label>
-          <textarea className={inp+' min-h-[100px] resize-y'} placeholder="\ud6c4\uae30 \ub0b4\uc6a9\uc744 \uc785\ub825\ud558\uc138\uc694" value={form.comment||''} onChange={e=>setForm(f=>({...f,comment:e.target.value}))} />
+          <label className={lbl}>후기 내용</label>
+          <textarea className={inp+' min-h-[100px] resize-y'} placeholder="후기 내용을 입력하세요" value={form.comment||''} onChange={e=>setForm(f=>({...f,comment:e.target.value}))} />
         </div>
       </div>
-      <Button onClick={handleAddReview} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white border-none shadow-lg shadow-indigo-200">{'\ud6c4\uae30 \ub4f1\ub85d \ud558\uae30'}</Button>
+      <Button onClick={handleAddReview} className="w-full bg-[#FF8A00] text-black hover:opacity-90 font-bold py-4 rounded-2xl transition-all duration-300">후기 등록 하기</Button>
     </div>
   );
 
   const RevenueForm = () => (
     <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-200">
-      <h3 className="font-black text-gray-900 mb-5 text-sm tracking-tight">{'\uc0c8 \uc218\uc775\uc778\uc99d \ub4f1\ub85d'}</h3>
+      <h3 className="font-black text-gray-900 mb-5 text-sm tracking-tight">새 수익인증 등록</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+        <div>
+          <label className={lbl}>기수 선택</label>
+          <select className={inp} value={form.cohort||''} onChange={e=>setForm(f=>({...f,cohort:e.target.value}))}>
+            <option value="">기수를 선택해주세요</option>
+            <option value="1기">1기</option>
+            <option value="2기">2기</option>
+            <option value="3기">3기</option>
+            <option value="4기">4기</option>
+            <option value="5기">5기</option>
+            <option value="6기">6기</option>
+            <option value="7기">7기</option>
+            <option value="8기">8기</option>
+            <option value="9기">9기</option>
+            <option value="10기">10기</option>
+          </select>
+        </div>
+        <div>
+          <label className={lbl}>작성자</label>
+          <input className={inp} placeholder="예: 로켓원" value={form.author||''} onChange={e=>setForm(f=>({...f,author:e.target.value}))} />
+        </div>
         <div className="md:col-span-2">
-          <label className={lbl}>{'\uc81c\ubaa9'}</label>
-          <input className={inp} placeholder="\uc608: \uadf8\ub85c\uc2a4 21\uae30 \uc6d4 1000\ub9cc \ub2ec\uc131 \ud6c4\uae30" value={form.title||''} onChange={e=>setForm(f=>({...f,title:e.target.value}))} />
+          <label className={lbl}>제목</label>
+          <input className={inp} placeholder="예: 월 1000만 달성 후기" value={form.title||''} onChange={e=>setForm(f=>({...f,title:e.target.value}))} />
         </div>
-        <div>
-          <label className={lbl}>{'\ub2ec\uc131 \uc131\uacfc'}</label>
-          <input className={inp} placeholder="\uc608: \uc6d4 1000\ub9cc \ub2ec\uc131" value={form.amount||''} onChange={e=>setForm(f=>({...f,amount:e.target.value}))} />
-        </div>
-        <div>
-          <label className={lbl}>{'\uc791\uc131\uc790'}</label>
-          <input className={inp} placeholder="\uc608: \ub85c\ucf13\ud2b8\uc6d0" value={form.author||''} onChange={e=>setForm(f=>({...f,author:e.target.value}))} />
-        </div>
-        <div>
-          <label className={lbl}>{'\ub0a0\uc9dc'}</label>
-          <input className={inp} placeholder={new Date().toISOString().split('T')[0]} value={form.date||''} onChange={e=>setForm(f=>({...f,date:e.target.value}))} />
-        </div>
-        <div>
-          <label className={lbl}>{'\uc368\ub124\uc77c \uc774\ubbf8\uc9c0 \uc5c5\ub85c\ub4dc'}</label>
+        <div className="md:col-span-2">
+          <label className={lbl}>썸네일 이미지 업로드</label>
           <div className="flex items-center gap-3">
             <label className="flex-1 flex items-center gap-3 cursor-pointer bg-white border-2 border-dashed border-gray-300 hover:border-indigo-400 rounded-xl px-4 py-3 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              <span className="text-sm text-gray-500 font-medium">{previewThumb ? '\uc774\ubbf8\uc9c0 \uc120\ud0dd\ub428' : '\ud30c\uc77c \uc120\ud0dd'}</span>
+              <span className="text-sm text-gray-500 font-medium">{previewThumb ? '이미지 선택됨' : '파일 선택'}</span>
               <input type="file" accept="image/*" className="hidden" onChange={e=>handleImageFile(e,'thumbnail')} />
             </label>
             {previewThumb && <img src={previewThumb} className="w-16 h-16 rounded-xl object-cover border border-gray-200 flex-shrink-0" alt="thumb" />}
           </div>
         </div>
         <div className="md:col-span-2">
-          <label className={lbl}>{'\uc0c1\uc138 \ud6c4\uae30 \ub0b4\uc6a9 (\uc904\ubc14\uafc8 \uc9c0\uc6d0)'}</label>
-          <textarea className={inp+' min-h-[140px] resize-y'} placeholder="\uc218\uac15 \ud6c4 \ubcc0\ud654\ub098 \uc131\uacfc\ub97c \uc791\uc131\ud558\uc138\uc694..." value={form.content||''} onChange={e=>setForm(f=>({...f,content:e.target.value}))} />
+          <label className={lbl}>상세 후기 내용</label>
+          <textarea className={inp+' min-h-[140px] resize-y'} placeholder="수강 후 변화나 성과를 작성하세요..." value={form.content||''} onChange={e=>setForm(f=>({...f,content:e.target.value}))} />
         </div>
       </div>
-      <Button onClick={handleAddRevenue} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white border-none shadow-lg shadow-indigo-200">{'\uc218\uc775\uc778\uc99d \ub4f1\ub85d \ud558\uae30'}</Button>
+      <Button onClick={handleAddRevenue} className="w-full bg-[#FF8A00] text-black hover:opacity-90 font-bold py-4 rounded-2xl transition-all duration-300">수익인증 등록 하기</Button>
+    </div>
+  );
+
+  const CourseForm = () => (
+    <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-200">
+      <h3 className="font-black text-gray-900 mb-5 text-sm tracking-tight">새 강의 등록</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+        <div>
+          <label className={lbl}>카테고리</label>
+          <input className={inp} placeholder="예: 생존 소싱" value={form.category||''} onChange={e=>setForm(f=>({...f,category:e.target.value}))} />
+        </div>
+        <div>
+          <label className={lbl}>강의 제목</label>
+          <input className={inp} placeholder="예: [초급] 틈새 발굴 로직" value={form.title||''} onChange={e=>setForm(f=>({...f,title:e.target.value}))} />
+        </div>
+        <div>
+          <label className={lbl}>수강료 (원 단위 숫자만)</label>
+          <input className={inp} type="number" placeholder="예: 499000" value={form.price||''} onChange={e=>setForm(f=>({...f,price:e.target.value}))} />
+        </div>
+        <div>
+          <label className={lbl}>수강생 수</label>
+          <input className={inp} type="number" placeholder="예: 1250" value={form.studentCount||''} onChange={e=>setForm(f=>({...f,studentCount:e.target.value}))} />
+        </div>
+        <div className="md:col-span-2">
+          <label className={lbl}>요약설명</label>
+          <input className={inp} placeholder="예: 처음 소싱부터 상품 등록까지 실전 완성" value={form.summary||''} onChange={e=>setForm(f=>({...f,summary:e.target.value}))} />
+        </div>
+        <div className="md:col-span-2">
+          <label className={lbl}>강의 썸네일 업로드</label>
+          <div className="flex items-center gap-3">
+            <label className="flex-1 flex items-center gap-3 cursor-pointer bg-white border-2 border-dashed border-gray-300 hover:border-indigo-400 rounded-xl px-4 py-3 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              <span className="text-sm text-gray-500 font-medium">{previewThumb ? '이미지 선택됨' : '파일 선택'}</span>
+              <input type="file" accept="image/*" className="hidden" onChange={e=>handleImageFile(e,'thumbnail')} />
+            </label>
+            {previewThumb && <img src={previewThumb} className="w-16 h-16 rounded-xl object-cover border border-gray-200 flex-shrink-0" alt="thumb" />}
+          </div>
+        </div>
+        <div className="md:col-span-2">
+          <label className={lbl}>커리큘럼 (각 장을 줄바꿈으로 입력)</label>
+          <textarea className={inp+' min-h-[100px] resize-y'} placeholder="예:&#13;1장: 마인드셋&#13;2장: 소싱 분석&#13;3장: 마케팅 전략" value={form.curriculum||''} onChange={e=>setForm(f=>({...f,curriculum:e.target.value}))} />
+        </div>
+        <div className="md:col-span-2">
+          <label className={lbl}>강의 상세 설명</label>
+          <textarea className={inp+' min-h-[140px] resize-y'} placeholder="상세 강의 설명을 작성하세요..." value={form.description||''} onChange={e=>setForm(f=>({...f,description:e.target.value}))} />
+        </div>
+      </div>
+      <Button onClick={handleAddCourse} className="w-full bg-[#FF8A00] text-black hover:opacity-90 font-bold py-4 rounded-2xl transition-all duration-300">강의 등록 하기</Button>
+    </div>
+  );
+
+  const MaterialForm = () => (
+    <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-200">
+      <h3 className="font-black text-gray-900 mb-5 text-sm tracking-tight">새 자료 등록</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+        <div>
+          <label className={lbl}>자료 제목</label>
+          <input className={inp} placeholder="예: 경쟁사 판매량 분석 프로그램" value={form.title||''} onChange={e=>setForm(f=>({...f,title:e.target.value}))} />
+        </div>
+        <div>
+          <label className={lbl}>자료 구분</label>
+          <select className={inp} value={form.type||''} onChange={e=>setForm(f=>({...f,type:e.target.value}))}>
+            <option value="">구분을 선택하세요</option>
+            <option value="프로그램">프로그램</option>
+            <option value="리소스">리소스</option>
+            <option value="업체정보">업체정보</option>
+          </select>
+        </div>
+        <div>
+          <label className={lbl}>다운로드 버튼 명칭</label>
+          <input className={inp} placeholder="예: 프로그램 다운로드" value={form.downloadLabel||''} onChange={e=>setForm(f=>({...f,downloadLabel:e.target.value}))} />
+        </div>
+        <div>
+          <label className={lbl}>다운로드 링크 URL</label>
+          <input className={inp} placeholder="예: # 또는 다운로드 파일 주소" value={form.downloadUrl||''} onChange={e=>setForm(f=>({...f,downloadUrl:e.target.value}))} />
+        </div>
+        <div className="md:col-span-2">
+          <label className={lbl}>아이콘/썸네일 업로드</label>
+          <div className="flex items-center gap-3">
+            <label className="flex-1 flex items-center gap-3 cursor-pointer bg-white border-2 border-dashed border-gray-300 hover:border-indigo-400 rounded-xl px-4 py-3 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              <span className="text-sm text-gray-500 font-medium">{previewIcon ? '이미지 선택됨' : '파일 선택'}</span>
+              <input type="file" accept="image/*" className="hidden" onChange={e=>handleImageFile(e,'icon')} />
+            </label>
+            {previewIcon && <img src={previewIcon} className="w-16 h-16 rounded-xl object-cover border border-gray-200 flex-shrink-0" alt="icon" />}
+          </div>
+        </div>
+        <div className="md:col-span-2">
+          <label className={lbl}>상세 설명</label>
+          <textarea className={inp+' min-h-[80px] resize-y'} placeholder="자료에 대한 상세 설명을 작성하세요..." value={form.desc||''} onChange={e=>setForm(f=>({...f,desc:e.target.value}))} />
+        </div>
+        <div className="md:col-span-2">
+          <label className={lbl}>사용 방법 (각 단계를 줄바꿈으로 입력)</label>
+          <textarea className={inp+' min-h-[100px] resize-y'} placeholder="예:&#13;1단계: 파일 설치&#13;2단계: 스토어 연동&#13;3단계: 프로그램 실행" value={form.steps||''} onChange={e=>setForm(f=>({...f,steps:e.target.value}))} />
+        </div>
+      </div>
+      <Button onClick={handleAddMaterial} className="w-full bg-[#FF8A00] text-black hover:opacity-90 font-bold py-4 rounded-2xl transition-all duration-300">자료 등록 하기</Button>
+    </div>
+  );
+
+  const QnaForm = () => (
+    <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-200">
+      <h3 className="font-black text-gray-900 mb-5 text-sm tracking-tight">새 FAQ 질문/답변 등록</h3>
+      <div className="grid grid-cols-1 gap-4 mb-5">
+        <div>
+          <label className={lbl}>질문 내용</label>
+          <textarea className={inp+' min-h-[80px] resize-y'} placeholder="질문 내용을 입력하세요" value={form.question||''} onChange={e=>setForm(f=>({...f,question:e.target.value}))} />
+        </div>
+        <div>
+          <label className={lbl}>답변 내용</label>
+          <textarea className={inp+' min-h-[120px] resize-y'} placeholder="답변 내용을 입력하세요" value={form.answer||''} onChange={e=>setForm(f=>({...f,answer:e.target.value}))} />
+        </div>
+      </div>
+      <Button onClick={handleAddQna} className="w-full bg-[#FF8A00] text-black hover:opacity-90 font-bold py-4 rounded-2xl transition-all duration-300">Q&A 등록 하기</Button>
     </div>
   );
 
   const renderList = (data, type) => (
     <div className="space-y-3">
-      {data.length === 0 && (
+      {(!data || data.length === 0) && (
         <div className="text-center py-16 text-gray-400 font-bold border-2 border-dashed border-gray-200 rounded-2xl">
-          {'\ub4f1\ub85d\ub41c \ud56d\ubaa9\uc774 \uc5c6\uc2b5\ub2c8\ub2e4. \uc704 \uc591\uc2dd\uc5d0\uc11c \uc0c8\ub85c \ub4f1\ub85d\ud558\uc138\uc694.'}
+          등록된 항목이 없습니다. 위 양식에서 새로 등록하세요.
         </div>
       )}
-      {data.map(item => (
-        <div key={item.id} className="flex items-center justify-between bg-white rounded-2xl px-5 py-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-4 flex-1 min-w-0">
-            {(item.image || item.thumbnail) && (
-              <img src={item.image || item.thumbnail} className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-gray-100" alt="" />
-            )}
-            <div className="min-w-0">
-              <p className="font-bold text-gray-900 text-sm truncate">{item.name || item.title}</p>
-              <p className="text-gray-400 text-xs truncate mt-0.5">{(item.comment || item.amount || '').substring(0, 60)}</p>
+      {(data || []).map(item => {
+        let title = item.title || item.name;
+        let sub = '';
+        let badgeText = '';
+        let extraAction = null;
+
+        if (type === 'reviews') {
+          title = `${item.name} 수강생 (평점: ${item.rating}점)`;
+          sub = item.comment;
+          badgeText = item.tag;
+        } else if (type === 'revenues') {
+          title = item.title;
+          sub = `${item.author} · 조회 ${item.views || 0}`;
+          badgeText = item.cohort || '수익인증';
+        } else if (type === 'courses') {
+          title = item.title;
+          sub = `${item.category} · ${formatPrice(item.price)} · 수강생 ${item.studentCount}명`;
+          badgeText = '강의';
+        } else if (type === 'materials') {
+          title = item.title;
+          sub = item.desc || '';
+          badgeText = item.type;
+        } else if (type === 'qna') {
+          title = item.question;
+          const hasAnswer = !!item.answer?.trim();
+          sub = hasAnswer ? `답변: ${item.answer.substring(0, 80)}...` : '답변 대기 중';
+          badgeText = hasAnswer ? '답변 완료' : '답변 대기';
+          extraAction = (
+            <button 
+              onClick={() => handleAnswerQnaItem(item)}
+              className="mr-2 flex-shrink-0 text-indigo-500 hover:text-indigo-700 font-bold text-xs px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors border border-indigo-100 hover:border-indigo-200"
+            >
+              {hasAnswer ? '답변 수정' : '답변 작성'}
+            </button>
+          );
+        }
+
+        return (
+          <div key={item.id} className="flex items-center justify-between bg-white rounded-2xl px-5 py-4 border border-gray-100 shadow-sm hover:shadow-md transition-all">
+            <div className="flex items-center gap-4 flex-1 min-w-0">
+              {(item.image || item.thumbnail || item.icon) && (
+                <img src={item.image || item.thumbnail || item.icon} className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-gray-100" alt="" />
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded ${type === 'qna' && !item.answer ? 'bg-orange-50 text-[#FF8A00]' : 'bg-gray-100 text-gray-600'}`}>
+                    {badgeText}
+                  </span>
+                  {type === 'qna' && <span className="text-[10px] text-gray-400">{item.author} · {item.date}</span>}
+                </div>
+                <p className="font-bold text-gray-900 text-sm truncate">{title}</p>
+                <p className="text-gray-400 text-xs truncate mt-0.5">{sub}</p>
+              </div>
+            </div>
+            <div className="flex items-center ml-4">
+              {extraAction}
+              <button
+                onClick={() => handleDelete(type, item.id)}
+                className="flex-shrink-0 text-red-400 hover:text-red-600 font-bold text-xs px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors border border-red-100 hover:border-red-200"
+              >
+                삭제
+              </button>
             </div>
           </div>
-          <button
-            onClick={() => handleDelete(type, item.id)}
-            className="ml-4 flex-shrink-0 text-red-400 hover:text-red-600 font-bold text-xs px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors border border-red-100 hover:border-red-200"
-          >
-            {'\uc0ad\uc81c'}
-          </button>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
+
+  const tabsList = [
+    { key: 'reviews', label: '후기 관리' },
+    { key: 'revenues', label: '수익인증 관리' },
+    { key: 'courses', label: '강의 관리' },
+    { key: 'materials', label: '자료실 관리' },
+    { key: 'qna', label: 'Q&A 관리' }
+  ];
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
       <div className="w-full md:w-64 bg-gray-900 text-white flex flex-col flex-shrink-0">
         <div className="p-5 md:p-8 text-xl font-black border-b border-gray-800 tracking-tighter">ADMIN</div>
         <nav className="flex flex-row md:flex-col overflow-x-auto p-3 md:p-6 gap-2 text-sm font-bold">
-          {[['reviews','\ud6c4\uae30 \uad00\ub9ac'],['revenues','\uc218\uc775\uc778\uc99d \uad00\ub9ac']].map(([key,label]) => (
-            <button key={key} onClick={()=>{setTab(key);resetForm();}} className={`flex-shrink-0 text-left px-5 py-3 rounded-xl transition-colors ${tab===key?'bg-indigo-600 text-white':'text-gray-400 hover:text-white hover:bg-gray-800'}`}>{label}</button>
+          {tabsList.map(({key, label}) => (
+            <button key={key} onClick={()=>{setTab(key);resetForm();}} className={`flex-shrink-0 text-left px-5 py-3 rounded-xl transition-colors ${tab===key?'bg-[#FF8A00] text-black':'text-gray-400 hover:text-white hover:bg-gray-800'}`}>{label}</button>
           ))}
         </nav>
         <div className="p-6 border-t border-gray-800 hidden md:block mt-auto">
           <button onClick={()=>navigate('/')} className="text-gray-500 font-bold hover:text-white transition-colors text-sm flex items-center">
             <Icon path={ICONS.LogOut} className="w-4 h-4 mr-2"/>
-            {'\ub098\uac00\uae30'}
+            나가기
           </button>
         </div>
       </div>
       <div className="flex-1 overflow-auto p-4 md:p-10">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-black text-gray-900 tracking-tight">
-            {tab === 'reviews' ? '\uc218\uac15\uc0dd \ud6c4\uae30 \uad00\ub9ac' : '\uc218\uc775\uc778\uc99d \uad00\ub9ac'}
+            {tab === 'reviews' ? '수강생 후기 관리' : 
+             tab === 'revenues' ? '수익인증 관리' : 
+             tab === 'courses' ? '강의 관리' : 
+             tab === 'materials' ? '자료실 관리' : 'Q&A 관리'}
           </h2>
-          <button onClick={()=>navigate('/')} className="md:hidden text-gray-500 font-bold text-sm bg-white px-3 py-1.5 rounded-lg border border-gray-200">{'\ub098\uac00\uae30'}</button>
+          <button onClick={()=>navigate('/')} className="md:hidden text-gray-500 font-bold text-sm bg-white px-3 py-1.5 rounded-lg border border-gray-200">나가기</button>
         </div>
-        {tab === 'reviews' && <ReviewForm />}
-        {tab === 'revenues' && <RevenueForm />}
+        {tab === 'reviews' && ReviewForm()}
+        {tab === 'revenues' && RevenueForm()}
+        {tab === 'courses' && CourseForm()}
+        {tab === 'materials' && MaterialForm()}
+        {tab === 'qna' && QnaForm()}
         <div className="bg-white rounded-[2rem] p-6 md:p-8 border border-gray-100 shadow-sm">
           <h3 className="font-black text-gray-700 mb-5 text-sm tracking-wide uppercase">
-            {tab === 'reviews' ? `\ub4f1\ub85d\ub41c \ud6c4\uae30 (${reviewsData.length}\uac74)` : `\ub4f1\ub85d\ub41c \uc218\uc775\uc778\uc99d (${revenuesData.length}\uac74)`}
+            {tab === 'reviews' ? `등록된 후기 (${reviewsData.length}건)` : 
+             tab === 'revenues' ? `등록된 수익인증 (${revenuesData.length}건)` : 
+             tab === 'courses' ? `등록된 강의 (${courses.length}건)` : 
+             tab === 'materials' ? `등록된 자료 (${materials.length}건)` : `등록된 Q&A (${qna.length}건)`}
           </h3>
           {tab === 'reviews' && renderList(reviewsData, 'reviews')}
           {tab === 'revenues' && renderList(revenuesData, 'revenues')}
+          {tab === 'courses' && renderList(courses, 'courses')}
+          {tab === 'materials' && renderList(materials, 'materials')}
+          {tab === 'qna' && renderList(qna, 'qna')}
         </div>
       </div>
     </div>
@@ -1404,13 +1699,37 @@ function App() {
   const [courses, setCourses] = useState(() => loadLocalData('courses', INITIAL_COURSES));
   const [materials, setMaterials] = useState(() => loadLocalData('materials', INITIAL_MATERIALS));
   const [community, setCommunity] = useState(() => loadLocalData('community', INITIAL_COMMUNITY));
+  const [qna, setQna] = useState(() => loadLocalData('qna', INITIAL_QNA));
   const [reviewsData, setReviewsData] = useState(() => loadLocalData('reviews', generateMockReviews()));
   const [revenuesData, setRevenuesData] = useState(() => loadLocalData('revenues', generateMockRevenues()));
   const [usersDB, setUsersDB] = useState(() => loadLocalData('users_db', []));
   
   const [enrolledCourses, setEnrolledCourses] = useState([]);
-  const [currentPath, setCurrentPath] = useState('/');
-  const [routeState, setRouteState] = useState(null);
+  const getInitialPath = () => {
+    const hash = window.location.hash;
+    if (!hash || hash === '#') return '/';
+    return hash.substring(1);
+  };
+  const [currentPath, setCurrentPath] = useState(getInitialPath);
+  const [routeState, setRouteState] = useState(() => {
+    try {
+      return window.history.state || null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  React.useEffect(() => {
+    const handlePopState = (event) => {
+      const hash = window.location.hash;
+      const normalizedPath = (!hash || hash === '#') ? '/' : hash.substring(1);
+      setCurrentPath(normalizedPath);
+      setRouteState(event?.state || null);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   const [isAdminSession, setIsAdminSession] = useState(false);
 
   // Firebase 실시간 데이터 구독 (Firestore 연동 시)
@@ -1422,6 +1741,7 @@ function App() {
       const unsubCommunity = window.FirebaseDB.subscribe('community', (data) => setCommunity(data));
       const unsubMaterials = window.FirebaseDB.subscribe('materials', (data) => setMaterials(data));
       const unsubCourses = window.FirebaseDB.subscribe('courses', (data) => setCourses(data));
+      const unsubQna = window.FirebaseDB.subscribe('qna', (data) => setQna(data));
       
       return () => {
         unsubReviews();
@@ -1430,6 +1750,7 @@ function App() {
         unsubCommunity();
         unsubMaterials();
         unsubCourses();
+        unsubQna();
       };
     }
   }, []);
@@ -1456,12 +1777,21 @@ function App() {
     if(key === 'courses') setCourses(data);
     if(key === 'materials') setMaterials(data);
     if(key === 'community') setCommunity(data);
+    if(key === 'qna') setQna(data);
     if(key === 'reviews') setReviewsData(data);
     if(key === 'revenues') setRevenuesData(data);
     if(key === 'users_db') setUsersDB(data);
   };
 
-  const navigate = (path, state = null) => { window.scrollTo(0, 0); setCurrentPath(path); setRouteState(state); };
+  const navigate = (path, state = null) => {
+    window.scrollTo(0, 0);
+    const hash = '#' + path;
+    if (window.location.hash !== hash) {
+      window.history.pushState(state, '', hash);
+    }
+    setCurrentPath(path);
+    setRouteState(state);
+  };
 
   const handleEnroll = (courseId, fromPayment = false) => {
     if(!user) { showModal('alert', '인증 에러', '로그인이 필요합니다.', () => navigate('/login')); return; }
@@ -1477,23 +1807,25 @@ function App() {
   const handleLogout = () => { FirebaseAuth.logout(); setUser(null); setIsAdminSession(false); navigate('/'); };
 
   let View;
-  switch (currentPath) {
-    case '/': View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
-    case '/enrollment': View = <EnrollmentPage user={user} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} onEnroll={handleEnroll} courses={courses} />; break;
-    case '/course': View = <CourseDetailPage course={courses.find(c=>c.id===routeState?.courseId)} user={user} onEnroll={handleEnroll} navigate={navigate} showModal={showModal} />; break;
-    case '/login': View = <AuthPage navigate={navigate} onLoginSuccess={() => { setUser(FirebaseAuth.getCurrentUser()); navigate('/'); }} showModal={showModal} />; break;
-    case '/write-review': View = <WriteReviewPage user={user} reviewsData={reviewsData} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
-    case '/reviews': View = <ReviewsPage reviewsData={reviewsData} navigate={navigate} showModal={showModal} />; break;
-    case '/revenues': View = <RevenuesPage revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
-    case '/mypage': View = <MyPage user={user} enrolledCourses={enrolledCourses} navigate={navigate} />; break;
-    case '/community': View = <CommunityPage communityPosts={community} user={user} onAddPost={(p)=>updateDB('community', [p, ...community])} showModal={showModal} />; break;
-    case '/materials': View = <MaterialsPage enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} />; break;
-    case '/material/mat-1': View = <MaterialDetailPage matId="mat-1" enrolledCourses={enrolledCourses} navigate={navigate} showModal={showModal} />; break;
-    case '/material/mat-2': View = <MaterialDetailPage matId="mat-2" enrolledCourses={enrolledCourses} navigate={navigate} showModal={showModal} />; break;
-    case '/material/mat-3': View = <MaterialDetailPage matId="mat-3" enrolledCourses={enrolledCourses} navigate={navigate} showModal={showModal} />; break;
-    case '/material/mat-4': View = <MaterialDetailPage matId="mat-4" enrolledCourses={enrolledCourses} navigate={navigate} showModal={showModal} />; break;
-    case '/admin': View = isAdminSession ? <AdminDashboard courses={courses} materials={materials} community={community} reviewsData={reviewsData} revenuesData={revenuesData} usersDB={usersDB} updateDB={updateDB} navigate={navigate} showModal={showModal} /> : <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
-    default: View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />;
+  if (currentPath.startsWith('/material/')) {
+    const matId = currentPath.split('/material/')[1];
+    View = <MaterialDetailPage matId={matId} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} />;
+  } else {
+    switch (currentPath) {
+      case '/': View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
+      case '/enrollment': View = <EnrollmentPage user={user} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} onEnroll={handleEnroll} courses={courses} />; break;
+      case '/course': View = <CourseDetailPage course={courses.find(c=>c.id===routeState?.courseId)} user={user} onEnroll={handleEnroll} navigate={navigate} showModal={showModal} />; break;
+      case '/login': View = <AuthPage navigate={navigate} onLoginSuccess={() => { setUser(FirebaseAuth.getCurrentUser()); navigate('/'); }} showModal={showModal} />; break;
+      case '/write-review': View = <WriteReviewPage user={user} reviewsData={reviewsData} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
+      case '/reviews': View = <ReviewsPage reviewsData={reviewsData} navigate={navigate} showModal={showModal} />; break;
+      case '/revenues': View = <RevenuesPage revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
+      case '/mypage': View = <MyPage user={user} enrolledCourses={enrolledCourses} navigate={navigate} />; break;
+      case '/community': View = <CommunityPage communityPosts={community} user={user} onAddPost={(p)=>updateDB('community', [p, ...community])} showModal={showModal} />; break;
+      case '/qna': View = <QnaPage qnaList={qna} user={user} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
+      case '/materials': View = <MaterialsPage enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} />; break;
+      case '/admin': View = isAdminSession ? <AdminDashboard courses={courses} materials={materials} community={community} qna={qna} reviewsData={reviewsData} revenuesData={revenuesData} usersDB={usersDB} updateDB={updateDB} navigate={navigate} showModal={showModal} /> : <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
+      default: View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />;
+    }
   }
 
   return (
@@ -1503,12 +1835,12 @@ function App() {
       {modal.isOpen && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm px-4 py-8">
           {modal.type === 'postView' ? (
-            <div className="bg-white rounded-2xl md:rounded-[2rem] p-6 md:p-10 w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl animate-fade-in-up border border-gray-100 hide-scroll flex flex-col">
-              <div className="flex justify-between items-start mb-6 sticky top-0 bg-white/95 backdrop-blur-sm pb-4 border-b border-gray-100 z-10">
+            <div className="bg-white rounded-2xl md:rounded-[2rem] w-full max-w-2xl max-h-[85vh] shadow-2xl animate-fade-in-up border border-gray-100 flex flex-col overflow-hidden">
+              <div className="flex justify-between items-start p-6 md:p-10 pb-4 border-b border-gray-100 bg-white">
                 <h3 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight leading-snug pr-4 word-keep">{modal.title}</h3>
                 <button onClick={closeModal} className="text-gray-400 hover:text-gray-900 bg-gray-50 rounded-full p-2 flex-shrink-0 transition-colors"><Icon path={ICONS.X} className="w-5 h-5"/></button>
               </div>
-              <div className="pt-2 text-gray-700 font-medium pb-8" dangerouslySetInnerHTML={{ __html: modal.message }}>
+              <div className="p-6 md:p-10 pt-4 overflow-y-auto flex-1 hide-scroll text-black font-medium pb-8 modal-body" dangerouslySetInnerHTML={{ __html: modal.message }}>
               </div>
             </div>
           ) : (
@@ -1550,13 +1882,18 @@ function App() {
       )}
 
       {/* 우측 하단 1:1 카카오톡 상담 플로팅 버튼 */}
-      <a href="#" target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 md:bottom-8 md:right-8 bg-[#FEE500] w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-110 transition-transform z-[9000] border border-yellow-300">
-        <svg viewBox="0 0 32 32" className="w-8 h-8 md:w-9 md:h-9"><path d="M16 4.64c-6.96 0-12.64 4.48-12.64 10.08 0 3.52 2.32 6.64 5.76 8.48l-1.12 4.16c-.16.56.56.96.96.64l4.8-3.2c.72.16 1.44.24 2.24.24 6.96 0 12.64-4.48 12.64-10.08S22.96 4.64 16 4.64z" fill="#3A1D1D"/></svg>
+      <a href="#" target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 md:bottom-8 md:right-8 bg-[#FEE500] h-14 md:h-16 rounded-full flex items-center gap-3 px-5 md:px-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-105 transition-transform z-[9000] border border-yellow-300">
+        <svg viewBox="0 0 32 32" className="w-7 h-7 md:w-8 md:h-8 flex-shrink-0"><path d="M16 4.64c-6.96 0-12.64 4.48-12.64 10.08 0 3.52 2.32 6.64 5.76 8.48l-1.12 4.16c-.16.56.56.96.96.64l4.8-3.2c.72.16 1.44.24 2.24.24 6.96 0 12.64-4.48 12.64-10.08S22.96 4.64 16 4.64z" fill="#3A1D1D"/></svg>
+        <div className="text-left font-black text-black leading-tight select-none flex flex-col justify-center">
+          <span className="text-xs md:text-sm font-black whitespace-nowrap text-black">카카오톡</span>
+          <span className="text-xs md:text-sm font-black whitespace-nowrap text-black">상담하기</span>
+        </div>
       </a>
 
       <style>{`
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in-up { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .modal-body p, .modal-body li, .modal-body span, .modal-body div, .modal-body h1, .modal-body h2, .modal-body h3, .modal-body h4 { color: #000000 !important; }
       `}</style>
     </div>
   );

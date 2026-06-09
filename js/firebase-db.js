@@ -29,7 +29,7 @@ if (
 }
 
 // 1MB 제한을 피하기 위해 각 항목을 단일 문서로 저장할 키 목록 (이미지 업로드 포함 가능 컬렉션)
-const COLLECTION_KEYS = ['reviews', 'revenues', 'community', 'users_db'];
+const COLLECTION_KEYS = ['reviews', 'revenues', 'community', 'users_db', 'courses', 'materials', 'qna'];
 
 const FirebaseDB = {
   // Firebase가 실제 활성화되어있는지 확인
@@ -97,10 +97,26 @@ const FirebaseDB = {
             list.push(doc.data());
           });
 
-          // ID 기준으로 내림차순 정렬하여 최신 글이 항상 상단에 위치하도록 함
+          if (list.length === 0) {
+            // 만약 Firestore에 데이터가 없으면, 로컬스토리지의 데이터를 업로드합니다.
+            const localData = localStorage.getItem(collectionKey);
+            if (localData) {
+              const parsed = JSON.parse(localData);
+              if (parsed && parsed.length > 0) {
+                FirebaseDB.saveData(collectionKey, parsed);
+                callback(parsed);
+                return;
+              }
+            }
+          }
+
+          // ID 기준 정렬: courses, materials는 오름차순(asc), 나머지는 내림차순(desc)
           list.sort((a, b) => {
             const idA = a.id || a.uid || a.email || '';
             const idB = b.id || b.uid || b.email || '';
+            if (collectionKey === 'courses' || collectionKey === 'materials') {
+              return idA.localeCompare(idB);
+            }
             return idB.localeCompare(idA);
           });
 
