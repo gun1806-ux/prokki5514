@@ -3,12 +3,12 @@
 // 차후 실제 Firebase 프로젝트를 생성하신 후 아래 설정값들을 교체하세요.
 // ============================================================================
 const FIREBASE_CONFIG = {
-  apiKey: "여기에_API_KEY_입력",
-  authDomain: "여기에_AUTH_DOMAIN_입력.firebaseapp.com",
-  projectId: "여기에_PROJECT_ID_입력",
-  storageBucket: "여기에_STORAGE_BUCKET_입력.appspot.com",
-  messagingSenderId: "여기에_MESSAGING_SENDER_ID_입력",
-  appId: "여기에_APP_ID_입력"
+  apiKey: "AIzaSyAZ98poir8qwUBBnlH71LdU_mN0-t85EF0",
+  authDomain: "ttolgi-analyzer.firebaseapp.com",
+  projectId: "ttolgi-analyzer",
+  storageBucket: "ttolgi-analyzer.firebasestorage.app",
+  messagingSenderId: "1085522134169",
+  appId: "1:1085522134169:web:a7099260b3ffd9abb96408"
 };
 
 // ============================================================================

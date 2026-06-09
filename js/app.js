@@ -42,89 +42,8 @@ const ICONS = {
   Edit: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>'
 };
 
-const generateMockReviews = () => {
-  const arr = [];
-  const comments = [
-    "유튜브 @156cmm 영상만 보다가 드디어 수강했습니다. 빚 독촉에 시달리던 제게 한 줄기 빛이 되었습니다. 상품 단 2개로 기적이 일어났네요.", 
-    "무작정 상품 수만 늘리다가 건강만 잃었었는데, '돈버는 똘기'님의 생존 소싱법을 배우고 일하는 시간이 반으로 줄었습니다.", 
-    "CEO저널 인터뷰 보고 진정성에 반해서 왔습니다. 스토어 매각(Exit)까지 바라보는 거시적인 관점, 정말 돈이 아깝지 않은 강의입니다.", 
-    "상세페이지 기획 강의 듣고 이탈률이 확 줄었습니다. 고객의 아픔을 공감하라는 카피라이팅의 비밀, 바로 적용해서 매출 3배 뛰었어요.", 
-    "단순한 스킬을 넘어 지속 가능한 비즈니스 마인드를 배웠습니다. 윈들리 솔루션 영상에서 본 그대로, 실전에서 통하는 진짜 노하우입니다."
-  ];
-  const tags = ["월 매출 3배 상승", "스토어 매각 준비중", "건강과 수익 동시회복", "상품 2개 파워", "진짜 생존 매뉴얼"];
-  for(let i=1; i<=30; i++) {
-    arr.push({
-      id: `review-${i}`, name: `실전셀러${i}`, rating: 5,
-      comment: comments[i % 5], tag: tags[i % 5],
-      image: i % 3 === 0 ? '[https://images.unsplash.com/photo-1556742049-0cfed4f9a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80](https://images.unsplash.com/photo-1556742049-0cfed4f9a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80)' : null
-    });
-  }
-  return arr.reverse();
-};
-
-const generateMockRevenues = () => {
-  const arr = [
-    {
-      id: `rev-1`, 
-      title: "[돈버는하마] 20기 홍대 일요일반 그로스 매출 1000만원 달성 후기", 
-      author: "로켓트원", date: "2026-03-09", views: 261,
-      amount: "월 1000만 달성",
-      thumbnail: '[https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80](https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80)', 
-      content: `<div class="space-y-6 text-gray-800 leading-relaxed text-sm md:text-base">
-          <p>안녕하세요! 20기 일요일반 수강생입니다.<br/>수강 이후 어느덧 1년에 가까운 시간이 흘렀습니다.</p>
-          <img src="[https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80)" class="w-full rounded-2xl border border-gray-200 shadow-sm" alt="차트" />
-          <p>뒤늦게 강의 후기를 쓰게 되어 조금 부끄럽지만, 강의를 들은 이후 어떤 변화가 있었는지 솔직하게 공유해보고 싶어 글을 적어봅니다.<br/><br/>9개월이 지난 지금도 똘기님의 강의는 저의 셀러 활동의 핵심 중심이 되고 있습니다. 그래프 보이시나요? 앞으로도 배운 대로만 가겠습니다.</p>
-        </div>`
-    },
-    {
-      id: `rev-2`, 
-      title: "[돈버는하마] 10기 송도반 반장 / 발리 여행 중 월 매출 1000 찍었습니다.", 
-      author: "서퍼", date: "2026-03-06", views: 391,
-      amount: "월 1000만 달성",
-      thumbnail: '[https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80](https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80)', 
-      content: `<div class="space-y-6 text-gray-800 leading-relaxed text-sm md:text-base">
-          <p>안녕하세요! 10기 송도반 수강생입니다.</p>
-          <p>지난 4월에는 육아휴직을 하며 둘째 아이 출산과 첫째 케어까지 병행해야 했습니다.<br/>입고된 제품 재포장, 상품 등록, 소싱까지 직접 처리하다 보니 쉽지 않은 시간이었습니다.</p>
-          <p>그럼에도 똘기님의 강의에서 제시해주신 기준을 중심으로 하루 루틴을 만들었고, 흔들리지 않고 나아갈 수 있었습니다.</p>
-          <h3 class="font-bold text-lg text-indigo-600 mt-6 bg-indigo-50 p-4 rounded-xl">건방진 말일 수도 있지만, 이제 월매출 1,000만 원은 시작을 알려주는 숫자처럼 느껴집니다.</h3>
-          <p>올해 목표를 월매출 3,000만 원으로 잡은 만큼, 더 좋은 성과를 만들어보고 싶습니다.</p>
-          <img src="[https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80)" class="w-full rounded-2xl border border-gray-200 shadow-sm" alt="차트" />
-        </div>`
-    },
-    {
-      id: `rev-3`, 
-      title: "[돈버는하마] 그로스 11기 강남 주말 월 1000 & 연 2억 달성 후기", 
-      author: "뜬구름", date: "2026-01-23", views: 349,
-      amount: "연 2억 달성",
-      thumbnail: '[https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80](https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80)', 
-      content: `<div class="space-y-6 text-gray-800 leading-relaxed text-sm md:text-base">
-          <p>안녕하세요~ 저는 24년도 10월에 똘기님 강의듣고 꾸준히 판매 이어나가고 있는 수강생입니다.</p>
-          <p>저는 강의 들은지 3개월만인 25년도 1월에 월 1000만원을 달성했고요.<br/>그 이후로 1500~1700선을 유지하며 25년도 연매출 2억을 달성했습니다.</p>
-          <img src="[https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80)" class="w-full rounded-2xl border border-gray-200 shadow-sm" alt="차트" />
-          <h3 class="font-bold text-lg text-gray-900 mt-6 border-b border-gray-200 pb-2">실전형 알짜배기 수업</h3>
-          <p>초심자들에게 똘기님 수업 과제가 빡세게 느껴질 수 있습니다.<br/>그치만 초심자들을 정말 빠른 시간내에 셀러로 바꿔주는 꼭 필요한 과정이었습니다.</p>
-          <h3 class="font-bold text-lg text-gray-900 mt-6 border-b border-gray-200 pb-2">이런 강사 없다! 확실한 애프터 서비스ㅎㅎ</h3>
-          <p>이렇게 오래도록 수강생 관리를 해주시다니- 정말 든든합니다 ^^</p>
-        </div>`
-    }
-  ];
-
-  for(let i=4; i<=30; i++) {
-    arr.push({
-      id: `rev-${i}`, 
-      title: `[돈버는똘기] ${i}주차 - 배운대로 똑똑하게 실행한 결과, 꾸준한 수익 발생!`, 
-      author: `수강생${i}`, date: "2026-04-10", views: 120 + i,
-      amount: `월 ${1000 + i*15}만원 달성`,
-      thumbnail: '[https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80](https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80)',
-      content: `<div class="space-y-6 text-gray-800 leading-relaxed text-sm md:text-base">
-          <p>강의에서 배운 대로 상품을 소싱하고 기획한 결과입니다.</p>
-          <img src="[https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80)" class="w-full rounded-2xl border border-gray-200 shadow-sm" alt="차트" />
-          <p>앞으로도 초심 잃지 않고 꾸준히 나아가겠습니다. 감사합니다!</p>
-        </div>`
-    });
-  }
-  return arr;
-};
+const generateMockReviews = () => [];
+const generateMockRevenues = () => [];
 
 const INITIAL_COURSES = [
   { id: "course-1", title: "[초급] 치열한 경쟁에서 살아남는 '진짜' 생존 소싱법", summary: "[무료 클래스] 이커머스 어떻게 판매하는지, 진짜를 보여드립니다.", description: "이커머스 어떻게 판매하는지, 진짜를 보여드립니다.\n[중간]\n공유하지 마세요.\n이런게 진짜입니다.", price: 0, thumbnail: "[https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80)", studentCount: 1250, category: "생존 소 소싱", curriculum: ["1장: 무작정 열심히 하지 마라 (마인드셋)", "2장: 상품 2개로 3억을 만든 틈새 발굴 로직", "3장: 실패 없는 도매처 협상과 리스크 제로 소싱", "4장: 마진율을 극대화하는 가격 방어 전략"] },
@@ -1213,252 +1132,210 @@ const MyPage = ({ user, enrolledCourses, navigate }) => (
 // ============================================================================
 const AdminDashboard = ({ courses, materials, community, reviewsData, revenuesData, usersDB, updateDB, navigate, showModal }) => {
   const [tab, setTab] = useState('reviews');
+  const [form, setForm] = useState({});
+  const [previewUrl, setPreviewUrl] = useState('');
+  const [previewThumb, setPreviewThumb] = useState('');
 
-  const handleAdd = () => {
-    if (tab === 'reviews') {
-      showModal(
-        'custom',
-        '새 후기 등록',
-        '수강생의 리얼 후기 데이터를 입력해 주세요.',
-        (data) => {
-          if(!data.name?.trim()) return showModal('alert', '안내', '작성자 이름을 입력해야 합니다.');
-          if(!data.comment?.trim()) return showModal('alert', '안내', '후기 내용을 입력해야 합니다.');
-          const newItem = {
-            id: `review-${Date.now()}`,
-            name: data.name,
-            rating: Number(data.rating || 5),
-            tag: data.tag || '실전셀러',
-            image: data.image?.trim() || null,
-            comment: data.comment
-          };
-          updateDB('reviews', [newItem, ...reviewsData]);
-          showModal('alert', '등록 성공', '후기가 성공적으로 등록되었습니다.');
-        },
-        '',
-        false,
-        [
-          { name: 'name', type: 'text', placeholder: '작성자 이름 (예: 실전셀러99)' },
-          { name: 'rating', type: 'number', placeholder: '평점 (1 ~ 5)' },
-          { name: 'tag', type: 'text', placeholder: '핵심 키워드/태그 (예: 월 매출 3배 상승)' },
-          { name: 'image', type: 'text', placeholder: '이미지 URL (선택사항)' },
-          { name: 'comment', type: 'textarea', placeholder: '후기 내용' }
-        ]
-      );
-    } else if (tab === 'revenues') {
-      showModal(
-        'custom',
-        '새 수익인증 등록',
-        '수강생의 수익 인증 사례를 입력해 주세요.',
-        (data) => {
-          if(!data.title?.trim()) return showModal('alert', '안내', '제목을 입력해야 합니다.');
-          if(!data.amount?.trim()) return showModal('alert', '안내', '달성 금액/성과를 입력해야 합니다.');
-          
-          const contentHTML = `<div class="space-y-6 text-gray-800 leading-relaxed text-sm md:text-base">
-            ${(data.content || '').split('\n').map(p => `<p>${p}</p>`).join('')}
-          </div>`;
+  const resetForm = () => { setForm({}); setPreviewUrl(''); setPreviewThumb(''); };
 
-          const newItem = {
-            id: `rev-${Date.now()}`,
-            title: data.title,
-            amount: data.amount,
-            author: data.author || '수강생',
-            date: data.date || new Date().toISOString().split('T')[0],
-            thumbnail: data.thumbnail || 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-            content: contentHTML
-          };
-          const newRevenues = [newItem, ...revenuesData];
-          updateDB('revenues', newRevenues);
-          showModal('alert', '등록 성공', '수익인증 글이 성공적으로 등록되었습니다.');
-        },
-        '',
-        false,
-        [
-          { name: 'title', type: 'text', placeholder: '제목 (예: 그로스 21기 월 1000만 달성 후기)' },
-          { name: 'amount', type: 'text', placeholder: '달성 성과 (예: 월 1000만 달성)' },
-          { name: 'author', type: 'text', placeholder: '작성자 (예: 로켓트원)' },
-          { name: 'date', type: 'text', placeholder: '작성 날짜 (YYYY-MM-DD, 미입력시 오늘)' },
-          { name: 'thumbnail', type: 'text', placeholder: '썸네일 이미지 URL (미입력시 기본이미지)' },
-          { name: 'content', type: 'textarea', placeholder: '상세 후기 내용 (줄바꿈 지원)' }
-        ]
-      );
-    } else {
-      showModal(
-        'custom',
-        '새 데이터 추가',
-        '제목, 내용, 파일, 이미지, 동영상 업로드가 가능합니다.',
-        (data) => {
-          if(!data.title?.trim()) return showModal('alert', '안내', '제목을 입력해야 합니다.');
-          const newItem = {
-            id: `item-${Date.now()}`,
-            title: data.title,
-            content: data.content || '',
-            attachment: data.attachment || '',
-            image: data.image || '',
-            video: data.video || ''
-          };
-          if(tab === 'materials') {
-            newItem.type = '일반문서';
-            updateDB('materials', [...materials, newItem]);
-          }
-          if(tab === 'community') {
-            newItem.author = '관리자';
-            newItem.date = new Date().toISOString().split('T')[0];
-            updateDB('community', [newItem, ...community]);
-          }
-          showModal('alert', '등록 성공', '데이터가 성공적으로 등록되었습니다.');
-        },
-        '',
-        false,
-        [
-          { name: 'title', type: 'text', placeholder: '게시글 제목' },
-          { name: 'content', type: 'textarea', placeholder: '게시글 내용' },
-          { name: 'attachment', type: 'file', placeholder: '파일 업로드' },
-          { name: 'image', type: 'file', placeholder: '이미지 업로드', accept: 'image/*' },
-          { name: 'video', type: 'file', placeholder: '동영상 업로드', accept: 'video/*' }
-        ]
-      );
-    }
+  const fileToBase64 = (file) => new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.readAsDataURL(file);
+  });
+
+  const handleImageFile = async (e, field) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const b64 = await fileToBase64(file);
+    if (field === 'image') setPreviewUrl(b64);
+    if (field === 'thumbnail') setPreviewThumb(b64);
+    setForm(f => ({ ...f, [field]: b64 }));
   };
 
-  const handleDelete = (id, list, key) => {
-    showModal('confirm', '삭제 경고', '이 데이터를 영구적으로 삭제하시겠습니까?', () => {
-      updateDB(key, list.filter(i => i.id !== id));
-      showModal('alert', '삭제 완료', '데이터가 삭제되었습니다.');
+  const handleAddReview = () => {
+    if (!form.name?.trim()) return showModal('alert', '\uc548\ub0b4', '\uc791\uc131\uc790 \uc774\ub984\uc744 \uc785\ub825\ud558\uc138\uc694.');
+    if (!form.comment?.trim()) return showModal('alert', '\uc548\ub0b4', '\ud6c4\uae30 \ub0b4\uc6a9\uc744 \uc785\ub825\ud558\uc138\uc694.');
+    const newItem = {
+      id: `review-${Date.now()}`,
+      name: form.name,
+      rating: Number(form.rating || 5),
+      tag: form.tag || '\uc2e4\uc804\uc140\ub7ec',
+      image: form.image || null,
+      comment: form.comment
+    };
+    updateDB('reviews', [newItem, ...reviewsData]);
+    showModal('alert', '\ub4f1\ub85d \uc131\uacf5', '\ud6c4\uae30\uac00 \ub4f1\ub85d\ub418\uc5c8\uc2b5\ub2c8\ub2e4.');
+    resetForm();
+  };
+
+  const handleAddRevenue = () => {
+    if (!form.title?.trim()) return showModal('alert', '\uc548\ub0b4', '\uc81c\ubaa9\uc744 \uc785\ub825\ud558\uc138\uc694.');
+    if (!form.amount?.trim()) return showModal('alert', '\uc548\ub0b4', '\ub2ec\uc131 \uc131\uacfc\ub97c \uc785\ub825\ud558\uc138\uc694.');
+    const contentHTML = `<div class="space-y-6 text-gray-800 leading-relaxed text-sm md:text-base">
+      ${(form.content || '').split('\n').map(p => `<p>${p}</p>`).join('')}
+      ${form.thumbnail ? `<img src="${form.thumbnail}" class="w-full rounded-2xl border border-gray-200 shadow-sm" alt="\uc218\uc775\uc778\uc99d" />` : ''}
+    </div>`;
+    const newItem = {
+      id: `rev-${Date.now()}`,
+      title: form.title,
+      amount: form.amount,
+      author: form.author || '\uc218\uac15\uc0dd',
+      date: form.date || new Date().toISOString().split('T')[0],
+      thumbnail: form.thumbnail || '',
+      content: contentHTML
+    };
+    updateDB('revenues', [newItem, ...revenuesData]);
+    showModal('alert', '\ub4f1\ub85d \uc131\uacf5', '\uc218\uc775\uc778\uc99d\uc774 \ub4f1\ub85d\ub418\uc5c8\uc2b5\ub2c8\ub2e4.');
+    resetForm();
+  };
+
+  const handleDelete = (type, id) => {
+    showModal('confirm', '\uc0ad\uc81c \ud655\uc778', '\uc774 \ud56d\ubaa9\uc744 \uc0ad\uc81c\ud558\uc2dc\uaca0\uc2b5\ub2c8\uae4c?', () => {
+      if (type === 'reviews') updateDB('reviews', reviewsData.filter(r => r.id !== id));
+      if (type === 'revenues') updateDB('revenues', revenuesData.filter(r => r.id !== id));
     });
   };
 
-  const handleEdit = (id, list, key) => {
-    if (key === 'reviews') {
-      const review = list.find(i => i.id === id);
-      showModal(
-        'custom',
-        '후기 수정',
-        '후기 데이터를 수정합니다.',
-        (data) => {
-          if(!data.name?.trim()) return showModal('alert', '안내', '작성자 이름을 입력해야 합니다.');
-          if(!data.comment?.trim()) return showModal('alert', '안내', '후기 내용을 입력해야 합니다.');
-          updateDB('reviews', list.map(i => i.id === id ? {
-            ...i,
-            name: data.name,
-            rating: Number(data.rating || 5),
-            tag: data.tag || '실전셀러',
-            image: data.image?.trim() || null,
-            comment: data.comment
-          } : i));
-          showModal('alert', '수정 완료', '성공적으로 수정되었습니다.');
-        },
-        '',
-        false,
-        [
-          { name: 'name', type: 'text', placeholder: '작성자 이름', value: review.name },
-          { name: 'rating', type: 'number', placeholder: '평점 (1 ~ 5)', value: review.rating },
-          { name: 'tag', type: 'text', placeholder: '핵심 키워드/태그', value: review.tag },
-          { name: 'image', type: 'text', placeholder: '이미지 URL', value: review.image || '' },
-          { name: 'comment', type: 'textarea', placeholder: '후기 내용', value: review.comment }
-        ]
-      );
-    } else if (key === 'revenues') {
-      const rev = list.find(i => i.id === id);
-      const getRawContent = (html) => {
-        if (!html) return '';
-        let text = html.replace(/<p>/g, '').replace(/<\/p>/g, '\n');
-        text = text.replace(/<div[^>]*>/g, '').replace(/<\/div>/g, '');
-        text = text.replace(/<[^>]*>/g, '');
-        return text.trim();
-      };
-      showModal(
-        'custom',
-        '수익인증 수정',
-        '수익 인증 데이터를 수정합니다.',
-        (data) => {
-          if(!data.title?.trim()) return showModal('alert', '안내', '제목을 입력해야 합니다.');
-          if(!data.amount?.trim()) return showModal('alert', '안내', '달성 금액/성과를 입력해야 합니다.');
-          
-          const contentHTML = `<div class="space-y-6 text-gray-800 leading-relaxed text-sm md:text-base">
-            ${(data.content || '').split('\n').map(p => `<p>${p}</p>`).join('')}
-          </div>`;
+  const inp = "w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100";
+  const lbl = "block text-xs font-black text-gray-600 mb-1.5 uppercase tracking-wide";
 
-          updateDB('revenues', list.map(i => i.id === id ? {
-            ...i,
-            title: data.title,
-            amount: data.amount,
-            author: data.author || '수강생',
-            date: data.date || i.date,
-            thumbnail: data.thumbnail || i.thumbnail,
-            content: contentHTML
-          } : i));
-          showModal('alert', '수정 완료', '성공적으로 수정되었습니다.');
-        },
-        '',
-        false,
-        [
-          { name: 'title', type: 'text', placeholder: '제목', value: rev.title },
-          { name: 'amount', type: 'text', placeholder: '달성 성과', value: rev.amount },
-          { name: 'author', type: 'text', placeholder: '작성자', value: rev.author },
-          { name: 'date', type: 'text', placeholder: '작성 날짜 (YYYY-MM-DD)', value: rev.date },
-          { name: 'thumbnail', type: 'text', placeholder: '썸네일 이미지 URL', value: rev.thumbnail },
-          { name: 'content', type: 'textarea', placeholder: '상세 후기 내용', value: getRawContent(rev.content) }
-        ]
-      );
-    } else {
-      const item = list.find(i => i.id === id);
-      showModal('prompt', '데이터 수정', '수정할 제목을 입력하세요.', (newTitle) => {
-        if(newTitle) {
-          updateDB(key, list.map(i => i.id === id ? { ...i, title: newTitle } : i));
-          showModal('alert', '수정 완료', '성공적으로 수정되었습니다.');
-        }
-      }, '제목 입력');
-    }
-  };
-
-  const renderList = (list, key) => {
-    const getDisplayName = (item, k) => {
-      if (k === 'reviews') {
-        const commentSnippet = item.comment && item.comment.length > 30 ? `${item.comment.slice(0, 30)}...` : item.comment;
-        return `[${item.name}] ${commentSnippet}`;
-      }
-      if (k === 'revenues') {
-        return `[${item.amount}] ${item.title}`;
-      }
-      return item.title || item.email || item.name;
-    };
-
-    return list.length === 0 ? <div className="p-10 text-center text-gray-400 font-bold border rounded-2xl">데이터가 없습니다.</div> :
-    list.map(item => (
-      <div key={item.id} className="p-5 border-b border-gray-50 flex flex-col md:flex-row justify-between items-start md:items-center hover:bg-gray-50/50 gap-3 transition-colors">
-        <span className="font-bold text-gray-800 word-keep text-sm md:text-base">{getDisplayName(item, key)}</span>
-        {key !== 'users_db' && (
-          <div className="flex gap-4 w-full md:w-auto justify-end">
-            <button onClick={() => handleEdit(item.id, list, key)} className="text-indigo-500 text-sm font-bold flex items-center bg-indigo-50 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors"><Icon path={ICONS.Edit} className="w-4 h-4 mr-1"/>수정</button>
-            <button onClick={() => handleDelete(item.id, list, key)} className="text-red-500 text-sm font-bold flex items-center bg-red-50 px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors"><Icon path={ICONS.Trash2} className="w-4 h-4 mr-1"/>삭제</button>
+  const ReviewForm = () => (
+    <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-200">
+      <h3 className="font-black text-gray-900 mb-5 text-sm tracking-tight">{'\uc0c8 \ud6c4\uae30 \ub4f1\ub85d'}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+        <div>
+          <label className={lbl}>{'\uc791\uc131\uc790 \uc774\ub984'}</label>
+          <input className={inp} placeholder="\uc608: \uc2e4\uc804\uc140\ub7ec99" value={form.name||''} onChange={e=>setForm(f=>({...f,name:e.target.value}))} />
+        </div>
+        <div>
+          <label className={lbl}>{'\ud3c9\uc810 (1~5)'}</label>
+          <input className={inp} type="number" min="1" max="5" placeholder="5" value={form.rating||''} onChange={e=>setForm(f=>({...f,rating:e.target.value}))} />
+        </div>
+        <div className="md:col-span-2">
+          <label className={lbl}>{'\ud575\uc2ec \ud0dc\uadf8'}</label>
+          <input className={inp} placeholder="\uc608: \uc6d4 \ub9e4\ucd9c 3\ubc30 \uc0c1\uc2b9" value={form.tag||''} onChange={e=>setForm(f=>({...f,tag:e.target.value}))} />
+        </div>
+        <div className="md:col-span-2">
+          <label className={lbl}>{'\uc0ac\uc9c4 \uc5c5\ub85c\ub4dc (\uc120\ud0dd)'}</label>
+          <div className="flex items-center gap-3">
+            <label className="flex-1 flex items-center gap-3 cursor-pointer bg-white border-2 border-dashed border-gray-300 hover:border-indigo-400 rounded-xl px-4 py-3 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              <span className="text-sm text-gray-500 font-medium">{previewUrl ? '\uc774\ubbf8\uc9c0 \uc120\ud0dd\ub428' : '\uc774\ubbf8\uc9c0 \ud30c\uc77c \uc120\ud0dd'}</span>
+              <input type="file" accept="image/*" className="hidden" onChange={e=>handleImageFile(e,'image')} />
+            </label>
+            {previewUrl && <img src={previewUrl} className="w-16 h-16 rounded-xl object-cover border border-gray-200 flex-shrink-0" alt="preview" />}
           </div>
-        )}
+        </div>
+        <div className="md:col-span-2">
+          <label className={lbl}>{'\ud6c4\uae30 \ub0b4\uc6a9'}</label>
+          <textarea className={inp+' min-h-[100px] resize-y'} placeholder="\ud6c4\uae30 \ub0b4\uc6a9\uc744 \uc785\ub825\ud558\uc138\uc694" value={form.comment||''} onChange={e=>setForm(f=>({...f,comment:e.target.value}))} />
+        </div>
       </div>
-    ));
-  };
+      <Button onClick={handleAddReview} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white border-none shadow-lg shadow-indigo-200">{'\ud6c4\uae30 \ub4f1\ub85d \ud558\uae30'}</Button>
+    </div>
+  );
+
+  const RevenueForm = () => (
+    <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-200">
+      <h3 className="font-black text-gray-900 mb-5 text-sm tracking-tight">{'\uc0c8 \uc218\uc775\uc778\uc99d \ub4f1\ub85d'}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+        <div className="md:col-span-2">
+          <label className={lbl}>{'\uc81c\ubaa9'}</label>
+          <input className={inp} placeholder="\uc608: \uadf8\ub85c\uc2a4 21\uae30 \uc6d4 1000\ub9cc \ub2ec\uc131 \ud6c4\uae30" value={form.title||''} onChange={e=>setForm(f=>({...f,title:e.target.value}))} />
+        </div>
+        <div>
+          <label className={lbl}>{'\ub2ec\uc131 \uc131\uacfc'}</label>
+          <input className={inp} placeholder="\uc608: \uc6d4 1000\ub9cc \ub2ec\uc131" value={form.amount||''} onChange={e=>setForm(f=>({...f,amount:e.target.value}))} />
+        </div>
+        <div>
+          <label className={lbl}>{'\uc791\uc131\uc790'}</label>
+          <input className={inp} placeholder="\uc608: \ub85c\ucf13\ud2b8\uc6d0" value={form.author||''} onChange={e=>setForm(f=>({...f,author:e.target.value}))} />
+        </div>
+        <div>
+          <label className={lbl}>{'\ub0a0\uc9dc'}</label>
+          <input className={inp} placeholder={new Date().toISOString().split('T')[0]} value={form.date||''} onChange={e=>setForm(f=>({...f,date:e.target.value}))} />
+        </div>
+        <div>
+          <label className={lbl}>{'\uc368\ub124\uc77c \uc774\ubbf8\uc9c0 \uc5c5\ub85c\ub4dc'}</label>
+          <div className="flex items-center gap-3">
+            <label className="flex-1 flex items-center gap-3 cursor-pointer bg-white border-2 border-dashed border-gray-300 hover:border-indigo-400 rounded-xl px-4 py-3 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              <span className="text-sm text-gray-500 font-medium">{previewThumb ? '\uc774\ubbf8\uc9c0 \uc120\ud0dd\ub428' : '\ud30c\uc77c \uc120\ud0dd'}</span>
+              <input type="file" accept="image/*" className="hidden" onChange={e=>handleImageFile(e,'thumbnail')} />
+            </label>
+            {previewThumb && <img src={previewThumb} className="w-16 h-16 rounded-xl object-cover border border-gray-200 flex-shrink-0" alt="thumb" />}
+          </div>
+        </div>
+        <div className="md:col-span-2">
+          <label className={lbl}>{'\uc0c1\uc138 \ud6c4\uae30 \ub0b4\uc6a9 (\uc904\ubc14\uafc8 \uc9c0\uc6d0)'}</label>
+          <textarea className={inp+' min-h-[140px] resize-y'} placeholder="\uc218\uac15 \ud6c4 \ubcc0\ud654\ub098 \uc131\uacfc\ub97c \uc791\uc131\ud558\uc138\uc694..." value={form.content||''} onChange={e=>setForm(f=>({...f,content:e.target.value}))} />
+        </div>
+      </div>
+      <Button onClick={handleAddRevenue} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white border-none shadow-lg shadow-indigo-200">{'\uc218\uc775\uc778\uc99d \ub4f1\ub85d \ud558\uae30'}</Button>
+    </div>
+  );
+
+  const renderList = (data, type) => (
+    <div className="space-y-3">
+      {data.length === 0 && (
+        <div className="text-center py-16 text-gray-400 font-bold border-2 border-dashed border-gray-200 rounded-2xl">
+          {'\ub4f1\ub85d\ub41c \ud56d\ubaa9\uc774 \uc5c6\uc2b5\ub2c8\ub2e4. \uc704 \uc591\uc2dd\uc5d0\uc11c \uc0c8\ub85c \ub4f1\ub85d\ud558\uc138\uc694.'}
+        </div>
+      )}
+      {data.map(item => (
+        <div key={item.id} className="flex items-center justify-between bg-white rounded-2xl px-5 py-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            {(item.image || item.thumbnail) && (
+              <img src={item.image || item.thumbnail} className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-gray-100" alt="" />
+            )}
+            <div className="min-w-0">
+              <p className="font-bold text-gray-900 text-sm truncate">{item.name || item.title}</p>
+              <p className="text-gray-400 text-xs truncate mt-0.5">{(item.comment || item.amount || '').substring(0, 60)}</p>
+            </div>
+          </div>
+          <button
+            onClick={() => handleDelete(type, item.id)}
+            className="ml-4 flex-shrink-0 text-red-400 hover:text-red-600 font-bold text-xs px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors border border-red-100 hover:border-red-200"
+          >
+            {'\uc0ad\uc81c'}
+          </button>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
       <div className="w-full md:w-64 bg-gray-900 text-white flex flex-col flex-shrink-0">
-        <div className="p-5 md:p-8 text-xl font-black border-b border-gray-800 cursor-pointer flex justify-between items-center" onClick={()=>navigate('/')}>
-          <span className="tracking-tighter">ADMIN</span>
-          <button onClick={()=>navigate('/')} className="md:hidden text-gray-400 font-bold text-xs bg-gray-800 px-3 py-1 rounded">EXIT</button>
-        </div>
-        <nav className="flex flex-row md:flex-col overflow-x-auto p-3 md:p-6 space-x-2 md:space-x-0 md:space-y-2 text-sm hide-scroll font-bold">
-          <button onClick={()=>setTab('reviews')} className={`flex-shrink-0 text-left px-5 py-3 rounded-xl transition-colors ${tab==='reviews'?'bg-indigo-600 text-white':'text-gray-400 hover:text-white hover:bg-gray-800'}`}>수강생 후기 관리</button>
-          <button onClick={()=>setTab('revenues')} className={`flex-shrink-0 text-left px-5 py-3 rounded-xl transition-colors ${tab==='revenues'?'bg-indigo-600 text-white':'text-gray-400 hover:text-white hover:bg-gray-800'}`}>수익인증 관리</button>
+        <div className="p-5 md:p-8 text-xl font-black border-b border-gray-800 tracking-tighter">ADMIN</div>
+        <nav className="flex flex-row md:flex-col overflow-x-auto p-3 md:p-6 gap-2 text-sm font-bold">
+          {[['reviews','\ud6c4\uae30 \uad00\ub9ac'],['revenues','\uc218\uc775\uc778\uc99d \uad00\ub9ac']].map(([key,label]) => (
+            <button key={key} onClick={()=>{setTab(key);resetForm();}} className={`flex-shrink-0 text-left px-5 py-3 rounded-xl transition-colors ${tab===key?'bg-indigo-600 text-white':'text-gray-400 hover:text-white hover:bg-gray-800'}`}>{label}</button>
+          ))}
         </nav>
-        <div className="p-6 border-t border-gray-800 hidden md:block mt-auto"><button onClick={()=>navigate('/')} className="text-gray-500 font-bold hover:text-white transition-colors text-sm flex items-center"><Icon path={ICONS.LogOut} className="w-4 h-4 mr-2"/>시스템 종료</button></div>
+        <div className="p-6 border-t border-gray-800 hidden md:block mt-auto">
+          <button onClick={()=>navigate('/')} className="text-gray-500 font-bold hover:text-white transition-colors text-sm flex items-center">
+            <Icon path={ICONS.LogOut} className="w-4 h-4 mr-2"/>
+            {'\ub098\uac00\uae30'}
+          </button>
+        </div>
       </div>
       <div className="flex-1 overflow-auto p-4 md:p-10">
-        <h2 className="text-2xl font-black mb-8 text-gray-900 tracking-tight">
-          {tab === 'reviews' ? '수강생 후기 관리' : '수익인증 관리'}
-        </h2>
-        <div className="bg-white rounded-[2rem] p-6 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
-           {tab === 'reviews' && renderList(reviewsData, 'reviews')}
-           {tab === 'revenues' && renderList(revenuesData, 'revenues')}
-           
-           <Button onClick={handleAdd} className="mt-8 w-full py-4 bg-gray-900 hover:bg-black text-white rounded-xl shadow-lg border-none">새로운 데이터 등록하기</Button>
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-black text-gray-900 tracking-tight">
+            {tab === 'reviews' ? '\uc218\uac15\uc0dd \ud6c4\uae30 \uad00\ub9ac' : '\uc218\uc775\uc778\uc99d \uad00\ub9ac'}
+          </h2>
+          <button onClick={()=>navigate('/')} className="md:hidden text-gray-500 font-bold text-sm bg-white px-3 py-1.5 rounded-lg border border-gray-200">{'\ub098\uac00\uae30'}</button>
+        </div>
+        {tab === 'reviews' && <ReviewForm />}
+        {tab === 'revenues' && <RevenueForm />}
+        <div className="bg-white rounded-[2rem] p-6 md:p-8 border border-gray-100 shadow-sm">
+          <h3 className="font-black text-gray-700 mb-5 text-sm tracking-wide uppercase">
+            {tab === 'reviews' ? `\ub4f1\ub85d\ub41c \ud6c4\uae30 (${reviewsData.length}\uac74)` : `\ub4f1\ub85d\ub41c \uc218\uc775\uc778\uc99d (${revenuesData.length}\uac74)`}
+          </h3>
+          {tab === 'reviews' && renderList(reviewsData, 'reviews')}
+          {tab === 'revenues' && renderList(revenuesData, 'revenues')}
         </div>
       </div>
     </div>
@@ -1466,10 +1343,24 @@ const AdminDashboard = ({ courses, materials, community, reviewsData, revenuesDa
 };
 
 // ============================================================================
+
+// ============================================================================
 // 메인 라우터 앱 & 커스텀 모달 매니저
 // ============================================================================
 function App() {
   const [modal, setModal] = useState({ isOpen: false, type: 'alert', title: '', message: '', onConfirm: null, placeholder: '', isPassword: false, fields: [] });
+
+  // 기존 mock 데이터 초기화 (버전 관리)
+  React.useEffect(() => {
+    const DATA_VERSION = 'v3';
+    if (localStorage.getItem('data_version') !== DATA_VERSION) {
+      localStorage.removeItem('reviews');
+      localStorage.removeItem('revenues');
+      localStorage.setItem('data_version', DATA_VERSION);
+      setReviewsData([]);
+      setRevenuesData([]);
+    }
+  }, []);
   
   const showModal = (type, title, message, onConfirm = null, placeholder = '', isPassword = false, fields = []) => {
     setModal({ isOpen: true, type, title, message, onConfirm, placeholder, isPassword, fields });
@@ -1522,10 +1413,39 @@ function App() {
   const [routeState, setRouteState] = useState(null);
   const [isAdminSession, setIsAdminSession] = useState(false);
 
-  useEffect(() => {
-    if(user) {
-      const encIds = loadLocalData(`enrollments_${user.uid}`, []);
-      setEnrolledCourses(courses.filter(c => encIds.includes(c.id)));
+  // Firebase 실시간 데이터 구독 (Firestore 연동 시)
+  React.useEffect(() => {
+    if (window.FirebaseDB.isFirebaseActive()) {
+      const unsubReviews = window.FirebaseDB.subscribe('reviews', (data) => setReviewsData(data));
+      const unsubRevenues = window.FirebaseDB.subscribe('revenues', (data) => setRevenuesData(data));
+      const unsubUsers = window.FirebaseDB.subscribe('users_db', (data) => setUsersDB(data));
+      const unsubCommunity = window.FirebaseDB.subscribe('community', (data) => setCommunity(data));
+      const unsubMaterials = window.FirebaseDB.subscribe('materials', (data) => setMaterials(data));
+      const unsubCourses = window.FirebaseDB.subscribe('courses', (data) => setCourses(data));
+      
+      return () => {
+        unsubReviews();
+        unsubRevenues();
+        unsubUsers();
+        unsubCommunity();
+        unsubMaterials();
+        unsubCourses();
+      };
+    }
+  }, []);
+
+  // 사용자별 수강신청 정보 실시간 동기화
+  React.useEffect(() => {
+    if (user) {
+      if (window.FirebaseDB.isFirebaseActive()) {
+        const unsubEnrollments = window.FirebaseDB.subscribe(`enrollments_${user.uid}`, (ids) => {
+          setEnrolledCourses(courses.filter(c => ids.includes(c.id)));
+        });
+        return () => unsubEnrollments();
+      } else {
+        const encIds = loadLocalData(`enrollments_${user.uid}`, []);
+        setEnrolledCourses(courses.filter(c => encIds.includes(c.id)));
+      }
     } else {
       setEnrolledCourses([]);
     }
@@ -1538,6 +1458,7 @@ function App() {
     if(key === 'community') setCommunity(data);
     if(key === 'reviews') setReviewsData(data);
     if(key === 'revenues') setRevenuesData(data);
+    if(key === 'users_db') setUsersDB(data);
   };
 
   const navigate = (path, state = null) => { window.scrollTo(0, 0); setCurrentPath(path); setRouteState(state); };

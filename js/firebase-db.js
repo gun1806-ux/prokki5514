@@ -1,19 +1,136 @@
 // ============================================================================
 // Firebase Database (Firestore) 래퍼 로직
-// 추후 실제 Firestore API (getDoc, setDoc 등)로 교체될 함수들을 모아둡니다.
+// 실제 Firebase와 로컬스토리지를 연동하여 실시간 데이터베이스 환경을 제공합니다.
 // ============================================================================
+
+let isFirebaseActive = false;
+let db = null;
+
+// Firebase API 설정 검증 및 초기화
+if (
+  window.USER_CONFIG &&
+  window.USER_CONFIG.FIREBASE &&
+  window.USER_CONFIG.FIREBASE.apiKey &&
+  !window.USER_CONFIG.FIREBASE.apiKey.includes('입력') &&
+  window.USER_CONFIG.FIREBASE.apiKey !== ''
+) {
+  try {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(window.USER_CONFIG.FIREBASE);
+    }
+    db = firebase.firestore();
+    isFirebaseActive = true;
+    console.log("[Firebase] 성공적으로 활성화되었습니다.");
+  } catch (error) {
+    console.error("[Firebase] 초기화 중 오류가 발생했습니다:", error);
+  }
+} else {
+  console.log("[Firebase] 설정이 비어있어 로컬 Mock 모드(LocalStorage)로 동작합니다.");
+}
+
+// 1MB 제한을 피하기 위해 각 항목을 단일 문서로 저장할 키 목록 (이미지 업로드 포함 가능 컬렉션)
+const COLLECTION_KEYS = ['reviews', 'revenues', 'community', 'users_db'];
+
 const FirebaseDB = {
-  // 데이터 불러오기
+  // Firebase가 실제 활성화되어있는지 확인
+  isFirebaseActive: () => isFirebaseActive,
+
+  // 데이터 불러오기 (동기 - 마운트 시 즉시 로컬 데이터 조회용)
   loadData: (collectionKey, defaultVal) => {
-    // 임시 Mock DB 로직 (추후 db.collection().get() 로 교체)
     const data = localStorage.getItem(collectionKey);
     return data ? JSON.parse(data) : defaultVal;
   },
 
-  // 데이터 저장하기
+  // 데이터 저장하기 (동기/비동기 병행)
   saveData: (collectionKey, val) => {
-    // 임시 Mock DB 로직 (추후 db.collection().add() 로 교체)
+    // 1. 즉각적인 UI 반영을 위해 LocalStorage에 먼저 저장
     localStorage.setItem(collectionKey, JSON.stringify(val));
+
+    // 2. Firebase가 활성화되어 있고, 로컬 세션 정보인 'mock_user'가 아닐 때 Firestore에 업로드
+    if (isFirebaseActive && db && collectionKey !== 'mock_user') {
+      if (COLLECTION_KEYS.includes(collectionKey)) {
+        // 컬렉션 기반 저장: 각 아이템을 개별 문서로 저장 (1MB 문서 제한 회피)
+        const colRef = db.collection('platform_data').doc(collectionKey).collection('items');
+        
+        // 아이템 개별 등록 및 수정
+        val.forEach(item => {
+          const docId = item.id || item.uid || item.email;
+          if (docId) {
+            colRef.doc(docId).set(item)
+              .catch(err => console.error(`[Firestore] 개별 아이템 저장 오류 (${collectionKey}/${docId}):`, err));
+          }
+        });
+
+        // 삭제 처리: Firestore에 있으나 전달된 배열에 없는 아이템 삭제
+        colRef.get().then(snapshot => {
+          snapshot.docs.forEach(doc => {
+            const exists = val.some(item => (item.id === doc.id || item.uid === doc.id || item.email === doc.id));
+            if (!exists) {
+              doc.ref.delete()
+                .catch(err => console.error(`[Firestore] 개별 아이템 삭제 오류 (${collectionKey}/${doc.id}):`, err));
+            }
+          });
+        }).catch(err => console.error(`[Firestore] 컬렉션 조회 오류 (${collectionKey}):`, err));
+
+      } else {
+        // 단순 단일 문서 저장 (courses, materials, enrollments 등 크기가 작고 이미지가 없는 데이터)
+        db.collection('platform_data').doc(collectionKey).set({ list: val })
+          .then(() => {
+            console.log(`[Firestore] 성공적으로 저장됨: ${collectionKey}`);
+          })
+          .catch(err => {
+            console.error(`[Firestore] 저장 오류 (${collectionKey}):`, err);
+          });
+      }
+    }
+  },
+
+  // 실시간 데이터 구독 (App 컴포넌트 마운트 시 호출하여 Firestore 변경사항 동기화)
+  subscribe: (collectionKey, callback) => {
+    if (isFirebaseActive && db && collectionKey !== 'mock_user') {
+      if (COLLECTION_KEYS.includes(collectionKey)) {
+        // 컬렉션 기반 실시간 구독
+        const colRef = db.collection('platform_data').doc(collectionKey).collection('items');
+        return colRef.onSnapshot((snapshot) => {
+          const list = [];
+          snapshot.forEach(doc => {
+            list.push(doc.data());
+          });
+
+          // ID 기준으로 내림차순 정렬하여 최신 글이 항상 상단에 위치하도록 함
+          list.sort((a, b) => {
+            const idA = a.id || a.uid || a.email || '';
+            const idB = b.id || b.uid || b.email || '';
+            return idB.localeCompare(idA);
+          });
+
+          // 로컬 캐시 동기화 후 콜백 호출
+          localStorage.setItem(collectionKey, JSON.stringify(list));
+          callback(list);
+        }, err => {
+          console.error(`[Firestore] 컬렉션 구독 오류 (${collectionKey}):`, err);
+        });
+      } else {
+        // 단일 문서 기반 실시간 구독
+        return db.collection('platform_data').doc(collectionKey).onSnapshot((doc) => {
+          if (doc.exists) {
+            const data = doc.data();
+            if (data && Array.isArray(data.list)) {
+              localStorage.setItem(collectionKey, JSON.stringify(data.list));
+              callback(data.list);
+            }
+          } else {
+            const localData = localStorage.getItem(collectionKey);
+            const val = localData ? JSON.parse(localData) : [];
+            db.collection('platform_data').doc(collectionKey).set({ list: val });
+          }
+        }, err => {
+          console.error(`[Firestore] 문서 구독 오류 (${collectionKey}):`, err);
+        });
+      }
+    }
+    // Firebase 미활성화 상태이면 아무것도 안 하는 더미 함수 반환
+    return () => {};
   }
 };
 
