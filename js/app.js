@@ -45,6 +45,53 @@ const ICONS = {
 const generateMockReviews = () => [];
 const generateMockRevenues = () => [];
 
+const moveImageToTop = (htmlString) => {
+  if (!htmlString) return '';
+  const imgRegex = /<img[^>]+>/i;
+  const match = htmlString.match(imgRegex);
+  if (match) {
+    const imgTag = match[0];
+    const cleanHtml = htmlString.replace(imgRegex, '');
+    const divMatch = cleanHtml.match(/^<div[^>]*>/i);
+    if (divMatch) {
+      const divTag = divMatch[0];
+      return cleanHtml.replace(divTag, `${divTag}\n${imgTag}`);
+    }
+    return imgTag + cleanHtml;
+  }
+  return htmlString;
+};
+
+const compressImage = (file, maxWidth = 800, maxHeight = 800, quality = 0.7) => new Promise((resolve) => {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let width = img.width;
+      let height = img.height;
+      if (width > height) {
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width = Math.round((width * maxHeight) / height);
+          height = maxHeight;
+        }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
 const INITIAL_COURSES = [
   { id: "course-1", title: "[초급] 치열한 경쟁에서 살아남는 '진짜' 생존 소싱법", summary: "[무료 클래스] 이커머스 어떻게 판매하는지, 진짜를 보여드립니다.", description: "이커머스 어떻게 판매하는지, 진짜를 보여드립니다.\n[중간]\n공유하지 마세요.\n이런게 진짜입니다.", price: 0, thumbnail: "[https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80)", studentCount: 1250, category: "생존 소 소싱", curriculum: ["1장: 무작정 열심히 하지 마라 (마인드셋)", "2장: 상품 2개로 3억을 만든 틈새 발굴 로직", "3장: 실패 없는 도매처 협상과 리스크 제로 소싱", "4장: 마진율을 극대화하는 가격 방어 전략"] },
   { id: "course-2", title: "[초&중급] 실제 소싱 노하우, 수익 구조화, 돈되는 셀링", summary: "[초&중급]처음 소싱부터,상품등록 , 수입방법, 광고 셋팅까지", description: "지속할 수 있는 판매 노하우의 정석을 담고 있습니다.", price: 499000, thumbnail: "[https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80)", studentCount: 890, category: "설득 기획", curriculum: ["1장: 상세페이지의 본질, 3초 안에 사로잡기", "2장: 섹션별 필수 구성: 고객의 불안 완벽 해소", "3장: 인간적인 스토리텔링 녹여내기", "4장: 구매 전환율 3배 올리는 카피라이팅 템플릿 실습"] },
@@ -308,9 +355,9 @@ const Footer = ({ showModal, onAdminSecretLogin }) => {
           <div className="md:col-span-2">
             <div className="text-3xl font-black mb-6 text-[#FF8A00] tracking-tight">브랜드빌더, 돈버는 똘기</div>
             <p className="text-sm md:text-base leading-relaxed mb-6 word-keep text-gray-600">
-              무작정 열심히 하는 시대는 끝났습니다.<br/>
-              빚 독촉과 건강 악화라는 절망의 늪에서 4억 스토어 매각까지.<br/>
-              현역 유튜버(@156cmm)가 여러분의 지속 가능한 성공을 돕겠습니다.
+              언제까지 소싱만 하실래요?<br/>
+              자본이 없으면 소싱은 의미가 없습니다.<br/>
+              남는 시간에 브랜딩에 집중하고, 마진 폭을 키워 매각까지 성공해봅시다.
             </p>
             <div className="flex items-center gap-3">
               <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-[#FFEDD0] transition-colors text-[#FF8A00]"><Icon path={ICONS.PlayCircle} className="w-5 h-5"/></a>
@@ -319,9 +366,9 @@ const Footer = ({ showModal, onAdminSecretLogin }) => {
           </div>
           <div>
             <h4 className="font-bold text-lg mb-6 border-b border-gray-100 pb-2 text-gray-800">고객센터</h4>
-            <p className="text-2xl font-black text-[#FF8A00] mb-2">02-1234-5678</p>
-            <p className="mb-2 text-sm text-gray-600">help@ddolgi.com</p>
-            <p className="text-xs text-gray-500">평일 10:00 - 18:00 운영</p>
+            <p className="text-lg font-black text-[#FF8A00] mb-2">카카오톡 채널 : 돈버는 똘기</p>
+            <p className="mb-2 text-sm text-gray-600">4ten.official1@gamil.com</p>
+            <p className="text-xs text-gray-500">365일 24시간 보자마자 답장</p>
           </div>
           <div>
             <h4 className="font-bold text-lg mb-6 border-b border-gray-100 pb-2 text-gray-800">이용 안내</h4>
@@ -352,7 +399,7 @@ const Footer = ({ showModal, onAdminSecretLogin }) => {
 // ============================================================================
 // 새로운 페이지 뷰: 전체 리뷰 / 전체 수익인증
 // ============================================================================
-const ReviewsPage = ({ reviewsData, navigate, showModal }) => {
+const ReviewsPage = ({ reviewsData, navigate, showModal, onReviewClick }) => {
   return (
     <div className="min-h-screen bg-gray-50 pt-32 pb-24">
       <div className="max-w-7xl mx-auto px-6">
@@ -366,11 +413,23 @@ const ReviewsPage = ({ reviewsData, navigate, showModal }) => {
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {reviewsData.map(review => (
-            <div key={review.id} className="p-8 rounded-[2rem] bg-[#111111] border border-gray-800 shadow-sm hover:shadow-lg transition-shadow flex flex-col h-[380px] md:h-[420px]">
-              {review.image && <img src={review.image} className="w-full h-32 md:h-40 object-cover rounded-2xl mb-6 shadow-sm" />}
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex text-yellow-400">{[...Array(review.rating)].map((_, j) => <Icon key={j} path={ICONS.Star} fill="#facc15" className="w-4 h-4" />)}</div>
-                <span className="text-[10px] md:text-xs font-extrabold text-[#FF8A00] bg-white/5 px-2.5 py-1 rounded-md word-keep tracking-tight">{review.tag}</span>
+            <div key={review.id} className="p-8 rounded-[2rem] bg-[#111111] border border-gray-800 shadow-sm hover:shadow-lg transition-shadow flex flex-col h-[380px] md:h-[420px] cursor-pointer" onClick={() => onReviewClick(review)}>
+              {(() => {
+                const imgList = review.images || (review.image ? [review.image] : []);
+                if (imgList.length === 0) return null;
+                return (
+                  <div className="relative mb-6 flex-shrink-0">
+                    <img src={imgList[0]} className="w-full h-32 md:h-40 object-cover rounded-2xl shadow-sm" />
+                    {imgList.length > 1 && (
+                      <span className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-black px-2 py-1 rounded-md flex items-center gap-1">
+                        📸 +{imgList.length - 1}
+                      </span>
+                    )}
+                  </div>
+                );
+              })()}
+              <div className="mb-4">
+                <div className="flex text-yellow-400">{[...Array(review.rating || 5)].map((_, j) => <Icon key={j} path={ICONS.Star} fill="#facc15" className="w-4 h-4" />)}</div>
               </div>
               <p className="text-gray-300 text-sm md:text-base font-medium leading-relaxed mb-6 flex-1 word-keep overflow-hidden">"{review.comment}"</p>
               <div className="border-t border-gray-800 pt-5 mt-auto"><div className="font-bold text-white text-sm word-keep">{review.name} 수강생</div></div>
@@ -416,7 +475,7 @@ const RevenuesPage = ({ revenuesData, navigate, showModal }) => {
 // ============================================================================
 // 메인 페이지 뷰
 // ============================================================================
-const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) => {
+const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onReviewClick }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
@@ -582,11 +641,23 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
             </div>
           </div>
             <Carousel items={top10Reviews} renderItem={(review) => (
-            <div className="p-8 rounded-[2rem] bg-[#111111] border border-gray-800 shadow-sm hover:shadow-lg transition-shadow flex flex-col h-[380px] md:h-[420px]">
-              {review.image && <img src={review.image} className="w-full h-32 md:h-40 object-cover rounded-2xl mb-6 shadow-sm" />}
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex text-yellow-400">{[...Array(review.rating)].map((_, j) => <Icon key={j} path={ICONS.Star} fill="#facc15" className="w-4 h-4" />)}</div>
-                <span className="text-[10px] md:text-xs font-extrabold text-[#FF8A00] bg-white/5 px-2.5 py-1 rounded-md word-keep tracking-tight">{review.tag}</span>
+            <div className="p-8 rounded-[2rem] bg-[#111111] border border-gray-800 shadow-sm hover:shadow-lg transition-shadow flex flex-col h-[380px] md:h-[420px] cursor-pointer" onClick={() => onReviewClick(review)}>
+              {(() => {
+                const imgList = review.images || (review.image ? [review.image] : []);
+                if (imgList.length === 0) return null;
+                return (
+                  <div className="relative mb-6 flex-shrink-0">
+                    <img src={imgList[0]} className="w-full h-32 md:h-40 object-cover rounded-2xl shadow-sm" />
+                    {imgList.length > 1 && (
+                      <span className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-black px-2 py-1 rounded-md flex items-center gap-1">
+                        📸 +{imgList.length - 1}
+                      </span>
+                    )}
+                  </div>
+                );
+              })()}
+              <div className="mb-4">
+                <div className="flex text-yellow-400">{[...Array(review.rating || 5)].map((_, j) => <Icon key={j} path={ICONS.Star} fill="#facc15" className="w-4 h-4" />)}</div>
               </div>
               <p className="text-gray-300 text-sm md:text-base font-medium leading-relaxed mb-6 flex-1 word-keep overflow-hidden">"{review.comment}"</p>
               <div className="border-t border-gray-800 pt-5 mt-auto"><div className="font-bold text-white text-sm word-keep">{review.name} 수강생</div></div>
@@ -600,19 +671,17 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
 
 const EnrollmentPage = ({ user, enrolledCourses, materials, navigate, showModal, onEnroll, courses }) => {
   const isEnrolled = enrolledCourses && enrolledCourses.length > 0;
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // [TEST MODE] 버튼 클릭 시 바로 수강 처리
   const handleApplyClick = () => {
-    if (!user) {
-      showModal('alert', '\ub85c\uadf8\uc778 \ud544\uc694', '\ub85c\uadf8\uc778 \ud6c4 \uc218\uac15\uc2e0\uccad\uc774 \uac00\ub2a5\ud569\ub2c8\ub2e4.', () => navigate('/login'));
-      return;
-    }
-    const firstCourse = courses && courses[0];
-    if (firstCourse && onEnroll) {
-      onEnroll(firstCourse.id);
-    } else {
-      navigate('/mypage');
-    }
+    showModal('counseling');
   };
 
   const handleDownloadClick = (mat) => {
@@ -632,13 +701,14 @@ const EnrollmentPage = ({ user, enrolledCourses, materials, navigate, showModal,
       <section className="relative w-full h-screen flex items-end overflow-hidden pb-14 md:pb-20">
         {/* Background Video */}
         <video
+          key={isMobile ? 'mobile-video' : 'desktop-video'}
           autoPlay
           loop
           muted
           playsInline
           className="absolute inset-0 w-full h-full object-cover object-center"
         >
-          <source src="assets/videos/8.mp4" type="video/mp4" />
+          <source src={isMobile ? 'assets/videos/9.mp4' : 'assets/videos/8.mp4'} type="video/mp4" />
         </video>
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-black/45" />
@@ -694,14 +764,16 @@ const EnrollmentPage = ({ user, enrolledCourses, materials, navigate, showModal,
         
         {/* Large Image Button */}
         <div className="w-full max-w-2xl bg-[#111111] rounded-[2rem] p-6 border border-[#FF8A00]/30 shadow-[0_0_30px_rgba(255,138,0,0.15)] flex flex-col items-center hover:scale-[1.01] transition-transform duration-300">
-          <button onClick={handleApplyClick} className="block w-full focus:outline-none">
+          <a href="https://pf.kakao.com/_bPinX/friend" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.preventDefault(); handleApplyClick(); }} className="block w-full focus:outline-none">
             <img src="assets/images/5.jpg" alt="지원서 접수하기" className="w-full h-auto object-cover rounded-2xl cursor-pointer shadow-md hover:opacity-95 transition-opacity" />
-          </button>
+          </a>
           <div className="mt-6 text-center w-full">
             <p className="text-xs text-[#FF8A00] font-bold mb-4">★ 1:1 밀착 코칭 및 실전 압축 실습 ★</p>
-            <Button size="lg" onClick={handleApplyClick} className="w-full sm:w-auto px-12 py-4 text-base md:text-lg bg-[#FF8A00] text-black font-black shadow-xl shadow-orange-500/20 hover:scale-105 active:scale-95 transition-all">
-              지원서 접수 하기 🔥
-            </Button>
+            <a href="https://pf.kakao.com/_bPinX/friend" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.preventDefault(); handleApplyClick(); }} className="inline-block w-full sm:w-auto">
+              <Button size="lg" className="w-full px-12 py-4 text-base md:text-lg bg-[#FF8A00] text-black font-black shadow-xl shadow-orange-500/20 hover:scale-105 active:scale-95 transition-all">
+                지원서 접수 하기 🔥
+              </Button>
+            </a>
           </div>
         </div>
 
@@ -762,7 +834,9 @@ const CourseDetailPage = ({ course, user, onEnroll, navigate, showModal }) => {
               <li className="flex items-center text-sm font-bold text-gray-700"><Icon path={ICONS.CheckCircle} className="w-5 h-5 mr-3 text-indigo-500"/>실무 템플릿 자료실 이용권</li>
             </ul>
 
-            <Button className="w-full py-5 text-lg" onClick={handlePaymentRequest}>안전하게 수강 신청하기</Button>
+            <a href="https://pf.kakao.com/_bPinX/friend" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.preventDefault(); showModal('counseling'); }} className="block w-full">
+              <Button className="w-full py-5 text-lg">안전하게 수강 신청하기</Button>
+            </a>
             <div className="flex items-center justify-center mt-5 gap-4">
               <span className="text-xs text-gray-400 font-bold bg-gray-100 px-3 py-1 rounded-full tracking-tight">테스트 결제 모드 지원</span>
             </div>
@@ -890,7 +964,7 @@ const AuthPage = ({ navigate, onLoginSuccess, showModal }) => {
 };
 
 const WriteReviewPage = ({ user, updateDB, reviewsData, navigate, showModal }) => {
-  const [formData, setFormData] = useState({ rating: 5, comment: '', tag: '생존 매뉴얼 검증', image: '' });
+  const [formData, setFormData] = useState({ comment: '', images: [] });
   
   useEffect(() => {
     if(!user) {
@@ -900,28 +974,71 @@ const WriteReviewPage = ({ user, updateDB, reviewsData, navigate, showModal }) =
 
   if(!user) return <div className="h-screen bg-gray-50"></div>;
   
+  const handleFileChange = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    if ((formData.images || []).length + files.length > 5) {
+      showModal('alert', '안내', '사진은 최대 5개까지 첨부 가능합니다.');
+      return;
+    }
+    const compressedB64s = await Promise.all(
+      files.map((file) => compressImage(file))
+    );
+    setFormData(prev => ({
+      ...prev,
+      images: [...(prev.images || []), ...compressedB64s]
+    }));
+  };
+
+  const removeImage = (indexToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      images: (prev.images || []).filter((_, idx) => idx !== indexToRemove)
+    }));
+  };
+
   const handleSubmit = () => {
     if(!formData.comment) return showModal('alert', '안내', '후기 내용을 입력해주세요.');
-    const newReview = { id: `review-${Date.now()}`, name: user.name || '수강생', rating: Number(formData.rating), comment: formData.comment, tag: formData.tag, image: formData.image || null };
+    const newReview = { 
+      id: `review-${Date.now()}`, 
+      name: user.name || '수강생', 
+      rating: 5, 
+      comment: formData.comment, 
+      tag: '', 
+      image: (formData.images && formData.images.length > 0) ? formData.images[0] : null,
+      images: formData.images || []
+    };
     updateDB('reviews', [newReview, ...reviewsData]);
     showModal('alert', '작성 완료', '소중한 후기가 등록되었습니다.', () => navigate('/reviews'));
   };
+
   return (
     <div className="min-h-screen bg-gray-50 pt-32 pb-20">
       <div className="max-w-2xl mx-auto px-6">
         <h1 className="text-3xl font-black mb-8 text-gray-900 word-keep tracking-tight">수강생 피드백 작성</h1>
         <div className="bg-white rounded-[2rem] p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 space-y-6">
           <div>
-            <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">별점 (1~5)</label>
-            <input type="number" min="1" max="5" value={formData.rating} onChange={(e)=>setFormData({...formData, rating: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500" />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">핵심 키워드 (태그)</label>
-            <input type="text" value={formData.tag} onChange={(e)=>setFormData({...formData, tag: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500" />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">사진 첨부 (URL 입력)</label>
-            <input type="text" placeholder="https://..." value={formData.image} onChange={(e)=>setFormData({...formData, image: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500" />
+            <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">사진 첨부 (여러 개 선택 가능)</label>
+            <div className="flex flex-wrap gap-3 mb-3">
+              {(formData.images || []).map((img, idx) => (
+                <div key={idx} className="relative w-20 h-20 rounded-xl overflow-hidden border border-gray-200">
+                  <img src={img} className="w-full h-full object-cover" />
+                  <button 
+                    onClick={() => removeImage(idx)} 
+                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-80 hover:opacity-100 transition-opacity"
+                    title="삭제"
+                    type="button"
+                  >
+                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-none stroke-current stroke-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+              ))}
+              <label className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 hover:bg-gray-50 transition-colors">
+                <svg viewBox="0 0 24 24" className="w-6 h-6 text-gray-400 fill-none stroke-current stroke-2 mb-1"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span className="text-[10px] font-bold text-gray-400">추가</span>
+                <input type="file" multiple accept="image/*" onChange={handleFileChange} className="hidden" />
+              </label>
+            </div>
           </div>
           <div>
             <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">후기 내용</label>
@@ -1187,15 +1304,39 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
     setForm(f => ({ ...f, [field]: b64 }));
   };
 
+  const handleMultipleImageFiles = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    if ((form.images || []).length + files.length > 5) {
+      showModal('alert', '안내', '사진은 최대 5개까지 첨부 가능합니다.');
+      return;
+    }
+    const compressedB64s = await Promise.all(
+      files.map((file) => compressImage(file))
+    );
+    setForm(f => ({
+      ...f,
+      images: [...(f.images || []), ...compressedB64s]
+    }));
+  };
+
+  const removeAdminImage = (idxToRemove) => {
+    setForm(f => ({
+      ...f,
+      images: (f.images || []).filter((_, idx) => idx !== idxToRemove)
+    }));
+  };
+
   const handleAddReview = () => {
     if (!form.name?.trim()) return showModal('alert', '안내', '작성자 이름을 입력하세요.');
     if (!form.comment?.trim()) return showModal('alert', '안내', '후기 내용을 입력하세요.');
     const newItem = {
       id: `review-${Date.now()}`,
       name: form.name,
-      rating: Number(form.rating || 5),
-      tag: form.tag || '실전셀러',
-      image: form.image || null,
+      rating: 5,
+      tag: '',
+      image: (form.images && form.images.length > 0) ? form.images[0] : null,
+      images: form.images || [],
       comment: form.comment
     };
     updateDB('reviews', [newItem, ...reviewsData]);
@@ -1208,8 +1349,8 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
     if (!form.title?.trim()) return showModal('alert', '안내', '제목을 입력해주세요.');
     if (!form.author?.trim()) return showModal('alert', '안내', '작성자를 입력해주세요.');
     const contentHTML = `<div class="space-y-6 text-gray-800 leading-relaxed text-sm md:text-base">
+      ${form.thumbnail ? `<img src="${form.thumbnail}" class="w-full rounded-2xl border border-gray-200 shadow-sm mb-4" alt="수익인증" />` : ''}
       ${(form.content || '').split('\n').map(p => `<p>${p}</p>`).join('')}
-      ${form.thumbnail ? `<img src="${form.thumbnail}" class="w-full rounded-2xl border border-gray-200 shadow-sm" alt="수익인증" />` : ''}
     </div>`;
     const newItem = {
       id: `rev-${Date.now()}`,
@@ -1309,31 +1450,35 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
   const ReviewForm = () => (
     <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-200">
       <h3 className="font-black text-gray-900 mb-5 text-sm tracking-tight">새 후기 등록</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+      <div className="grid grid-cols-1 gap-4 mb-5">
         <div>
           <label className={lbl}>작성자 이름</label>
           <input className={inp} placeholder="예: 실전셀러99" value={form.name||''} onChange={e=>setForm(f=>({...f,name:e.target.value}))} />
         </div>
         <div>
-          <label className={lbl}>평점 (1~5)</label>
-          <input className={inp} type="number" min="1" max="5" placeholder="5" value={form.rating||''} onChange={e=>setForm(f=>({...f,rating:e.target.value}))} />
-        </div>
-        <div className="md:col-span-2">
-          <label className={lbl}>핵심 태그</label>
-          <input className={inp} placeholder="예: 월 매출 3배 상승" value={form.tag||''} onChange={e=>setForm(f=>({...f,tag:e.target.value}))} />
-        </div>
-        <div className="md:col-span-2">
-          <label className={lbl}>사진 업로드 (선택)</label>
-          <div className="flex items-center gap-3">
-            <label className="flex-1 flex items-center gap-3 cursor-pointer bg-white border-2 border-dashed border-gray-300 hover:border-indigo-400 rounded-xl px-4 py-3 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              <span className="text-sm text-gray-500 font-medium">{previewUrl ? '이미지 선택됨' : '이미지 파일 선택'}</span>
-              <input type="file" accept="image/*" className="hidden" onChange={e=>handleImageFile(e,'image')} />
+          <label className={lbl}>사진 업로드 (여러 개 선택 가능)</label>
+          <div className="flex flex-wrap gap-3 mb-3">
+            {(form.images || []).map((img, idx) => (
+              <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-gray-200">
+                <img src={img} className="w-full h-full object-cover" />
+                <button 
+                  onClick={() => removeAdminImage(idx)} 
+                  className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-0.5 opacity-80 hover:opacity-100 transition-opacity"
+                  title="삭제"
+                  type="button"
+                >
+                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-none stroke-current stroke-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            ))}
+            <label className="w-16 h-16 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#FF8A00] hover:bg-white transition-colors">
+              <svg viewBox="0 0 24 24" className="w-5 h-5 text-gray-400 fill-none stroke-current stroke-2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span className="text-[9px] font-bold text-gray-400">추가</span>
+              <input type="file" multiple accept="image/*" onChange={handleMultipleImageFiles} className="hidden" />
             </label>
-            {previewUrl && <img src={previewUrl} className="w-16 h-16 rounded-xl object-cover border border-gray-200 flex-shrink-0" alt="preview" />}
           </div>
         </div>
-        <div className="md:col-span-2">
+        <div>
           <label className={lbl}>후기 내용</label>
           <textarea className={inp+' min-h-[100px] resize-y'} placeholder="후기 내용을 입력하세요" value={form.comment||''} onChange={e=>setForm(f=>({...f,comment:e.target.value}))} />
         </div>
@@ -1658,7 +1803,11 @@ function App() {
   }, []);
   
   const showModal = (type, title, message, onConfirm = null, placeholder = '', isPassword = false, fields = []) => {
-    setModal({ isOpen: true, type, title, message, onConfirm, placeholder, isPassword, fields });
+    let msg = message;
+    if (type === 'postView') {
+      msg = moveImageToTop(message);
+    }
+    setModal({ isOpen: true, type, title, message: msg, onConfirm, placeholder, isPassword, fields });
   };
 
   const handleModalConfirm = () => {
@@ -1806,25 +1955,43 @@ function App() {
 
   const handleLogout = () => { FirebaseAuth.logout(); setUser(null); setIsAdminSession(false); navigate('/'); };
 
+  const handleReviewClick = (review) => {
+    const ratingStars = '⭐'.repeat(review.rating);
+    const imagesList = review.images || (review.image ? [review.image] : []);
+    const imageTags = imagesList
+      .map(img => `<img src="${img}" class="w-full rounded-2xl border border-gray-100 shadow-sm mb-4" alt="후기 사진" />`)
+      .join('');
+    
+    const contentHTML = `<div class="space-y-6 text-gray-800 leading-relaxed text-sm md:text-base">
+      ${imageTags}
+      <div class="border-b border-gray-100 pb-4">
+        <div class="text-yellow-400 text-lg font-bold">${ratingStars}</div>
+      </div>
+      <p class="whitespace-pre-wrap font-medium">${review.comment}</p>
+    </div>`;
+    
+    showModal('postView', `${review.name} 수강생 후기`, contentHTML);
+  };
+
   let View;
   if (currentPath.startsWith('/material/')) {
     const matId = currentPath.split('/material/')[1];
     View = <MaterialDetailPage matId={matId} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} />;
   } else {
     switch (currentPath) {
-      case '/': View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
+      case '/': View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
       case '/enrollment': View = <EnrollmentPage user={user} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} onEnroll={handleEnroll} courses={courses} />; break;
       case '/course': View = <CourseDetailPage course={courses.find(c=>c.id===routeState?.courseId)} user={user} onEnroll={handleEnroll} navigate={navigate} showModal={showModal} />; break;
       case '/login': View = <AuthPage navigate={navigate} onLoginSuccess={() => { setUser(FirebaseAuth.getCurrentUser()); navigate('/'); }} showModal={showModal} />; break;
       case '/write-review': View = <WriteReviewPage user={user} reviewsData={reviewsData} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
-      case '/reviews': View = <ReviewsPage reviewsData={reviewsData} navigate={navigate} showModal={showModal} />; break;
+      case '/reviews': View = <ReviewsPage reviewsData={reviewsData} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
       case '/revenues': View = <RevenuesPage revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
       case '/mypage': View = <MyPage user={user} enrolledCourses={enrolledCourses} navigate={navigate} />; break;
       case '/community': View = <CommunityPage communityPosts={community} user={user} onAddPost={(p)=>updateDB('community', [p, ...community])} showModal={showModal} />; break;
       case '/qna': View = <QnaPage qnaList={qna} user={user} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
       case '/materials': View = <MaterialsPage enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} />; break;
-      case '/admin': View = isAdminSession ? <AdminDashboard courses={courses} materials={materials} community={community} qna={qna} reviewsData={reviewsData} revenuesData={revenuesData} usersDB={usersDB} updateDB={updateDB} navigate={navigate} showModal={showModal} /> : <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
-      default: View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />;
+      case '/admin': View = isAdminSession ? <AdminDashboard courses={courses} materials={materials} community={community} qna={qna} reviewsData={reviewsData} revenuesData={revenuesData} usersDB={usersDB} updateDB={updateDB} navigate={navigate} showModal={showModal} /> : <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
+      default: View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />;
     }
   }
 
@@ -1834,7 +2001,32 @@ function App() {
       {/* 커스텀 모달 지원 컴포넌트 */}
       {modal.isOpen && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm px-4 py-8">
-          {modal.type === 'postView' ? (
+          {modal.type === 'counseling' ? (
+            <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl animate-fade-in-up border border-gray-100 text-center flex flex-col items-center modal-body">
+              <div className="w-16 h-16 bg-[#FEE500] rounded-full flex items-center justify-center mb-6 shadow-sm border border-yellow-300">
+                <svg viewBox="0 0 32 32" className="w-9 h-9"><path d="M16 4.64c-6.96 0-12.64 4.48-12.64 10.08 0 3.52 2.32 6.64 5.76 8.48l-1.12 4.16c-.16.56.56.96.96.64l4.8-3.2c.72.16 1.44.24 2.24.24 6.96 0 12.64-4.48 12.64-10.08S22.96 4.64 16 4.64z" fill="#3A1D1D"/></svg>
+              </div>
+              <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">수강신청 안내</h3>
+              <p className="text-gray-600 font-bold mb-8 whitespace-pre-wrap leading-relaxed word-keep">상담을 통해 수강신청이 가능합니다.</p>
+              
+              <a 
+                href="https://pf.kakao.com/_bPinX/friend" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                onClick={closeModal}
+                className="w-full bg-[#FEE500] hover:bg-[#FEE500]/90 text-[#3A1D1D] font-black py-4 px-6 rounded-2xl shadow-lg shadow-yellow-500/10 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mb-3"
+              >
+                <svg viewBox="0 0 32 32" className="w-6 h-6 flex-shrink-0"><path d="M16 4.64c-6.96 0-12.64 4.48-12.64 10.08 0 3.52 2.32 6.64 5.76 8.48l-1.12 4.16c-.16.56.56.96.96.64l4.8-3.2c.72.16 1.44.24 2.24.24 6.96 0 12.64-4.48 12.64-10.08S22.96 4.64 16 4.64z" fill="#3A1D1D"/></svg>
+                수강상담하기
+              </a>
+              <button 
+                onClick={closeModal} 
+                className="text-gray-400 hover:text-gray-700 font-bold text-sm py-2 hover:underline transition-colors"
+              >
+                닫기
+              </button>
+            </div>
+          ) : modal.type === 'postView' ? (
             <div className="bg-white rounded-2xl md:rounded-[2rem] w-full max-w-2xl max-h-[85vh] shadow-2xl animate-fade-in-up border border-gray-100 flex flex-col overflow-hidden">
               <div className="flex justify-between items-start p-6 md:p-10 pb-4 border-b border-gray-100 bg-white">
                 <h3 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight leading-snug pr-4 word-keep">{modal.title}</h3>
@@ -1882,7 +2074,7 @@ function App() {
       )}
 
       {/* 우측 하단 1:1 카카오톡 상담 플로팅 버튼 */}
-      <a href="#" target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 md:bottom-8 md:right-8 bg-[#FEE500] h-14 md:h-16 rounded-full flex items-center gap-3 px-5 md:px-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-105 transition-transform z-[9000] border border-yellow-300">
+      <a href="https://pf.kakao.com/_bPinX/friend" target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 md:bottom-8 md:right-8 bg-[#FEE500] h-14 md:h-16 rounded-full flex items-center gap-3 px-5 md:px-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-105 transition-transform z-[9000] border border-yellow-300">
         <svg viewBox="0 0 32 32" className="w-7 h-7 md:w-8 md:h-8 flex-shrink-0"><path d="M16 4.64c-6.96 0-12.64 4.48-12.64 10.08 0 3.52 2.32 6.64 5.76 8.48l-1.12 4.16c-.16.56.56.96.96.64l4.8-3.2c.72.16 1.44.24 2.24.24 6.96 0 12.64-4.48 12.64-10.08S22.96 4.64 16 4.64z" fill="#3A1D1D"/></svg>
         <div className="text-left font-black text-black leading-tight select-none flex flex-col justify-center">
           <span className="text-xs md:text-sm font-black whitespace-nowrap text-black">카카오톡</span>
@@ -1894,6 +2086,8 @@ function App() {
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in-up { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .modal-body p, .modal-body li, .modal-body span, .modal-body div, .modal-body h1, .modal-body h2, .modal-body h3, .modal-body h4 { color: #000000 !important; }
+        .modal-body a { color: #000000 !important; }
+        .modal-body a[class*="bg-[#FEE500]"] { color: #3A1D1D !important; }
       `}</style>
     </div>
   );
