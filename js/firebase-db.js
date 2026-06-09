@@ -57,7 +57,10 @@ const FirebaseDB = {
           const docId = item.id || item.uid || item.email;
           if (docId) {
             colRef.doc(docId).set(item)
-              .catch(err => console.error(`[Firestore] 개별 아이템 저장 오류 (${collectionKey}/${docId}):`, err));
+              .catch(err => {
+                console.error(`[Firestore] 개별 아이템 저장 오류 (${collectionKey}/${docId}):`, err);
+                window.alert(`[데이터베이스 오류] 저장에 실패했습니다.\n상세 오류: ${err.message}`);
+              });
           }
         });
 
@@ -67,10 +70,16 @@ const FirebaseDB = {
             const exists = val.some(item => (item.id === doc.id || item.uid === doc.id || item.email === doc.id));
             if (!exists) {
               doc.ref.delete()
-                .catch(err => console.error(`[Firestore] 개별 아이템 삭제 오류 (${collectionKey}/${doc.id}):`, err));
+                .catch(err => {
+                  console.error(`[Firestore] 개별 아이템 삭제 오류 (${collectionKey}/${doc.id}):`, err);
+                  window.alert(`[데이터베이스 오류] 삭제에 실패했습니다.\n상세 오류: ${err.message}`);
+                });
             }
           });
-        }).catch(err => console.error(`[Firestore] 컬렉션 조회 오류 (${collectionKey}):`, err));
+        }).catch(err => {
+          console.error(`[Firestore] 컬렉션 조회 오류 (${collectionKey}):`, err);
+          window.alert(`[데이터베이스 오류] 목록 조회에 실패했습니다.\n상세 오류: ${err.message}`);
+        });
 
       } else {
         // 단순 단일 문서 저장 (courses, materials, enrollments 등 크기가 작고 이미지가 없는 데이터)
@@ -80,6 +89,7 @@ const FirebaseDB = {
           })
           .catch(err => {
             console.error(`[Firestore] 저장 오류 (${collectionKey}):`, err);
+            window.alert(`[데이터베이스 오류] 저장에 실패했습니다.\n상세 오류: ${err.message}`);
           });
       }
     }
@@ -94,7 +104,15 @@ const FirebaseDB = {
         return colRef.onSnapshot((snapshot) => {
           const list = [];
           snapshot.forEach(doc => {
-            list.push(doc.data());
+            const item = doc.data();
+            if (item) {
+              if (collectionKey === 'users_db') {
+                if (!item.uid) item.uid = doc.id;
+              } else {
+                if (!item.id) item.id = doc.id;
+              }
+              list.push(item);
+            }
           });
 
           if (list.length === 0) {
