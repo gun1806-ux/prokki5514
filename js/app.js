@@ -136,9 +136,10 @@ const INITIAL_COMMUNITY = [
   { id: "comm-2", title: "스토어 매각 목표로 달리고 있습니다!", author: "실행력갑", date: "2026-05-21", content: "단기 매출이 아니라 사업으로 접근하라는 말씀, 뼈에 새기고 있습니다. 템플릿 잘 활용하고 있어요." } 
 ];
 const INITIAL_MATERIALS = [
-  { id: "mat-1", title: "매출 3억 달성 상세페이지 기획안 템플릿", type: "기획서", url: "#" },
-  { id: "mat-2", title: "스토어 매각(Exit) 필수 체크리스트 엑셀", type: "문서", url: "#" },
-  { id: "mat-3", title: "경쟁강도 분석 및 소싱 아이템 관리표", type: "엑셀", url: "#" }
+  { id: "mat-1", title: "\uacbd\uc7c1\uc0ac \ud310\ub9e4\ub7c9 \ubd84\uc11d\ud504\ub85c\uadf8\ub7a8", type: "\ud504\ub85c\uadf8\ub7a8", route: "/material/mat-1", icon: "assets/images/9.png" },
+  { id: "mat-2", title: "\uc678\ubd80\ub9c1\ud06c \ucd94\uc801 \ud504\ub85c\uadf8\ub7a8", type: "\ud504\ub85c\uadf8\ub7a8", route: "/material/mat-2", icon: "assets/images/10.png" },
+  { id: "mat-3", title: "AI \uc591\ubc29\ud5a5 \uc790\ub3d9\ubc88\uc5ed\uae30 + 1688 LV6 \uc544\uc774\ub514 + \uccb4\ud5d8\ub2e8 \uc5c5\uccb4", type: "\ub9ac\uc18c\uc2a4", route: "/material/mat-3", icon: "assets/images/11.png" },
+  { id: "mat-4", title: "\uc218\uc785\ub300\ud589 & 3PL \ub3d9\uc2dc\uc6b4\uc601 \uc5c5\uccb4", type: "\uc5c5\uccb4\uc815\ubcf4", route: "/material/mat-4", icon: "assets/images/12.png" },
 ];
 
 const formatPrice = (price) => price === 0 ? '무료' : new Intl.NumberFormat('ko-KR').format(price) + '원';
@@ -538,7 +539,7 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
             className="inline-block rounded-2xl overflow-hidden shadow-xl cursor-pointer hover:scale-[1.02] transition-transform duration-300"
             onClick={() => navigate('/enrollment')}
           >
-            <img src="assets/images/5.png" alt="수강신청 바로가기" className="w-auto max-w-xs sm:max-w-sm md:max-w-md h-auto object-cover block" />
+            <img src="assets/images/5.jpg" alt="수강신청 바로가기" className="w-auto max-w-xs sm:max-w-sm md:max-w-md h-auto object-cover block" />
           </div>
           <p className="text-xs md:text-sm text-gray-400 font-medium mt-3">쿠팡부터, 스마트스토어, 브랜드까지</p>
         </div>
@@ -603,11 +604,21 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal }) =
   );
 };
 
-const EnrollmentPage = ({ user, enrolledCourses, materials, navigate, showModal }) => {
+const EnrollmentPage = ({ user, enrolledCourses, materials, navigate, showModal, onEnroll, courses }) => {
   const isEnrolled = enrolledCourses && enrolledCourses.length > 0;
 
+  // [TEST MODE] 버튼 클릭 시 바로 수강 처리
   const handleApplyClick = () => {
-    showModal('alert', '지원서 접수 완료', '무료 상담 신청 및 지원서 접수가 완료되었습니다. 담당자가 빠른 시일 내에 연락드리겠습니다.');
+    if (!user) {
+      showModal('alert', '\ub85c\uadf8\uc778 \ud544\uc694', '\ub85c\uadf8\uc778 \ud6c4 \uc218\uac15\uc2e0\uccad\uc774 \uac00\ub2a5\ud569\ub2c8\ub2e4.', () => navigate('/login'));
+      return;
+    }
+    const firstCourse = courses && courses[0];
+    if (firstCourse && onEnroll) {
+      onEnroll(firstCourse.id);
+    } else {
+      navigate('/mypage');
+    }
   };
 
   const handleDownloadClick = (mat) => {
@@ -666,8 +677,8 @@ const EnrollmentPage = ({ user, enrolledCourses, materials, navigate, showModal 
           {materials.map((mat) => (
             <div key={mat.id} className="bg-[#111111] p-6 rounded-[2rem] border border-gray-800 shadow-lg flex items-center justify-between hover:border-[#FF8A00]/30 hover:shadow-[0_0_20px_rgba(255,138,0,0.05)] transition-all cursor-pointer" onClick={() => handleDownloadClick(mat)}>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gray-800 rounded-2xl flex items-center justify-center text-[#FF8A00] shadow-inner flex-shrink-0">
-                  <Icon path={ICONS.FileText} className="w-5 h-5" />
+                <div className="w-12 h-12 rounded-2xl overflow-hidden flex-shrink-0">
+                  <img src={mat.icon} alt={mat.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="text-left">
                   <h3 className="font-bold text-white word-keep mb-1 tracking-tight text-base">{mat.title}</h3>
@@ -675,7 +686,7 @@ const EnrollmentPage = ({ user, enrolledCourses, materials, navigate, showModal 
                 </div>
               </div>
               <Button size="sm" variant="outline" className="border-gray-800 text-gray-400 hover:border-[#FF8A00] hover:text-[#FF8A00] ml-4 flex-shrink-0">
-                {isEnrolled ? '다운로드' : '🔒 전용'}
+                {isEnrolled ? '\uc5f4\uae30' : '\ud83d\udd12 \uc804\uc6a9'}
               </Button>
             </div>
           ))}
@@ -690,7 +701,7 @@ const EnrollmentPage = ({ user, enrolledCourses, materials, navigate, showModal 
         {/* Large Image Button */}
         <div className="w-full max-w-2xl bg-[#111111] rounded-[2rem] p-6 border border-[#FF8A00]/30 shadow-[0_0_30px_rgba(255,138,0,0.15)] flex flex-col items-center hover:scale-[1.01] transition-transform duration-300">
           <button onClick={handleApplyClick} className="block w-full focus:outline-none">
-            <img src="assets/images/5.png" alt="지원서 접수하기" className="w-full h-auto object-cover rounded-2xl cursor-pointer shadow-md hover:opacity-95 transition-opacity" />
+            <img src="assets/images/5.jpg" alt="지원서 접수하기" className="w-full h-auto object-cover rounded-2xl cursor-pointer shadow-md hover:opacity-95 transition-opacity" />
           </button>
           <div className="mt-6 text-center w-full">
             <p className="text-xs text-[#FF8A00] font-bold mb-4">★ 1:1 밀착 코칭 및 실전 압축 실습 ★</p>
@@ -965,34 +976,46 @@ const CommunityPage = ({ communityPosts, user, onAddPost, showModal }) => {
   );
 };
 
-const MaterialsPage = ({ enrolledCourses, materials, showModal }) => {
-  if(enrolledCourses.length === 0) {
+const MaterialsPage = ({ enrolledCourses, materials, navigate }) => {
+  const isEnrolled = enrolledCourses && enrolledCourses.length > 0;
+  if (!isEnrolled) {
     return (
       <div className="min-h-screen bg-gray-50 pt-48 pb-20 flex justify-center text-center">
          <div>
            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-gray-100"><Icon path={ICONS.Lock} className="w-10 h-10 text-gray-300" /></div>
-           <h2 className="text-2xl font-black text-gray-900 mb-4 word-keep">수강생 전용 프리미엄 자료실</h2>
-           <p className="text-gray-500 font-medium word-keep">클래스 결제를 완료한 분들만 접근 가능한 비밀 게시판입니다.</p>
+           <h2 className="text-2xl font-black text-gray-900 mb-4 word-keep">{'\uc218\uac15\uc0dd \uc804\uc6a9 \ud504\ub9ac\ubbf8\uc5c4 \uc790\ub8cc\uc2e4'}</h2>
+           <p className="text-gray-500 font-medium word-keep">{'\ud074\ub798\uc2a4 \uacb0\uc81c\ub97c \uc644\ub8cc\ud55c \ubd84\ub4e4\ub9cc \uc811\uadfc \uac00\ub2a5\ud55c \ube44\ubc00 \uac8c\uc2dc\ud310\uc785\ub2c8\ub2e4.'}</p>
          </div>
       </div>
     );
   }
+
+  const icons = { '\ud504\ub85c\uadf8\ub7a8': ICONS.Code || ICONS.FileText, '\ub9ac\uc18c\uc2a4': ICONS.Star || ICONS.FileText, '\uc5c5\uccb4\uc815\ubcf4': ICONS.Users || ICONS.FileText };
+
   return (
     <div className="min-h-screen bg-gray-50 pt-32 pb-20">
       <div className="max-w-5xl mx-auto px-6">
-        <h1 className="text-3xl font-black mb-3 text-gray-900 tracking-tight">실전 템플릿 자료실</h1>
-        <p className="text-gray-500 mb-10 font-medium">압도적 성장을 위해 '돈버는 똘기'가 직접 사용하는 엑셀/기획안 템플릿입니다.</p>
+        <h1 className="text-3xl font-black mb-2 text-gray-900 tracking-tight">{'\uc2e4\uc804 \ud234\ud50c\ub9bf \uc790\ub8cc\uc2e4'}</h1>
+        <p className="text-gray-500 mb-10 font-medium">{'\ub3c8\ubc84\ub294 \ub98e\uae30\uac00 \uc9c1\uc811 \uc0ac\uc6a9\ud558\ub294 \uc2e4\uc804 \ud234\uc2a4\uc640 \uc5c5\uccb4 \uc815\ubcf4\uc785\ub2c8\ub2e4.'}</p>
         <div className="grid md:grid-cols-2 gap-6">
           {materials.map((mat) => (
-            <div key={mat.id} className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm flex items-center justify-between hover:border-indigo-100 hover:shadow-md transition-all cursor-pointer">
+            <div
+              key={mat.id}
+              onClick={() => navigate(mat.route)}
+              className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm flex items-center justify-between hover:border-[#FF8A00]/40 hover:shadow-lg transition-all cursor-pointer group"
+            >
               <div className="flex items-center gap-5">
-                <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 shadow-inner"><Icon path={ICONS.FileText} /></div>
+                <div className="w-14 h-14 rounded-2xl overflow-hidden flex-shrink-0 shadow-inner group-hover:opacity-90 transition-opacity">
+                  <img src={mat.icon} alt={mat.title} className="w-full h-full object-cover" />
+                </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 word-keep mb-1 tracking-tight text-lg">{mat.title}</h3>
-                  <span className="text-[11px] bg-gray-100 text-gray-500 px-2 py-1 rounded font-bold">{mat.type}</span>
+                  <h3 className="font-bold text-gray-900 word-keep mb-1 tracking-tight text-base">{mat.title}</h3>
+                  <span className="text-[11px] bg-orange-50 text-[#FF8A00] px-2 py-1 rounded font-bold">{mat.type}</span>
                 </div>
               </div>
-              <Button size="sm" variant="outline" onClick={()=>showModal('alert', '다운로드 진행', `'${mat.title}' 다운로드가 안전하게 시작되었습니다.`)} className="border-gray-200 text-gray-600">다운로드</Button>
+              <Button size="sm" className="ml-4 flex-shrink-0 bg-[#FF8A00] text-black border-none">
+                {'\uc5f4\uae30'}
+              </Button>
             </div>
           ))}
         </div>
@@ -1000,6 +1023,155 @@ const MaterialsPage = ({ enrolledCourses, materials, showModal }) => {
     </div>
   );
 };
+
+// ============================================================================
+// 자료실 상세 페이지 (각 자료별)
+// ============================================================================
+const MATERIAL_DETAIL_DATA = {
+  'mat-1': {
+    title: '\uacbd\uc7c1\uc0ac \ud310\ub9e4\ub7c9 \ubd84\uc11d\ud504\ub85c\uadf8\ub7a8',
+    type: '\ud504\ub85c\uadf8\ub7a8',
+    icon: 'assets/images/9.png',
+    desc: '\ucfe0\ud321, \uc2a4\ub9c8\ud2b8\uc2a4\ud1a0\uc5b4\uc5d0\uc11c \uacbd\uc7c1 \uc140\ub7ec\uc758 \uc2e4\uc81c \ud310\ub9e4\ub7c9\uc744 \ucd94\uc801\ud558\ub294 \ud504\ub85c\uadf8\ub7a8\uc785\ub2c8\ub2e4. \uc0c1\uc704 \ub178\ucd9c \uc0c1\ud488\uc758 \uc6d4\ubcc4 \ub9e4\ucd9c\ub7c9\uc744 \uc77c\uc77c\uc774 \ud655\uc778\ud558\uc5ec \uc548\uc815\uc801\uc778 \uc544\uc774\ud15c\uc744 \uc120\ubcc4\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.',
+    steps: [
+      '\ud504\ub85c\uadf8\ub7a8 \ub2e4\uc6b4\ub85c\ub4dc \ud6c4 \uc2e4\ud589',
+      '\ucfe0\ud321 or \uc2a4\ub9c8\ud2b8\uc2a4\ud1a0\uc5b4 \ud0ed \uc120\ud0dd',
+      '\ubd84\uc11d\ud560 \ud0a4\uc6cc\ub4dc \uc785\ub825',
+      '\uc6d4\ubcc4/\uc8fc\ubcc4 \ub9e4\ucd9c \uc2e4\uc801 \ud655\uc778',
+      '\uc81c\ud488 \ub4f1\ub85d \uc5ec\ubd80 \ud310\ub2e8\uc5d0 \ud65c\uc6a9',
+    ],
+    downloadLabel: '\ud504\ub85c\uadf8\ub7a8 \ub2e4\uc6b4\ub85c\ub4dc',
+    downloadUrl: '#',
+  },
+  'mat-2': {
+    title: '\uc678\ubd80\ub9c1\ud06c \ucd94\uc801 \ud504\ub85c\uadf8\ub7a8',
+    type: '\ud504\ub85c\uadf8\ub7a8',
+    icon: 'assets/images/10.png',
+    desc: '\uc678\ubd80 \ub9c1\ud06c(\ube14\ub85c\uadf8, SNS, \uce74\ud398 \ub4f1)\uc5d0\uc11c \uc720\uc785\ub418\ub294 \ud2b8\ub798\ud53d\uc744 \ucd94\uc801\ud558\ub294 \ud234\uc785\ub2c8\ub2e4. \uc5b4\ub5a4 \ub9c1\ud06c\uac00 \uc2e4\uc81c \ub9e4\ucd9c\ub85c \uc774\uc5b4\uc9c0\ub294\uc9c0 \ub370\uc774\ud130\ub85c \ud655\uc778\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.',
+    steps: [
+      '\ud504\ub85c\uadf8\ub7a8 \uc124\uce58 \ud6c4 \uc2e4\ud589',
+      '\uc790\uc2e0\uc758 \uc2a4\ud1a0\uc5b4 URL \uc785\ub825',
+      '\ucd94\uc801\ud560 \uc678\ubd80 \ub9c1\ud06c URL \uc785\ub825',
+      '\uc720\uc785 \uba85\uc218 / \uc804\ud658\uc728 \ud655\uc778',
+      '\ub9c1\ud06c\ubcc4 ROI \uc5f0\uc0b0\ud558\uc5ec \ub9c8\ucf80\ud305 \ucd5c\uc801\ud654',
+    ],
+    downloadLabel: '\ud504\ub85c\uadf8\ub7a8 \ub2e4\uc6b4\ub85c\ub4dc',
+    downloadUrl: '#',
+  },
+  'mat-3': {
+    title: 'AI \uc591\ubc29\ud5a5 \uc790\ub3d9\ubc88\uc5ed\uae30 + 1688 LV6 \uc544\uc774\ub514 + \uccb4\ud5d8\ub2e8 \uc5c5\uccb4',
+    type: '\ub9ac\uc18c\uc2a4',
+    icon: 'assets/images/11.png',
+    desc: '3\uac00\uc9c0 \ub9ac\uc18c\uc2a4 \ud328\ud0a4\uc9c0\uc785\ub2c8\ub2e4. AI\ub97c \uc774\uc6a9\ud55c \ud55c\uc911 \uc591\ubc29\ud5a5 \uc790\ub3d9 \ubc88\uc5ed\uae30, 1688 \uace0\ub4f1\uae09(LV6) \ubc14\uc774\uc5b4 \uc544\uc774\ub514, \uc2e4\uc81c \uccb4\ud5d8\ub2e8 \uc5f0\uacc4 \uc5c5\uccb4 \ub9ac\uc2a4\ud2b8\uac00 \ud3ec\ud568\ub418\uc5b4 \uc788\uc2b5\ub2c8\ub2e4.',
+    steps: [
+      '[\uc790\ub3d9\ubc88\uc5ed\uae30] \ud06c\ub86c \ud655\uc7a5\ud504\ub85c\uadf8\ub7a8 \uc124\uce58 \ud6c4 \uc0ac\uc6a9',
+      '[\ub9ac\uc2a4\ud2b8] 1688 LV6 \uc544\uc774\ub514\ub85c \ub3c4\ub9e4\uac00 \ud560\uc778\uc728 \ud655\uc778',
+      '[\uccb4\ud5d8\ub2e8] \ub9ac\uc2a4\ud2b8\uc5d0\uc11c \uc5c5\uccb4 \ucee4\ud0dd\ud6c4 \uc870\uac74 \ud611\uc758',
+      '\ubb38\uc758\ub294 \uc5c5\uccb4\ubcc4 \ub9de\ucDB4\uc9c0\ub294 \uc591\uc2dd \ud65c\uc6a9 \uad6c\uccb4\uc801 \ubc29\uc2dd \uc548\ub0b4\uc11c \ud3ec\ud568',
+    ],
+    downloadLabel: '\ub9ac\uc18c\uc2a4 \ud328\ud0a4\uc9c0 \ub2e4\uc6b4\ub85c\ub4dc',
+    downloadUrl: '#',
+  },
+  'mat-4': {
+    title: '\uc218\uc785\ub300\ud589 & 3PL \ub3d9\uc2dc\uc6b4\uc601 \uc5c5\uccb4',
+    type: '\uc5c5\uccb4\uc815\ubcf4',
+    icon: 'assets/images/12.png',
+    desc: '\uc911\uad6d\uc0b0 \uc81c\ud488 \uc218\uc785 \ub300\ud589\uacfc 3PL(\ucc3d\uace0/\ubc30\uc1a1) \uc5c5\ubb34\ub97c \ub3d9\uc2dc\uc5d0 \uc6b4\uc601\ud558\ub294 \uc5c5\uccb4 \ub9ac\uc2a4\ud2b8\uc785\ub2c8\ub2e4. \ub3cc\uae30\uac00 \uc9c1\uc811 \uac71\uc5b4\ubcf4\uace0 \uc2e0\ub8b0\ud560 \uc218 \uc788\ub294 \ud30c\ud2b8\ub108\uc785\ub2c8\ub2e4.',
+    steps: [
+      '\uc5c5\uccb4 \ub9ac\uc2a4\ud2b8 \ub2e4\uc6b4\ub85c\ub4dc',
+      '\ub2f4\ub2f9\uc790\uc5d0\uac8c \ud95c\uccb4 \ub2e8\uac00 \uc694\uccad',
+      '\ub3d9\ub300\ubb38 vs 3PL \uc870\uac74 \ube44\uad50\ud6c4 \uc120\ud0dd',
+      '\uc2dc\uc81c\ud488 \ubc1c\uc8fc \ud6c4 \ud488\uc9c8 \ud655\uc778 \uc808\ucc28 \uc548\ub0b4',
+    ],
+    downloadLabel: '\uc5c5\uccb4 \ub9ac\uc2a4\ud2b8 \ub2e4\uc6b4\ub85c\ub4dc',
+    downloadUrl: '#',
+  },
+};
+
+const MaterialDetailPage = ({ matId, enrolledCourses, navigate, showModal }) => {
+  const isEnrolled = enrolledCourses && enrolledCourses.length > 0;
+  const data = MATERIAL_DETAIL_DATA[matId];
+
+  if (!data) return <div className="pt-48 text-center font-bold">{'\uc790\ub8cc\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.'}</div>;
+
+  const handleDownload = () => {
+    if (!isEnrolled) {
+      showModal('alert', '\uc218\uac15\uc0dd \uc804\uc6a9', '\uc218\uac15 \ub4f1\ub85d \ud6c4 \ub2e4\uc6b4\ub85c\ub4dc\uac00 \uac00\ub2a5\ud569\ub2c8\ub2e4.');
+      return;
+    }
+    if (data.downloadUrl === '#') {
+      showModal('alert', '\uc900\ube44 \uc911', '\ub2e4\uc6b4\ub85c\ub4dc \ud30c\uc77c\uc744 \uc900\ube44 \uc911\uc785\ub2c8\ub2e4. \uc870\ub9cc \uae30\ub2e4\ub824\uc8fc\uc138\uc694!');
+    } else {
+      window.open(data.downloadUrl, '_blank');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 pt-32 pb-20">
+      <div className="max-w-3xl mx-auto px-6">
+        {/* 뒤로 가기 */}
+        <button onClick={() => navigate('/materials')} className="flex items-center gap-2 text-gray-500 hover:text-gray-800 font-bold mb-8 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+          {'\uc790\ub8cc\uc2e4\ub85c \ub3cc\uc544\uac00\uae30'}
+        </button>
+
+        {/* 헤더 */}
+        <div className="bg-white rounded-[2rem] p-8 md:p-12 border border-gray-100 shadow-sm mb-6">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 shadow-sm">
+              <img src={data.icon} alt={data.title} className="w-full h-full object-cover" />
+            </div>
+            <div>
+              <span className="text-xs bg-orange-50 text-[#FF8A00] px-3 py-1 rounded-full font-bold">{data.type}</span>
+              <h1 className="text-xl md:text-2xl font-black text-gray-900 mt-2 word-keep tracking-tight">{data.title}</h1>
+            </div>
+          </div>
+          <p className="text-gray-600 leading-relaxed font-medium">{data.desc}</p>
+        </div>
+
+        {/* 사용 방법 */}
+        <div className="bg-white rounded-[2rem] p-8 md:p-12 border border-gray-100 shadow-sm mb-6">
+          <h2 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
+            <span className="w-1.5 h-6 bg-[#FF8A00] rounded-full inline-block"></span>
+            {'\uc0ac\uc6a9 \ubc29\ubc95'}
+          </h2>
+          <ol className="space-y-4">
+            {data.steps.map((step, i) => (
+              <li key={i} className="flex items-start gap-4">
+                <span className="w-7 h-7 bg-[#FF8A00] text-black text-xs font-black rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">{i + 1}</span>
+                <p className="text-gray-700 font-medium leading-relaxed word-keep">{step}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        {/* 다운로드 버튼 */}
+        <div className="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          {isEnrolled ? (
+            <>
+              <p className="text-gray-600 font-medium">{'\uc218\uac15\uc0dd \uc804\uc6a9 \ud30c\uc77c\uc785\ub2c8\ub2e4. \uc544\ub798\uc5d0\uc11c \ub2e4\uc6b4\ub85c\ub4dc\ud558\uc138\uc694.'}</p>
+              <Button onClick={handleDownload} className="w-full sm:w-auto bg-[#FF8A00] text-black border-none font-black">
+                {'\u2b07\ufe0f '}{data.downloadLabel}
+              </Button>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-3">
+                <Icon path={ICONS.Lock} className="w-5 h-5 text-gray-400" />
+                <p className="text-gray-500 font-medium">{'\uc218\uac15 \ub4f1\ub85d \uc774\ud6c4 \ub2e4\uc6b4\ub85c\ub4dc \uac00\ub2a5\ud569\ub2c8\ub2e4.'}</p>
+              </div>
+              <Button onClick={() => navigate('/enrollment')} className="w-full sm:w-auto bg-gray-900 text-white border-none">
+                {'\uc218\uac15\uc2e0\uccad \ud558\ub7ec\uac00\uae30'}
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 
 const MyPage = ({ user, enrolledCourses, navigate }) => (
   <div className="min-h-screen bg-gray-50 pt-32 pb-20">
@@ -1386,7 +1558,7 @@ function App() {
   let View;
   switch (currentPath) {
     case '/': View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
-    case '/enrollment': View = <EnrollmentPage user={user} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} />; break;
+    case '/enrollment': View = <EnrollmentPage user={user} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} onEnroll={handleEnroll} courses={courses} />; break;
     case '/course': View = <CourseDetailPage course={courses.find(c=>c.id===routeState?.courseId)} user={user} onEnroll={handleEnroll} navigate={navigate} showModal={showModal} />; break;
     case '/login': View = <AuthPage navigate={navigate} onLoginSuccess={() => { setUser(FirebaseAuth.getCurrentUser()); navigate('/'); }} showModal={showModal} />; break;
     case '/write-review': View = <WriteReviewPage user={user} reviewsData={reviewsData} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
@@ -1394,7 +1566,11 @@ function App() {
     case '/revenues': View = <RevenuesPage revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
     case '/mypage': View = <MyPage user={user} enrolledCourses={enrolledCourses} navigate={navigate} />; break;
     case '/community': View = <CommunityPage communityPosts={community} user={user} onAddPost={(p)=>updateDB('community', [p, ...community])} showModal={showModal} />; break;
-    case '/materials': View = <MaterialsPage enrolledCourses={enrolledCourses} materials={materials} showModal={showModal} />; break;
+    case '/materials': View = <MaterialsPage enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} />; break;
+    case '/material/mat-1': View = <MaterialDetailPage matId="mat-1" enrolledCourses={enrolledCourses} navigate={navigate} showModal={showModal} />; break;
+    case '/material/mat-2': View = <MaterialDetailPage matId="mat-2" enrolledCourses={enrolledCourses} navigate={navigate} showModal={showModal} />; break;
+    case '/material/mat-3': View = <MaterialDetailPage matId="mat-3" enrolledCourses={enrolledCourses} navigate={navigate} showModal={showModal} />; break;
+    case '/material/mat-4': View = <MaterialDetailPage matId="mat-4" enrolledCourses={enrolledCourses} navigate={navigate} showModal={showModal} />; break;
     case '/admin': View = isAdminSession ? <AdminDashboard courses={courses} materials={materials} community={community} reviewsData={reviewsData} revenuesData={revenuesData} usersDB={usersDB} updateDB={updateDB} navigate={navigate} showModal={showModal} /> : <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
     default: View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} />;
   }
