@@ -418,8 +418,8 @@ const ReviewsPage = ({ reviewsData, navigate, showModal, onReviewClick }) => {
                 const imgList = review.images || (review.image ? [review.image] : []);
                 if (imgList.length === 0) return null;
                 return (
-                  <div className="relative mb-6 flex-shrink-0">
-                    <img src={imgList[0]} className="w-full h-32 md:h-40 object-cover rounded-2xl shadow-sm" />
+                  <div className="relative mb-6 flex-shrink-0 bg-[#0B0B0B] rounded-2xl border border-gray-800/50 overflow-hidden flex items-center justify-center h-32 md:h-40">
+                    <img src={imgList[0]} className="max-w-full max-h-full object-contain" />
                     {imgList.length > 1 && (
                       <span className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-black px-2 py-1 rounded-md flex items-center gap-1">
                         📸 +{imgList.length - 1}
@@ -646,8 +646,8 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onR
                 const imgList = review.images || (review.image ? [review.image] : []);
                 if (imgList.length === 0) return null;
                 return (
-                  <div className="relative mb-6 flex-shrink-0">
-                    <img src={imgList[0]} className="w-full h-32 md:h-40 object-cover rounded-2xl shadow-sm" />
+                  <div className="relative mb-6 flex-shrink-0 bg-[#0B0B0B] rounded-2xl border border-gray-800/50 overflow-hidden flex items-center justify-center h-32 md:h-40">
+                    <img src={imgList[0]} className="max-w-full max-h-full object-contain" />
                     {imgList.length > 1 && (
                       <span className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-black px-2 py-1 rounded-md flex items-center gap-1">
                         📸 +{imgList.length - 1}
