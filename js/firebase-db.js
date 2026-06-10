@@ -57,7 +57,11 @@ const FirebaseDB = {
   // 데이터 저장하기 (동기/비동기 병행)
   saveData: (collectionKey, val) => {
     // 1. 즉각적인 UI 반영을 위해 LocalStorage에 먼저 저장
-    localStorage.setItem(collectionKey, JSON.stringify(val));
+    try {
+      localStorage.setItem(collectionKey, JSON.stringify(val));
+    } catch (e) {
+      console.warn(`[LocalStorage] 저장 공간 한도 초과 (${collectionKey}):`, e);
+    }
 
     // 2. Firebase가 활성화되어 있고, 로컬 세션 정보인 'mock_user'가 아닐 때 Firestore에 업로드
     if (isFirebaseActive && db && collectionKey !== 'mock_user') {

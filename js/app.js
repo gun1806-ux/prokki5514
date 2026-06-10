@@ -851,7 +851,7 @@ const EnrollmentPage = ({ user, enrolledCourses, materials, navigate, showModal,
   const handleDownloadClick = (mat) => {
     if (!user) {
       showModal('alert', '로그인 필요', '로그인 후 이용이 가능합니다.', () => navigate('/login'));
-    } else if (!isEnrolled) {
+    } else if (user.role !== 'student') {
       showModal('alert', '수강 권한 없음', '수강생 전용 자료입니다. 실전 압축 강의 수강 후 다운로드가 가능합니다.');
     } else {
       showModal('alert', '다운로드 진행', `'${mat.title}' 다운로드가 시작되었습니다.`);
@@ -998,9 +998,13 @@ const CourseDetailPage = ({ course, user, onEnroll, navigate, showModal }) => {
               <li className="flex items-center text-sm font-bold text-gray-700"><Icon path={ICONS.CheckCircle} className="w-5 h-5 mr-3 text-indigo-500"/>실무 템플릿 자료실 이용권</li>
             </ul>
 
-            <a href="https://pf.kakao.com/_bPinX/friend" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.preventDefault(); showModal('counseling'); }} className="block w-full">
-              <Button className="w-full py-5 text-lg">안전하게 수강 신청하기</Button>
-            </a>
+            {user && user.role === 'student' ? (
+              <Button onClick={() => navigate('/mypage')} className="w-full py-5 text-lg">내 강의실에서 학습하기</Button>
+            ) : (
+              <a href="https://pf.kakao.com/_bPinX/friend" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.preventDefault(); showModal('counseling'); }} className="block w-full">
+                <Button className="w-full py-5 text-lg">안전하게 수강 신청하기</Button>
+              </a>
+            )}
             <div className="flex items-center justify-center mt-5 gap-4">
               <span className="text-xs text-gray-400 font-bold bg-gray-100 px-3 py-1 rounded-full tracking-tight">테스트 결제 모드 지원</span>
             </div>
@@ -1027,7 +1031,8 @@ const AuthPage = ({ usersDB, updateDB, navigate, onLoginSuccess, showModal }) =>
       region: '미지정',
       phone: '미지정',
       kakaoId: `kakao_${kakaoTimestamp.toString().slice(-6)}`,
-      isKakao: true
+      isKakao: true,
+      role: 'member'
     };
     window.FirebaseAuth.saveSession(mockUser);
     const currentUsers = usersDB || [];
@@ -1044,24 +1049,31 @@ const AuthPage = ({ usersDB, updateDB, navigate, onLoginSuccess, showModal }) =>
             success: function(res) {
               const kakaoAccount = res.kakao_account;
               const profile = kakaoAccount.profile;
-              const mockUser = {
-                email: kakaoAccount.email || `kakao_${res.id}@user.com`,
-                uid: `uid_kakao_${res.id}`,
-                name: profile.nickname || '카카오 회원',
-                profileName: profile.nickname || `Kakao_${res.id.toString().slice(-4)}`,
-                region: '미지정',
-                phone: '미지정',
-                kakaoId: profile.nickname || `kakao_${res.id.toString().slice(-6)}`,
-                isKakao: true
-              };
-              
-              window.FirebaseAuth.saveSession(mockUser);
+              const targetUid = `uid_kakao_${res.id}`;
+              const targetEmail = kakaoAccount.email || `kakao_${res.id}@user.com`;
               
               const currentUsers = usersDB || [];
-              const exists = currentUsers.some(u => u.uid === mockUser.uid);
-              if (!exists) {
-                updateDB('users_db', [...currentUsers, mockUser]);
+              const existingUser = currentUsers.find(u => u.uid === targetUid || u.email === targetEmail);
+              
+              let userToSave;
+              if (existingUser) {
+                userToSave = existingUser;
+              } else {
+                userToSave = {
+                  email: targetEmail,
+                  uid: targetUid,
+                  name: profile.nickname || '카카오 회원',
+                  profileName: profile.nickname || `Kakao_${res.id.toString().slice(-4)}`,
+                  region: '미지정',
+                  phone: '미지정',
+                  kakaoId: profile.nickname || `kakao_${res.id.toString().slice(-6)}`,
+                  isKakao: true,
+                  role: 'member'
+                };
+                updateDB('users_db', [...currentUsers, userToSave]);
               }
+              
+              window.FirebaseAuth.saveSession(userToSave);
               
               showModal('alert', '카카오 연동 완료', '카카오 간편 로그인이 성공적으로 완료되었습니다.', () => {
                 onLoginSuccess();
@@ -1089,35 +1101,59 @@ const AuthPage = ({ usersDB, updateDB, navigate, onLoginSuccess, showModal }) =>
 
   const handleSubmit = (e) => {
     e.preventDefault(); 
-    if (!isLogin) {
-      if(!formData.name.trim()) return showModal('alert', '안내', "이름을 정확히 입력해주세요.");
-      if(!formData.profileName.trim()) return showModal('alert', '안내', "프로필명을 입력해주세요.");
-      if(!formData.phone.trim()) return showModal('alert', '안내', "전화번호를 입력해주세요.");
-      if(!formData.region.trim()) return showModal('alert', '안내', "거주 지역(시 단위)을 입력해주세요.");
-    }
-    if(!formData.email.trim() || !formData.email.includes('@')) return showModal('alert', '안내', "유효한 이메일 주소를 입력해주세요.");
-    if(formData.password.length < 6) return showModal('alert', '안내', "보안을 위해 비밀번호는 6자리 이상 설정해야 합니다.");
+    try {
+      if (!isLogin) {
+        if(!formData.name?.trim()) return showModal('alert', '안내', "이름을 정확히 입력해주세요.");
+        if(!formData.profileName?.trim()) return showModal('alert', '안내', "프로필명을 입력해주세요.");
+        if(!formData.phone?.trim()) return showModal('alert', '안내', "전화번호를 입력해주세요.");
+        if(!formData.region?.trim()) return showModal('alert', '안내', "거주 지역(시 단위)을 입력해주세요.");
+      }
+      if(!formData.email?.trim() || !formData.email.includes('@')) return showModal('alert', '안내', "유효한 이메일 주소를 입력해주세요.");
+      if(!formData.password || formData.password.length < 6) return showModal('alert', '안내', "보안을 위해 비밀번호는 6자리 이상 설정해야 합니다.");
 
-    const mockUser = { 
-      email: formData.email, 
-      uid: `uid_${Date.now()}`, 
-      name: isLogin ? (formData.email.split('@')[0]) : formData.name,
-      profileName: formData.profileName,
-      region: formData.region,
-      phone: formData.phone,
-      kakaoId: formData.kakaoId || ''
-    };
-    
-    window.FirebaseAuth.saveSession(mockUser);
-    
-    if(!isLogin) {
+      let mockUser;
       const currentUsers = usersDB || [];
-      updateDB('users_db', [...currentUsers, mockUser]);
+      
+      if (isLogin) {
+        const existingUser = currentUsers.find(u => u.email === formData.email);
+        if (existingUser) {
+          mockUser = existingUser;
+        } else {
+          mockUser = {
+            email: formData.email,
+            uid: `uid_${Date.now()}`,
+            name: formData.email.split('@')[0],
+            profileName: formData.email.split('@')[0],
+            region: '미지정',
+            phone: '미지정',
+            kakaoId: '',
+            role: 'member'
+          };
+          updateDB('users_db', [...currentUsers, mockUser]);
+        }
+      } else {
+        mockUser = { 
+          email: formData.email, 
+          uid: `uid_${Date.now()}`, 
+          name: formData.name,
+          profileName: formData.profileName,
+          region: formData.region,
+          phone: formData.phone,
+          kakaoId: formData.kakaoId || '',
+          role: 'member'
+        };
+        updateDB('users_db', [...currentUsers, mockUser]);
+      }
+      
+      window.FirebaseAuth.saveSession(mockUser);
+      
+      showModal('alert', isLogin ? '로그인 성공' : '가입 완료', isLogin ? "정상적으로 로그인되었습니다." : "회원가입이 완료되었습니다. 돈버는 똘기에 오신것을 환영합니다!", () => {
+        onLoginSuccess();
+      });
+    } catch (error) {
+      console.error("Submit Error:", error);
+      showModal('alert', '오류 발생', '회원 처리 중 예기치 못한 오류가 발생했습니다: ' + error.message);
     }
-    
-    showModal('alert', isLogin ? '로그인 성공' : '가입 완료', isLogin ? "정상적으로 로그인되었습니다." : "회원가입이 완료되었습니다. 돈버는 똘기에 오신것을 환영합니다!", () => {
-      onLoginSuccess();
-    });
   };
 
   return (
@@ -1425,15 +1461,23 @@ const QnaPage = ({ qnaList, user, updateDB, navigate, showModal }) => {
   );
 };
 
-const MaterialsPage = ({ enrolledCourses, materials, navigate }) => {
-  const isEnrolled = enrolledCourses && enrolledCourses.length > 0;
-  if (!isEnrolled) {
+const MaterialsPage = ({ enrolledCourses, materials, navigate, user, isAdmin }) => {
+  const isStudent = user && (user.role === 'student' || isAdmin);
+
+  if (!isStudent) {
     return (
       <div className="min-h-screen bg-gray-50 pt-48 pb-20 flex justify-center text-center">
-         <div>
-           <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-gray-100"><Icon path={ICONS.Lock} className="w-10 h-10 text-gray-300" /></div>
-           <h2 className="text-2xl font-black text-gray-900 mb-4 word-keep">{'\uc218\uac15\uc0dd \uc804\uc6a9 \ud504\ub9ac\ubbf8\uc5c4 \uc790\ub8cc\uc2e4'}</h2>
-           <p className="text-gray-500 font-medium word-keep">{'\ud074\ub798\uc2a4 \uacb0\uc81c\ub97c \uc644\ub8cc\ud55c \ubd84\ub4e4\ub9cc \uc811\uadfc \uac00\ub2a5\ud55c \ube44\ubc00 \uac8c\uc2dc\ud310\uc785\ub2c8\ub2e4.'}</p>
+         <div className="max-w-md mx-auto px-6 flex flex-col items-center">
+           <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm border border-gray-100"><Icon path={ICONS.Lock} className="w-10 h-10 text-[#FF8A00]" /></div>
+           <h2 className="text-2xl font-black text-gray-900 mb-4 word-keep">수강생 전용 프리미엄 자료실</h2>
+           <p className="text-[#FF8A00] font-black text-base mb-2">수강신청 시 이용가능.</p>
+           <p className="text-gray-400 text-sm font-medium mb-8">클래스를 수강하시는 분들을 위한 실전 프로그램 및 전용 리소스 저장소입니다.</p>
+           
+           {!user ? (
+             <Button onClick={() => navigate('/login')} variant="primary" size="md">로그인 하러가기</Button>
+           ) : (
+             <Button onClick={() => navigate('/enrollment')} variant="primary" size="md">수강신청 하러가기</Button>
+           )}
          </div>
       </div>
     );
@@ -1444,8 +1488,8 @@ const MaterialsPage = ({ enrolledCourses, materials, navigate }) => {
   return (
     <div className="min-h-screen bg-gray-50 pt-32 pb-20">
       <div className="max-w-5xl mx-auto px-6">
-        <h1 className="text-3xl font-black mb-2 text-gray-900 tracking-tight">{'\uc2e4\uc804 \ud234\ud50c\ub9bf \uc790\ub8cc\uc2e4'}</h1>
-        <p className="text-gray-500 mb-10 font-medium">{'\ub3c8\ubc84\ub294 \ub98e\uae30\uac00 \uc9c1\uc811 \uc0ac\uc6a9\ud558\ub294 \uc2e4\uc804 \ud234\uc2a4\uc640 \uc5c5\uccb4 \uc815\ubcf4\uc785\ub2c8\ub2e4.'}</p>
+        <h1 className="text-3xl font-black mb-2 text-gray-900 tracking-tight">실전 툴플릿 자료실</h1>
+        <p className="text-gray-500 mb-10 font-medium">돈버는 똘기가 직접 사용하는 실전 툴스와 업체 정보입니다.</p>
         <div className="grid md:grid-cols-2 gap-6">
           {materials.map((mat) => (
             <div
@@ -1463,7 +1507,7 @@ const MaterialsPage = ({ enrolledCourses, materials, navigate }) => {
                 </div>
               </div>
               <Button size="sm" className="ml-4 flex-shrink-0 bg-[#FF8A00] text-black border-none">
-                {'\uc5f4\uae30'}
+                열기
               </Button>
             </div>
           ))}
@@ -1472,40 +1516,162 @@ const MaterialsPage = ({ enrolledCourses, materials, navigate }) => {
     </div>
   );
 };
-const MyPage = ({ user, enrolledCourses, navigate }) => (
-  <div className="min-h-screen bg-gray-50 pt-32 pb-20">
-    <div className="max-w-4xl mx-auto px-6">
-      <h1 className="text-3xl font-black text-gray-900 mb-8 tracking-tight">내 강의실</h1>
-      
-      <div className="bg-white rounded-[2.5rem] p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex items-center gap-8 mb-12">
-        <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-blue-50 rounded-full flex items-center justify-center text-indigo-600 shadow-inner"><Icon path={ICONS.User} className="w-10 h-10"/></div>
-        <div>
-          <h2 className="text-2xl font-black mb-2 tracking-tight">{user?.name || user?.email || '수강생'}님</h2>
-          <p className="text-gray-500 text-sm font-bold">학습 중인 클래스 <span className="text-indigo-600 text-base ml-1">{enrolledCourses.length}</span>개</p>
+
+const MaterialDetailPage = ({ matId, enrolledCourses, materials, navigate, showModal, user, isAdmin }) => {
+  const mat = materials.find(m => m.id === matId);
+  if (!mat) {
+    return <div className="pt-32 text-center h-screen font-bold">자료를 찾을 수 없습니다.</div>;
+  }
+
+  const isStudent = user && (user.role === 'student' || isAdmin);
+
+  const handleDownload = () => {
+    showModal('alert', '다운로드 진행', `'${mat.title}' 다운로드가 시작되었습니다.`);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 pt-32 pb-20">
+      <div className="max-w-3xl mx-auto px-6">
+        {/* 뒤로가기 버튼 */}
+        <button onClick={() => navigate('/materials')} className="flex items-center gap-2 text-gray-500 hover:text-gray-900 font-bold mb-8 transition-colors text-xs md:text-sm">
+          <Icon path={ICONS.ChevronLeft} className="w-5 h-5" />
+          자료실 목록으로 돌아가기
+        </button>
+
+        <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8 pb-8 border-b border-gray-100">
+            <div className="flex items-center gap-5">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-inner flex-shrink-0">
+                <img src={mat.icon} alt={mat.title} className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <span className="text-xs bg-orange-50 text-[#FF8A00] px-3 py-1 rounded-full font-black tracking-tight mb-2 inline-block">
+                  {mat.type}
+                </span>
+                <h1 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight word-keep">{mat.title}</h1>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-10">
+            <h3 className="text-lg font-black text-gray-800 mb-3">자료 소개</h3>
+            <p className="text-gray-600 font-medium leading-relaxed whitespace-pre-wrap word-keep text-base">
+              {mat.desc}
+            </p>
+          </div>
+
+          {isStudent ? (
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-lg font-black text-gray-800 mb-4 flex items-center gap-2">
+                  <span className="w-1.5 h-6 bg-[#FF8A00] rounded-full inline-block"></span>
+                  사용 방법 및 단계
+                </h3>
+                <div className="space-y-3">
+                  {mat.steps && mat.steps.map((step, idx) => (
+                    <div key={idx} className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                      <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-sm text-xs font-bold text-gray-500 border border-gray-100 flex-shrink-0 mt-0.5">
+                        {idx + 1}
+                      </div>
+                      <span className="text-gray-700 font-medium text-sm leading-relaxed">{step}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-gray-100 flex justify-end">
+                <Button onClick={handleDownload} variant="primary" className="w-full md:w-auto px-10 py-4 text-base">
+                  {mat.downloadLabel || '자료 다운로드'}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-gray-50 rounded-[2rem] p-8 md:p-10 border border-dashed border-gray-200 text-center flex flex-col items-center">
+              <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm border border-gray-100">
+                <Icon path={ICONS.Lock} className="w-6 h-6 text-gray-400" />
+              </div>
+              <p className="text-[#FF8A00] font-black text-lg mb-2">수강신청 시 이용가능.</p>
+              <p className="text-gray-400 text-xs sm:text-sm font-medium mb-6">
+                이 자료는 수강생 등급만 다운로드 및 사용 방법을 확인하실 수 있습니다.
+              </p>
+              <Button onClick={() => navigate('/enrollment')} variant="primary" size="md">
+                수강신청 하러가기
+              </Button>
+            </div>
+          )}
         </div>
       </div>
+    </div>
+  );
+};
 
-      <h3 className="text-xl font-black text-gray-900 mb-6 px-2">보유 중인 클래스</h3>
-      <div className="space-y-6">
-        {enrolledCourses.length === 0 ? (
-          <div className="text-center py-24 text-gray-400 font-bold border border-gray-100 rounded-[2rem] bg-white">아직 시작한 클래스가 없습니다.</div>
+const MyPage = ({ user, enrolledCourses, navigate, isAdmin }) => {
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-48 pb-20 flex justify-center text-center">
+         <div className="max-w-md mx-auto px-6">
+           <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-gray-100"><Icon path={ICONS.Lock} className="w-10 h-10 text-gray-300" /></div>
+           <h2 className="text-2xl font-black text-gray-900 mb-4">로그인이 필요합니다</h2>
+           <p className="text-gray-500 font-medium mb-8">마이페이지는 로그인 후 이용하실 수 있습니다.</p>
+           <Button onClick={() => navigate('/login')} variant="primary">로그인 하러가기</Button>
+         </div>
+      </div>
+    );
+  }
+
+  const isStudent = user.role === 'student' || isAdmin;
+
+  return (
+    <div className="min-h-screen bg-gray-50 pt-32 pb-20">
+      <div className="max-w-4xl mx-auto px-6">
+        <h1 className="text-3xl font-black text-gray-900 mb-8 tracking-tight">내 강의실</h1>
+        
+        <div className="bg-white rounded-[2.5rem] p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex items-center gap-8 mb-12">
+          <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-blue-50 rounded-full flex items-center justify-center text-indigo-600 shadow-inner"><Icon path={ICONS.User} className="w-10 h-10"/></div>
+          <div>
+            <h2 className="text-2xl font-black mb-2 tracking-tight">{user.name || user.email}님</h2>
+            <p className="text-gray-500 text-sm font-bold">
+              회원 등급: <span className="text-[#FF8A00] font-black">{isStudent ? '수강생' : '일반회원'}</span>
+            </p>
+          </div>
+        </div>
+
+        <h3 className="text-xl font-black text-gray-900 mb-6 px-2">보유 중인 클래스</h3>
+        
+        {isStudent ? (
+          <div className="space-y-6">
+            {enrolledCourses.length === 0 ? (
+              <div className="text-center py-24 text-gray-400 font-bold border border-gray-100 rounded-[2rem] bg-white">아직 시작한 클래스가 없습니다.</div>
+            ) : (
+              enrolledCourses.map(course => (
+                 <div key={course.id} className="bg-white rounded-[2rem] p-6 md:p-8 border border-gray-100 flex flex-col md:flex-row items-center md:items-start gap-8 shadow-sm hover:shadow-md transition-shadow">
+                    <img src={course.thumbnail} className="w-full md:w-48 rounded-2xl object-cover aspect-video shadow-sm" />
+                    <div className="text-center md:text-left flex-1 w-full pt-2">
+                      <div className="inline-block text-xs text-indigo-600 font-extrabold bg-indigo-50 px-3 py-1 rounded-full mb-3">평생 소장</div>
+                      <h4 className="text-xl font-black word-keep tracking-tight mb-4">{course.title}</h4>
+                      <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden mb-2"><div className="bg-indigo-500 w-[15%] h-full rounded-full"></div></div>
+                      <div className="text-right text-xs font-bold text-gray-400">학습 진행률 15%</div>
+                    </div>
+                 </div>
+              ))
+            )}
+          </div>
         ) : (
-          enrolledCourses.map(course => (
-             <div key={course.id} className="bg-white rounded-[2rem] p-6 md:p-8 border border-gray-100 flex flex-col md:flex-row items-center md:items-start gap-8 shadow-sm hover:shadow-md transition-shadow">
-                <img src={course.thumbnail} className="w-full md:w-48 rounded-2xl object-cover aspect-video shadow-sm" />
-                <div className="text-center md:text-left flex-1 w-full pt-2">
-                  <div className="inline-block text-xs text-indigo-600 font-extrabold bg-indigo-50 px-3 py-1 rounded-full mb-3">평생 소장</div>
-                  <h4 className="text-xl font-black word-keep tracking-tight mb-4">{course.title}</h4>
-                  <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden mb-2"><div className="bg-indigo-500 w-[15%] h-full rounded-full"></div></div>
-                  <div className="text-right text-xs font-bold text-gray-400">학습 진행률 15%</div>
-                </div>
-             </div>
-          ))
+          <div className="text-center py-16 px-6 bg-white rounded-[2rem] border border-gray-100 shadow-sm flex flex-col items-center">
+            <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mb-4 border border-orange-100">
+              <Icon path={ICONS.Lock} className="w-8 h-8 text-[#FF8A00]" />
+            </div>
+            <h3 className="text-xl font-black text-gray-900 mb-2">클래스 수강 권한이 없습니다</h3>
+            <p className="text-gray-500 font-medium text-sm mb-6">수강생으로 등록하시면 모든 실전 강의를 제한 없이 수강할 수 있습니다.</p>
+            <Button onClick={() => navigate('/enrollment')} variant="primary" size="md">
+              수강신청 하러가기
+            </Button>
+          </div>
         )}
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // ============================================================================
 // 관리자 대시보드
@@ -1517,6 +1683,17 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
   const [previewThumb, setPreviewThumb] = useState('');
   const [previewIcon, setPreviewIcon] = useState('');
   const [userEnrollments, setUserEnrollments] = useState({});
+
+  const handleRoleChange = (userItem, newRole) => {
+    const updatedUsers = usersDB.map(u => {
+      if (u.uid === userItem.uid) {
+        return { ...u, role: newRole };
+      }
+      return u;
+    });
+    updateDB('users_db', updatedUsers);
+    showModal('alert', '등급 변경 완료', `'${userItem.name}'님의 등급이 '${newRole === 'student' ? '수강생' : '일반회원'}'으로 변경되었습니다.`);
+  };
 
   React.useEffect(() => {
     if (tab === 'users' && window.FirebaseDB.isFirebaseActive()) {
@@ -2021,8 +2198,19 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
                     </span>
                   )}
                 </div>
-                <h4 className="font-bold text-gray-900 text-sm flex items-center gap-2">
-                  {u.name} <span className="text-gray-400 font-medium text-xs">({u.profileName || '닉네임 없음'})</span>
+                <h4 className="font-bold text-gray-900 text-sm flex items-center gap-2 flex-wrap">
+                  <span>{u.name}</span>
+                  <span className="text-gray-400 font-medium text-xs">({u.profileName || '닉네임 없음'})</span>
+                  <span className="text-gray-300">|</span>
+                  <span className="text-xs text-gray-500 font-bold">등급:</span>
+                  <select 
+                    value={u.role === 'student' ? 'student' : 'member'} 
+                    onChange={(e) => handleRoleChange(u, e.target.value)}
+                    className="text-xs bg-gray-50 border border-gray-200 rounded px-2 py-0.5 font-black text-[#FF8A00] focus:outline-none focus:border-[#FF8A00] cursor-pointer"
+                  >
+                    <option value="member" className="text-gray-700 font-bold">일반회원</option>
+                    <option value="student" className="text-[#FF8A00] font-black">수강생</option>
+                  </select>
                 </h4>
                 <p className="text-gray-500 text-xs mt-1">이메일: {u.email} · 연락처: {u.phone || '미지정'} · 지역: {u.region || '미지정'}</p>
                 {isEnrolled && (
@@ -2200,6 +2388,19 @@ function App() {
       setShuffledRevenues([]);
     }
   }, [revenuesData]);
+
+  React.useEffect(() => {
+    if (user && usersDB && usersDB.length > 0) {
+      const dbUser = usersDB.find(u => u.uid === user.uid || u.email === user.email);
+      if (dbUser) {
+        if (dbUser.role !== user.role || dbUser.name !== user.name || dbUser.profileName !== user.profileName) {
+          console.log("[Auth Sync] 유저 정보 변경 감지. 세션 동기화:", dbUser);
+          FirebaseAuth.saveSession(dbUser);
+          setUser(dbUser);
+        }
+      }
+    }
+  }, [usersDB, user]);
   
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const getInitialPath = () => {
@@ -2365,7 +2566,7 @@ function App() {
   let View;
   if (currentPath.startsWith('/material/')) {
     const matId = currentPath.split('/material/')[1];
-    View = <MaterialDetailPage matId={matId} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} />;
+    View = <MaterialDetailPage matId={matId} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} user={user} isAdmin={isAdminSession} />;
   } else {
     switch (currentPath) {
       case '/': View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
@@ -2375,10 +2576,10 @@ function App() {
       case '/write-review': View = <WriteReviewPage user={user} reviewsData={reviewsData} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
       case '/reviews': View = <ReviewsPage reviewsData={reviewsData} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
       case '/revenues': View = <RevenuesPage revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} />; break;
-      case '/mypage': View = <MyPage user={user} enrolledCourses={enrolledCourses} navigate={navigate} />; break;
+      case '/mypage': View = <MyPage user={user} enrolledCourses={enrolledCourses} navigate={navigate} isAdmin={isAdminSession} />; break;
       case '/community': View = <CommunityPage communityPosts={community} user={user} onAddPost={(p)=>updateDB('community', [p, ...community])} showModal={showModal} />; break;
       case '/qna': View = <QnaPage qnaList={qna} user={user} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
-      case '/materials': View = <MaterialsPage enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} />; break;
+      case '/materials': View = <MaterialsPage enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} user={user} isAdmin={isAdminSession} />; break;
       case '/admin': View = isAdminSession ? <AdminDashboard courses={courses} materials={materials} community={community} qna={qna} reviewsData={reviewsData} revenuesData={revenuesData} usersDB={usersDB} updateDB={updateDB} navigate={navigate} showModal={showModal} /> : <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
       default: View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />;
     }
