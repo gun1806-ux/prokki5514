@@ -37,9 +37,22 @@ const FirebaseDB = {
 
   // 데이터 불러오기 (동기 - 마운트 시 즉시 로컬 데이터 조회용)
   loadData: (collectionKey, defaultVal) => {
-    const data = localStorage.getItem(collectionKey);
-    return data ? JSON.parse(data) : defaultVal;
+    try {
+      const data = localStorage.getItem(collectionKey);
+      if (!data || data === "undefined" || data === "null") {
+        return defaultVal;
+      }
+      const parsed = JSON.parse(data);
+      if (Array.isArray(defaultVal) && !Array.isArray(parsed)) {
+        return defaultVal;
+      }
+      return parsed;
+    } catch (e) {
+      console.warn(`Error parsing local storage key "${collectionKey}":`, e);
+      return defaultVal;
+    }
   },
+
 
   // 데이터 저장하기 (동기/비동기 병행)
   saveData: (collectionKey, val) => {
@@ -130,8 +143,8 @@ const FirebaseDB = {
 
           // ID 기준 정렬: courses, materials는 오름차순(asc), 나머지는 내림차순(desc)
           list.sort((a, b) => {
-            const idA = a.id || a.uid || a.email || '';
-            const idB = b.id || b.uid || b.email || '';
+            const idA = String(a.id || a.uid || a.email || '');
+            const idB = String(b.id || b.uid || b.email || '');
             if (collectionKey === 'courses' || collectionKey === 'materials') {
               return idA.localeCompare(idB);
             }

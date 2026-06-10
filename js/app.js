@@ -1011,7 +1011,7 @@ const CourseDetailPage = ({ course, user, onEnroll, navigate, showModal }) => {
   );
 };
 
-const AuthPage = ({ navigate, onLoginSuccess, showModal }) => {
+const AuthPage = ({ usersDB, updateDB, navigate, onLoginSuccess, showModal }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ email: '', password: '', name: '', phone: '', profileName: '', region: '', kakaoId: '' });
 
@@ -1030,8 +1030,8 @@ const AuthPage = ({ navigate, onLoginSuccess, showModal }) => {
       isKakao: true
     };
     window.FirebaseAuth.saveSession(mockUser);
-    const currentUsers = window.FirebaseDB.loadData('users_db', []);
-    window.FirebaseDB.saveData('users_db', [...currentUsers, mockUser]);
+    const currentUsers = usersDB || [];
+    updateDB('users_db', [...currentUsers, mockUser]);
     onLoginSuccess();
   };
 
@@ -1057,10 +1057,10 @@ const AuthPage = ({ navigate, onLoginSuccess, showModal }) => {
               
               window.FirebaseAuth.saveSession(mockUser);
               
-              const currentUsers = window.FirebaseDB.loadData('users_db', []);
+              const currentUsers = usersDB || [];
               const exists = currentUsers.some(u => u.uid === mockUser.uid);
               if (!exists) {
-                window.FirebaseDB.saveData('users_db', [...currentUsers, mockUser]);
+                updateDB('users_db', [...currentUsers, mockUser]);
               }
               
               showModal('alert', '카카오 연동 완료', '카카오 간편 로그인이 성공적으로 완료되었습니다.', () => {
@@ -1111,8 +1111,8 @@ const AuthPage = ({ navigate, onLoginSuccess, showModal }) => {
     window.FirebaseAuth.saveSession(mockUser);
     
     if(!isLogin) {
-      const usersDB = window.FirebaseDB.loadData('users_db', []);
-      window.FirebaseDB.saveData('users_db', [...usersDB, mockUser]);
+      const currentUsers = usersDB || [];
+      updateDB('users_db', [...currentUsers, mockUser]);
     }
     
     showModal('alert', isLogin ? '로그인 성공' : '가입 완료', isLogin ? "정상적으로 로그인되었습니다." : "회원가입이 완료되었습니다. 돈버는 똘기에 오신것을 환영합니다!", () => {
@@ -2371,7 +2371,7 @@ function App() {
       case '/': View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
       case '/enrollment': View = <EnrollmentPage user={user} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} onEnroll={handleEnroll} courses={courses} />; break;
       case '/course': View = <CourseDetailPage course={courses.find(c=>c.id===routeState?.courseId)} user={user} onEnroll={handleEnroll} navigate={navigate} showModal={showModal} />; break;
-      case '/login': View = <AuthPage navigate={navigate} onLoginSuccess={() => { setUser(FirebaseAuth.getCurrentUser()); navigate('/'); }} showModal={showModal} />; break;
+      case '/login': View = <AuthPage usersDB={usersDB} updateDB={updateDB} navigate={navigate} onLoginSuccess={() => { setUser(FirebaseAuth.getCurrentUser()); navigate('/'); }} showModal={showModal} />; break;
       case '/write-review': View = <WriteReviewPage user={user} reviewsData={reviewsData} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
       case '/reviews': View = <ReviewsPage reviewsData={reviewsData} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
       case '/revenues': View = <RevenuesPage revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} />; break;
