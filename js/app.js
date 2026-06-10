@@ -1017,7 +1017,7 @@ const AuthPage = ({ navigate, onLoginSuccess, showModal }) => {
 
   const handleChange = (e) => { setFormData({ ...formData, [e.target.name]: e.target.value }); };
 
-  const handleKakaoLogin = () => {
+  const triggerMockKakaoLogin = () => {
     const kakaoTimestamp = Date.now();
     const mockUser = {
       email: `kakao_${kakaoTimestamp}@user.com`,
@@ -1030,13 +1030,61 @@ const AuthPage = ({ navigate, onLoginSuccess, showModal }) => {
       isKakao: true
     };
     window.FirebaseAuth.saveSession(mockUser);
-    
     const currentUsers = window.FirebaseDB.loadData('users_db', []);
     window.FirebaseDB.saveData('users_db', [...currentUsers, mockUser]);
-    
-    showModal('alert', '카카오 연동 완료', '카카오 간편 로그인이 성공적으로 완료되었습니다.', () => {
-      onLoginSuccess();
-    });
+    onLoginSuccess();
+  };
+
+  const handleKakaoLogin = () => {
+    if (window.Kakao && window.Kakao.isInitialized()) {
+      window.Kakao.Auth.login({
+        success: function(authObj) {
+          window.Kakao.API.request({
+            url: '/v2/user/me',
+            success: function(res) {
+              const kakaoAccount = res.kakao_account;
+              const profile = kakaoAccount.profile;
+              const mockUser = {
+                email: kakaoAccount.email || `kakao_${res.id}@user.com`,
+                uid: `uid_kakao_${res.id}`,
+                name: profile.nickname || '카카오 회원',
+                profileName: profile.nickname || `Kakao_${res.id.toString().slice(-4)}`,
+                region: '미지정',
+                phone: '미지정',
+                kakaoId: profile.nickname || `kakao_${res.id.toString().slice(-6)}`,
+                isKakao: true
+              };
+              
+              window.FirebaseAuth.saveSession(mockUser);
+              
+              const currentUsers = window.FirebaseDB.loadData('users_db', []);
+              const exists = currentUsers.some(u => u.uid === mockUser.uid);
+              if (!exists) {
+                window.FirebaseDB.saveData('users_db', [...currentUsers, mockUser]);
+              }
+              
+              showModal('alert', '카카오 연동 완료', '카카오 간편 로그인이 성공적으로 완료되었습니다.', () => {
+                onLoginSuccess();
+              });
+            },
+            fail: function(error) {
+              console.error(error);
+              showModal('alert', '안내', '카카오 사용자 정보를 가져오는 중 오류가 발생했습니다.');
+            }
+          });
+        },
+        fail: function(err) {
+          console.error(err);
+          showModal('alert', '안내', '카카오 SDK 로그인 연동을 실패하였습니다. 가입 테스트 진행을 위해 임시 로그인 모드로 가입을 완료합니다.', () => {
+            triggerMockKakaoLogin();
+          });
+        }
+      });
+    } else {
+      showModal('alert', '안내', '카카오 SDK가 준비되지 않았습니다. 임시 로그인으로 가입을 진행합니다.', () => {
+        triggerMockKakaoLogin();
+      });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -1073,7 +1121,7 @@ const AuthPage = ({ navigate, onLoginSuccess, showModal }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col pt-28 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-8">
         <h2 className="text-3xl font-black text-gray-900 tracking-tight">{isLogin ? '환영합니다.' : '지속 가능한 이커머스의 시작'}</h2>
       </div>
@@ -1117,9 +1165,12 @@ const AuthPage = ({ navigate, onLoginSuccess, showModal }) => {
             </div>
 
             <div className="pt-4">
-              <Button type="submit" className="w-full py-4 text-base tracking-tight">
+              <button 
+                type="submit" 
+                className="w-full py-4 text-base tracking-tight inline-flex items-center justify-center font-bold rounded-2xl transition-all duration-300 ease-out active:scale-95 whitespace-nowrap bg-gradient-to-r from-[#FF8A00] to-[#FF6C00] text-black shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/35 hover:-translate-y-0.5"
+              >
                 {isLogin ? '이메일로 로그인' : '가입 완료하기'}
-              </Button>
+              </button>
             </div>
           </form>
 
