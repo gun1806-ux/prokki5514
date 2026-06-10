@@ -268,7 +268,41 @@ const Carousel = ({ items, renderItem }) => {
   );
 };
 
+const Marquee = ({ items, renderItem }) => {
+  if (!items || items.length === 0) {
+    return <div className="text-center p-10 text-gray-400 font-medium border border-[#f4e4ce] rounded-3xl">등록된 데이터가 없습니다.</div>;
+  }
+
+  // Ensure enough items to span multiple screens and loop smoothly
+  let displayItems = [...items];
+  while (displayItems.length < 10) {
+    displayItems = [...displayItems, ...items];
+  }
+  // Double the list for seamless marquee loop
+  const doubleItems = [...displayItems, ...displayItems];
+
+  return (
+    <div className="relative w-full overflow-hidden">
+      {/* Edge gradient overlays for beautiful transition */}
+      <div className="absolute left-0 top-0 bottom-0 w-8 md:w-24 bg-gradient-to-r from-[#fff7f0] to-transparent z-10 pointer-events-none"></div>
+      <div className="absolute right-0 top-0 bottom-0 w-8 md:w-24 bg-gradient-to-l from-[#fff7f0] to-transparent z-10 pointer-events-none"></div>
+      
+      <div className="animate-marquee flex gap-4 md:gap-6 py-4">
+        {doubleItems.map((item, idx) => (
+          <div 
+            key={`${item.id}-${idx}`} 
+            className="w-[280px] sm:w-[320px] md:w-[360px] flex-shrink-0"
+          >
+            {renderItem(item)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // ============================================================================
+
 // 헤더 & 푸터
 // ============================================================================
 const Header = ({ currentPath, navigate, user, isAdmin, onLogout }) => {
@@ -340,6 +374,138 @@ const Header = ({ currentPath, navigate, user, isAdmin, onLogout }) => {
   );
 };
 
+const TERMS_CONTENT = `
+<div class="space-y-6 text-gray-800 text-sm md:text-base leading-relaxed word-keep">
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">제1조 목적</h4>
+    <p>본 약관은 브랜드빌더, 돈버는 똘기(이하 "회사")가 제공하는 서비스의 이용조건 및 절차, 회사와 회원 간의 권리·의무를 규정함을 목적으로 합니다.</p>
+  </div>
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">제2조 회원가입</h4>
+    <ul class="list-disc pl-5 space-y-1" style="list-style-type: disc;">
+      <li>회원은 본 약관에 동의함으로써 가입할 수 있습니다.</li>
+      <li>회원은 정확한 정보를 제공해야 합니다.</li>
+    </ul>
+  </div>
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">제3조 서비스 이용</h4>
+    <ul class="list-disc pl-5 space-y-1" style="list-style-type: disc;">
+      <li>회사는 온라인 강의 및 자료를 제공합니다.</li>
+      <li>서비스 내용은 변경될 수 있습니다.</li>
+    </ul>
+  </div>
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">제4조 회원의 의무</h4>
+    <ul class="list-disc pl-5 space-y-1" style="list-style-type: disc;">
+      <li>타인의 계정을 사용해서는 안 됩니다.</li>
+      <li>불법적인 용도로 서비스를 이용해서는 안 됩니다.</li>
+      <li>강의 자료를 무단 배포할 수 없습니다.</li>
+    </ul>
+  </div>
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">제5조 저작권</h4>
+    <ul class="list-disc pl-5 space-y-1" style="list-style-type: disc;">
+      <li>모든 강의 및 자료의 저작권은 회사에 있습니다.</li>
+      <li>무단 복제, 배포, 판매를 금지합니다.</li>
+    </ul>
+  </div>
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">제6조 서비스 제한</h4>
+    <p class="mb-2">다음의 경우 서비스 이용이 제한될 수 있습니다.</p>
+    <ul class="list-disc pl-5 space-y-1" style="list-style-type: disc;">
+      <li>약관 위반</li>
+      <li>타인 권리 침해</li>
+      <li>불법 행위</li>
+    </ul>
+  </div>
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">제7조 면책조항</h4>
+    <p>회사는 회원의 개인적인 투자, 사업, 수익 활동 결과에 대해 책임지지 않습니다.</p>
+  </div>
+</div>
+`;
+
+const PRIVACY_CONTENT = `
+<div class="space-y-6 text-gray-800 text-sm md:text-base leading-relaxed word-keep">
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">수집 항목</h4>
+    <ul class="list-disc pl-5 space-y-1" style="list-style-type: disc;">
+      <li>이름</li>
+      <li>이메일</li>
+      <li>휴대폰번호</li>
+      <li>결제정보</li>
+      <li>접속기록(IP)</li>
+    </ul>
+  </div>
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">수집 목적</h4>
+    <ul class="list-disc pl-5 space-y-1" style="list-style-type: disc;">
+      <li>회원관리</li>
+      <li>강의 제공</li>
+      <li>고객문의 응대</li>
+      <li>결제 처리</li>
+    </ul>
+  </div>
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">보유 기간</h4>
+    <p>회원 탈퇴 시까지 보관하며 관계 법령에 따라 일정 기간 보관될 수 있습니다.</p>
+  </div>
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">제3자 제공</h4>
+    <p class="mb-2">회사는 원칙적으로 개인정보를 외부에 제공하지 않습니다. 단, 다음의 경우는 예외로 합니다.</p>
+    <ul class="list-disc pl-5 space-y-1" style="list-style-type: disc;">
+      <li>법령에 따른 경우</li>
+      <li>이용자의 동의가 있는 경우</li>
+    </ul>
+  </div>
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">개인정보 보호 책임자</h4>
+    <p>담당자 : 돈버는 똘기 | 이메일 : <a href="mailto:4ten.official1@gmail.com" class="text-[#FF8A00] underline font-bold">4ten.official1@gmail.com</a></p>
+  </div>
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">이용자 권리</h4>
+    <ul class="list-disc pl-5 space-y-1" style="list-style-type: disc;">
+      <li>개인정보 열람</li>
+      <li>수정</li>
+      <li>삭제</li>
+      <li>처리정지 요청</li>
+    </ul>
+  </div>
+</div>
+`;
+
+const REFUND_CONTENT = `
+<div class="space-y-6 text-gray-800 text-sm md:text-base leading-relaxed word-keep">
+  <div class="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-2xl mb-4">
+    <p class="font-black text-red-700 text-sm sm:text-base mb-1">⚠️ 가장 중요</p>
+    <p class="text-red-600 text-xs sm:text-sm">디지털 콘텐츠 특성상 강의 시청이 시작된 경우 전자상거래법에 따라 청약철회가 제한될 수 있습니다.</p>
+  </div>
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">환불 기준</h4>
+    <ul class="list-disc pl-5 space-y-3" style="list-style-type: disc;">
+      <li><strong>결제 후 7일 이내:</strong> 강의 미수강 시 100% 환불</li>
+      <li>
+        <strong>일부 수강 시:</strong>
+        <ul class="list-circle pl-5 mt-2 space-y-1.5" style="list-style-type: circle;">
+          <li>전체 강의의 20% 이하 수강 : 부분 환불 가능</li>
+          <li>전체 강의의 20% 초과 수강 : <strong class="text-red-600 font-bold">환불 불가</strong></li>
+        </ul>
+      </li>
+      <li><strong>자료 다운로드:</strong> PDF, 템플릿, 파일 등을 다운로드한 경우 환불이 제한될 수 있습니다.</li>
+    </ul>
+  </div>
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">환불 신청</h4>
+    <p>환불 신청은 고객센터 또는 이메일을 통해 접수 가능합니다.</p>
+    <p class="mt-1">이메일 : <a href="mailto:4ten.official1@gmail.com" class="text-[#FF8A00] underline font-bold">4ten.official1@gmail.com</a></p>
+  </div>
+  <div>
+    <h4 class="font-black text-lg text-gray-900 mb-2">환불 처리</h4>
+    <p>환불 승인 후 영업일 기준 3~7일 내 처리됩니다.</p>
+  </div>
+</div>
+`;
+
 const Footer = ({ showModal, onAdminSecretLogin }) => {
   const handleHiddenAdmin = () => {
     showModal('prompt', '관리자 인증', '관리자 비밀번호를 입력하세요. (초기비밀번호: 6789)', (pwd) => {
@@ -373,9 +539,9 @@ const Footer = ({ showModal, onAdminSecretLogin }) => {
           <div>
             <h4 className="font-bold text-lg mb-6 border-b border-gray-100 pb-2 text-gray-800">이용 안내</h4>
             <ul className="space-y-3 text-sm text-gray-600">
-              <li className="cursor-pointer hover:text-gray-900 transition-colors">이용약관</li>
-              <li className="cursor-pointer hover:text-gray-900 transition-colors font-bold">개인정보처리방침</li>
-              <li className="cursor-pointer hover:text-gray-900 transition-colors">환불규정</li>
+              <li onClick={() => showModal('postView', '이용약관', TERMS_CONTENT)} className="cursor-pointer hover:text-[#FF8A00] hover:underline transition-all">이용약관</li>
+              <li onClick={() => showModal('postView', '개인정보처리방침', PRIVACY_CONTENT)} className="cursor-pointer hover:text-[#FF8A00] hover:underline transition-all font-bold">개인정보처리방침</li>
+              <li onClick={() => showModal('postView', '환불규정', REFUND_CONTENT)} className="cursor-pointer hover:text-[#FF8A00] hover:underline transition-all">환불규정</li>
             </ul>
           </div>
         </div>
@@ -459,9 +625,8 @@ const RevenuesPage = ({ revenuesData, navigate, showModal }) => {
                </div>
                <div className="p-6 flex-1 flex flex-col justify-between bg-[#111111]">
                   <h3 className="font-bold text-base md:text-lg text-white mb-2 line-clamp-2 word-keep">{rev.title}</h3>
-                  <div className="mt-auto text-xs text-gray-400 font-medium flex items-center justify-between">
+                  <div className="mt-auto text-xs text-gray-400 font-medium">
                      <span>{rev.author}</span>
-                     <span>{rev.date} · 조회 {rev.views}</span>
                   </div>
                </div>
             </div>
@@ -537,7 +702,7 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onR
           </div>
           <div className="mt-8 flex flex-col items-center gap-3">
             <div className="bg-[#5f6e8f]/90 backdrop-blur-sm rounded-xl px-6 py-3 border border-gray-600 shadow-md">
-              <p className="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight word-keep">
+              <p className="text-base sm:text-lg md:text-xl font-extrabold text-[#FFAA46] tracking-tight word-keep">
                 강의가 끝나면 더 연락하세요. 개인폰번호 공개 합니다!
               </p>
             </div>
@@ -608,7 +773,7 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onR
             </div>
             <Button variant="ghost" className="hidden md:flex text-[#FF8A00] hover:bg-[#ffe8d0]" onClick={()=>navigate('/revenues')}>전체보기 <Icon path={ICONS.ArrowRight} className="w-4 h-4 ml-1"/></Button>
           </div>
-          <Carousel items={top10Revenues} renderItem={(rev) => (
+          <Marquee items={top10Revenues} renderItem={(rev) => (
             <div className="bg-white rounded-3xl overflow-hidden border border-[#f4e4ce] shadow-lg hover:shadow-xl transition-shadow flex flex-col h-[360px] cursor-pointer" onClick={() => showModal('postView', rev.title, rev.content)}>
                <div className="h-48 overflow-hidden relative border-b border-[#f4e4ce]">
                   <img src={rev.thumbnail} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
@@ -616,9 +781,8 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onR
                </div>
                <div className="p-6 flex-1 flex flex-col justify-between bg-white">
                   <h3 className="font-bold text-base md:text-lg text-[#111827] mb-2 line-clamp-2 word-keep">{rev.title}</h3>
-                  <div className="mt-auto text-xs text-[#6b7280] font-medium flex items-center justify-between">
+                  <div className="mt-auto text-xs text-[#6b7280] font-medium">
                      <span>{rev.author}</span>
-                     <span>{rev.date} · 조회 {rev.views}</span>
                   </div>
                </div>
             </div>
@@ -750,7 +914,7 @@ const EnrollmentPage = ({ user, enrolledCourses, materials, navigate, showModal,
                 </div>
               </div>
               <Button size="sm" variant="outline" className="border-gray-800 text-gray-400 hover:border-[#FF8A00] hover:text-[#FF8A00] ml-4 flex-shrink-0">
-                {isEnrolled ? '\uc5f4\uae30' : '\ud83d\udd12 \uc804\uc6a9'}
+                {'\ud83d\udd12 \uc804\uc6a9'}
               </Button>
             </div>
           ))}
@@ -849,13 +1013,27 @@ const CourseDetailPage = ({ course, user, onEnroll, navigate, showModal }) => {
 
 const AuthPage = ({ navigate, onLoginSuccess, showModal }) => {
   const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({ email: '', password: '', name: '', phone: '', profileName: '', region: '' });
+  const [formData, setFormData] = useState({ email: '', password: '', name: '', phone: '', profileName: '', region: '', kakaoId: '' });
 
   const handleChange = (e) => { setFormData({ ...formData, [e.target.name]: e.target.value }); };
 
   const handleKakaoLogin = () => {
-    const dummyEmail = `kakao_${Date.now()}@user.com`;
-    window.FirebaseAuth.saveSession({ email: dummyEmail, uid: `uid_${Date.now()}`, name: '카카오 회원' });
+    const kakaoTimestamp = Date.now();
+    const mockUser = {
+      email: `kakao_${kakaoTimestamp}@user.com`,
+      uid: `uid_kakao_${kakaoTimestamp}`,
+      name: '카카오 회원',
+      profileName: `Kakao_${kakaoTimestamp.toString().slice(-4)}`,
+      region: '미지정',
+      phone: '미지정',
+      kakaoId: `kakao_${kakaoTimestamp.toString().slice(-6)}`,
+      isKakao: true
+    };
+    window.FirebaseAuth.saveSession(mockUser);
+    
+    const currentUsers = window.FirebaseDB.loadData('users_db', []);
+    window.FirebaseDB.saveData('users_db', [...currentUsers, mockUser]);
+    
     showModal('alert', '카카오 연동 완료', '카카오 간편 로그인이 성공적으로 완료되었습니다.', () => {
       onLoginSuccess();
     });
@@ -878,7 +1056,8 @@ const AuthPage = ({ navigate, onLoginSuccess, showModal }) => {
       name: isLogin ? (formData.email.split('@')[0]) : formData.name,
       profileName: formData.profileName,
       region: formData.region,
-      phone: formData.phone
+      phone: formData.phone,
+      kakaoId: formData.kakaoId || ''
     };
     
     window.FirebaseAuth.saveSession(mockUser);
@@ -921,6 +1100,10 @@ const AuthPage = ({ navigate, onLoginSuccess, showModal }) => {
                     <input type="text" name="region" value={formData.region} onChange={handleChange} className="w-full px-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors" placeholder="서울특별시" />
                   </div>
                 </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase tracking-wider">카카오톡 아이디 (선택)</label>
+                  <input type="text" name="kakaoId" value={formData.kakaoId || ''} onChange={handleChange} className="w-full px-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors" placeholder="KakaoTalk ID" />
+                </div>
               </>
             )}
             
@@ -953,7 +1136,7 @@ const AuthPage = ({ navigate, onLoginSuccess, showModal }) => {
           </div>
           
           <div className="mt-8 text-center">
-            <button onClick={() => { setIsLogin(!isLogin); setFormData({email:'', password:'', name:'', phone:'', profileName:'', region:''}); }} className="text-sm font-bold text-gray-500 hover:text-indigo-600 transition-colors">
+            <button onClick={() => { setIsLogin(!isLogin); setFormData({email:'', password:'', name:'', phone:'', profileName:'', region:'', kakaoId:''}); }} className="text-sm font-bold text-gray-500 hover:text-indigo-600 transition-colors">
               {isLogin ? '아직 계정이 없으신가요? 회원가입' : '이미 계정이 있으신가요? 로그인'}
             </button>
           </div>
@@ -1121,11 +1304,8 @@ const QnaPage = ({ qnaList, user, updateDB, navigate, showModal }) => {
           <div>
             <Badge className="mb-4">Q&A 게시판</Badge>
             <h1 className="text-3xl md:text-5xl font-black tracking-tight word-keep mb-3 text-[#FF8A00]">질문 & 답변</h1>
-            <p className="text-gray-400 font-medium text-sm md:text-base">궁금한 점이 있으신가요? 자주 묻는 질문을 확인하거나 직접 질문해보세요.</p>
+            <p className="text-gray-400 font-medium text-sm md:text-base">궁금한 점이 있으신가요? 자주 묻는 질문을 확인해 보세요.</p>
           </div>
-          <Button onClick={handleWriteQuestion} className="flex-shrink-0 bg-[#FF8A00] text-black font-black">
-            질문 등록하기 🔥
-          </Button>
         </div>
 
         {/* 검색바 */}
@@ -1285,6 +1465,28 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
   const [previewUrl, setPreviewUrl] = useState('');
   const [previewThumb, setPreviewThumb] = useState('');
   const [previewIcon, setPreviewIcon] = useState('');
+  const [userEnrollments, setUserEnrollments] = useState({});
+
+  React.useEffect(() => {
+    if (tab === 'users' && window.FirebaseDB.isFirebaseActive()) {
+      const unsubscribes = (usersDB || []).map(u => {
+        return window.FirebaseDB.subscribe(`enrollments_${u.uid}`, (ids) => {
+          setUserEnrollments(prev => ({
+            ...prev,
+            [u.uid]: ids || []
+          }));
+        });
+      });
+      return () => unsubscribes.forEach(unsub => unsub());
+    } else if (tab === 'users') {
+      const localMap = {};
+      (usersDB || []).forEach(u => {
+        const localData = localStorage.getItem(`enrollments_${u.uid}`);
+        localMap[u.uid] = localData ? JSON.parse(localData) : [];
+      });
+      setUserEnrollments(localMap);
+    }
+  }, [tab, usersDB]);
 
   const resetForm = () => { setForm({}); setPreviewUrl(''); setPreviewThumb(''); setPreviewIcon(''); };
 
@@ -1441,6 +1643,7 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
       if (type === 'courses') updateDB('courses', courses.filter(c => c.id !== id));
       if (type === 'materials') updateDB('materials', materials.filter(m => m.id !== id));
       if (type === 'qna') updateDB('qna', qna.filter(q => q.id !== id));
+      if (type === 'users') updateDB('users_db', usersDB.filter(u => u.uid !== id));
     });
   };
 
@@ -1668,7 +1871,7 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
           badgeText = item.tag;
         } else if (type === 'revenues') {
           title = item.title;
-          sub = `${item.author} · 조회 ${item.views || 0}`;
+          sub = item.author;
           badgeText = item.cohort || '수익인증';
         } else if (type === 'courses') {
           title = item.title;
@@ -1725,12 +1928,80 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
     </div>
   );
 
+  const renderUsersList = () => (
+    <div className="space-y-4">
+      {(!usersDB || usersDB.length === 0) && (
+        <div className="text-center py-16 text-gray-400 font-bold border-2 border-dashed border-gray-200 rounded-2xl">
+          가입된 회원이 없습니다.
+        </div>
+      )}
+      {(usersDB || []).map(u => {
+        const enrolledIds = userEnrollments[u.uid] || [];
+        const isEnrolled = enrolledIds.length > 0;
+        const enrolledCoursesList = courses.filter(c => enrolledIds.includes(c.id));
+        const coursesText = enrolledCoursesList.map(c => c.title).join(', ');
+
+        return (
+          <div key={u.uid || u.email} className="flex flex-col md:flex-row md:items-center justify-between bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all gap-4">
+            <div className="flex items-start gap-4 flex-1 min-w-0">
+              {u.isKakao ? (
+                <div className="w-12 h-12 rounded-xl bg-[#FEE500] flex items-center justify-center flex-shrink-0 relative border border-yellow-300">
+                  <svg viewBox="0 0 32 32" className="w-6 h-6"><path d="M16 4.64c-6.96 0-12.64 4.48-12.64 10.08 0 3.52 2.32 6.64 5.76 8.48l-1.12 4.16c-.16.56.56.96.96.64l4.8-3.2c.72.16 1.44.24 2.24.24 6.96 0 12.64-4.48 12.64-10.08S22.96 4.64 16 4.64z" fill="#3A1D1D"/></svg>
+                  <span className="absolute -bottom-1 -right-1 bg-[#FEE500] text-black text-[7px] font-black px-1 rounded-full border border-white">TALK</span>
+                </div>
+              ) : (
+                <div className="w-12 h-12 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0 text-gray-400">
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current stroke-2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded ${isEnrolled ? 'bg-green-50 text-green-600 border border-green-200' : 'bg-gray-50 text-gray-500 border border-gray-200'}`}>
+                    {isEnrolled ? '수강 중' : '미수강'}
+                  </span>
+                  {u.isKakao && (
+                    <span className="text-[10px] bg-yellow-50 text-yellow-800 border border-yellow-200 px-2 py-0.5 rounded font-black flex items-center gap-1">
+                      🟡 카카오 회원
+                    </span>
+                  )}
+                  {u.kakaoId && (
+                    <span className="text-[10px] bg-gray-50 text-gray-700 border border-gray-200 px-2 py-0.5 rounded font-bold">
+                      카카오톡 ID: {u.kakaoId}
+                    </span>
+                  )}
+                </div>
+                <h4 className="font-bold text-gray-900 text-sm flex items-center gap-2">
+                  {u.name} <span className="text-gray-400 font-medium text-xs">({u.profileName || '닉네임 없음'})</span>
+                </h4>
+                <p className="text-gray-500 text-xs mt-1">이메일: {u.email} · 연락처: {u.phone || '미지정'} · 지역: {u.region || '미지정'}</p>
+                {isEnrolled && (
+                  <p className="text-indigo-600 font-semibold text-xs mt-1.5 bg-indigo-50/50 px-3 py-1 rounded-lg border border-indigo-50 inline-block">
+                    수강 중인 강의: {coursesText}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center self-end md:self-center">
+              <button
+                onClick={() => handleDelete('users', u.uid || u.email)}
+                className="flex-shrink-0 text-red-400 hover:text-red-600 font-bold text-xs px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors border border-red-100 hover:border-red-200"
+              >
+                회원 탈퇴
+              </button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+
   const tabsList = [
     { key: 'reviews', label: '후기 관리' },
     { key: 'revenues', label: '수익인증 관리' },
     { key: 'courses', label: '강의 관리' },
     { key: 'materials', label: '자료실 관리' },
-    { key: 'qna', label: 'Q&A 관리' }
+    { key: 'qna', label: 'Q&A 관리' },
+    { key: 'users', label: '회원가입 현황' }
   ];
 
   return (
@@ -1755,7 +2026,8 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
             {tab === 'reviews' ? '수강생 후기 관리' : 
              tab === 'revenues' ? '수익인증 관리' : 
              tab === 'courses' ? '강의 관리' : 
-             tab === 'materials' ? '자료실 관리' : 'Q&A 관리'}
+             tab === 'materials' ? '자료실 관리' : 
+             tab === 'qna' ? 'Q&A 관리' : '회원가입 현황'}
           </h2>
           <button onClick={()=>navigate('/')} className="md:hidden text-gray-500 font-bold text-sm bg-white px-3 py-1.5 rounded-lg border border-gray-200">나가기</button>
         </div>
@@ -1769,13 +2041,15 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
             {tab === 'reviews' ? `등록된 후기 (${reviewsData.length}건)` : 
              tab === 'revenues' ? `등록된 수익인증 (${revenuesData.length}건)` : 
              tab === 'courses' ? `등록된 강의 (${courses.length}건)` : 
-             tab === 'materials' ? `등록된 자료 (${materials.length}건)` : `등록된 Q&A (${qna.length}건)`}
+             tab === 'materials' ? `등록된 자료 (${materials.length}건)` : 
+             tab === 'qna' ? `등록된 Q&A (${qna.length}건)` : `등록된 회원 (${usersDB.length}명)`}
           </h3>
           {tab === 'reviews' && renderList(reviewsData, 'reviews')}
           {tab === 'revenues' && renderList(revenuesData, 'revenues')}
           {tab === 'courses' && renderList(courses, 'courses')}
           {tab === 'materials' && renderList(materials, 'materials')}
           {tab === 'qna' && renderList(qna, 'qna')}
+          {tab === 'users' && renderUsersList()}
         </div>
       </div>
     </div>
@@ -1845,13 +2119,36 @@ function App() {
 
   // 외부 모듈(firebase-db.js / firebase-auth.js)을 사용한 데이터 로드
   const [user, setUser] = useState(() => FirebaseAuth.getCurrentUser());
-  const [courses, setCourses] = useState(() => loadLocalData('courses', INITIAL_COURSES));
-  const [materials, setMaterials] = useState(() => loadLocalData('materials', INITIAL_MATERIALS));
+  const [courses, setCourses] = useState(() => {
+    const local = loadLocalData('courses', INITIAL_COURSES);
+    return (!local || local.length === 0) ? INITIAL_COURSES : local;
+  });
+  const [materials, setMaterials] = useState(() => {
+    const local = loadLocalData('materials', INITIAL_MATERIALS);
+    return (!local || local.length === 0) ? INITIAL_MATERIALS : local;
+  });
   const [community, setCommunity] = useState(() => loadLocalData('community', INITIAL_COMMUNITY));
-  const [qna, setQna] = useState(() => loadLocalData('qna', INITIAL_QNA));
+  const [qna, setQna] = useState(() => {
+    const local = loadLocalData('qna', INITIAL_QNA);
+    return (!local || local.length === 0) ? INITIAL_QNA : local;
+  });
   const [reviewsData, setReviewsData] = useState(() => loadLocalData('reviews', generateMockReviews()));
   const [revenuesData, setRevenuesData] = useState(() => loadLocalData('revenues', generateMockRevenues()));
   const [usersDB, setUsersDB] = useState(() => loadLocalData('users_db', []));
+  const [shuffledRevenues, setShuffledRevenues] = useState([]);
+
+  React.useEffect(() => {
+    if (revenuesData && revenuesData.length > 0) {
+      const arr = [...revenuesData];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      setShuffledRevenues(arr);
+    } else {
+      setShuffledRevenues([]);
+    }
+  }, [revenuesData]);
   
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const getInitialPath = () => {
@@ -1874,10 +2171,30 @@ function App() {
       const normalizedPath = (!hash || hash === '#') ? '/' : hash.substring(1);
       setCurrentPath(normalizedPath);
       setRouteState(event?.state || null);
+      setModal(prev => {
+        if (prev.isOpen) return { ...prev, isOpen: false };
+        return prev;
+      });
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
+
+  React.useEffect(() => {
+    try {
+      if (modal.isOpen) {
+        if (!window.history.state || !window.history.state.modalOpen) {
+          window.history.pushState({ modalOpen: true }, '', window.location.hash);
+        }
+      } else {
+        if (window.history.state && window.history.state.modalOpen) {
+          window.history.back();
+        }
+      }
+    } catch (e) {
+      console.warn("History API is not fully supported or accessible:", e);
+    }
+  }, [modal.isOpen]);
 
   const [isAdminSession, setIsAdminSession] = useState(false);
 
@@ -1888,9 +2205,30 @@ function App() {
       const unsubRevenues = window.FirebaseDB.subscribe('revenues', (data) => setRevenuesData(data));
       const unsubUsers = window.FirebaseDB.subscribe('users_db', (data) => setUsersDB(data));
       const unsubCommunity = window.FirebaseDB.subscribe('community', (data) => setCommunity(data));
-      const unsubMaterials = window.FirebaseDB.subscribe('materials', (data) => setMaterials(data));
-      const unsubCourses = window.FirebaseDB.subscribe('courses', (data) => setCourses(data));
-      const unsubQna = window.FirebaseDB.subscribe('qna', (data) => setQna(data));
+      const unsubMaterials = window.FirebaseDB.subscribe('materials', (data) => {
+        if (!data || data.length === 0) {
+          window.FirebaseDB.saveData('materials', INITIAL_MATERIALS);
+          setMaterials(INITIAL_MATERIALS);
+        } else {
+          setMaterials(data);
+        }
+      });
+      const unsubCourses = window.FirebaseDB.subscribe('courses', (data) => {
+        if (!data || data.length === 0) {
+          window.FirebaseDB.saveData('courses', INITIAL_COURSES);
+          setCourses(INITIAL_COURSES);
+        } else {
+          setCourses(data);
+        }
+      });
+      const unsubQna = window.FirebaseDB.subscribe('qna', (data) => {
+        if (!data || data.length === 0) {
+          window.FirebaseDB.saveData('qna', INITIAL_QNA);
+          setQna(INITIAL_QNA);
+        } else {
+          setQna(data);
+        }
+      });
       
       return () => {
         unsubReviews();
@@ -1979,19 +2317,19 @@ function App() {
     View = <MaterialDetailPage matId={matId} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} />;
   } else {
     switch (currentPath) {
-      case '/': View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
+      case '/': View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
       case '/enrollment': View = <EnrollmentPage user={user} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} onEnroll={handleEnroll} courses={courses} />; break;
       case '/course': View = <CourseDetailPage course={courses.find(c=>c.id===routeState?.courseId)} user={user} onEnroll={handleEnroll} navigate={navigate} showModal={showModal} />; break;
       case '/login': View = <AuthPage navigate={navigate} onLoginSuccess={() => { setUser(FirebaseAuth.getCurrentUser()); navigate('/'); }} showModal={showModal} />; break;
       case '/write-review': View = <WriteReviewPage user={user} reviewsData={reviewsData} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
       case '/reviews': View = <ReviewsPage reviewsData={reviewsData} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
-      case '/revenues': View = <RevenuesPage revenuesData={revenuesData} navigate={navigate} showModal={showModal} />; break;
+      case '/revenues': View = <RevenuesPage revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} />; break;
       case '/mypage': View = <MyPage user={user} enrolledCourses={enrolledCourses} navigate={navigate} />; break;
       case '/community': View = <CommunityPage communityPosts={community} user={user} onAddPost={(p)=>updateDB('community', [p, ...community])} showModal={showModal} />; break;
       case '/qna': View = <QnaPage qnaList={qna} user={user} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
       case '/materials': View = <MaterialsPage enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} />; break;
-      case '/admin': View = isAdminSession ? <AdminDashboard courses={courses} materials={materials} community={community} qna={qna} reviewsData={reviewsData} revenuesData={revenuesData} usersDB={usersDB} updateDB={updateDB} navigate={navigate} showModal={showModal} /> : <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
-      default: View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={revenuesData} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />;
+      case '/admin': View = isAdminSession ? <AdminDashboard courses={courses} materials={materials} community={community} qna={qna} reviewsData={reviewsData} revenuesData={revenuesData} usersDB={usersDB} updateDB={updateDB} navigate={navigate} showModal={showModal} /> : <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
+      default: View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />;
     }
   }
 
