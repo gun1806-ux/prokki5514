@@ -142,7 +142,7 @@ const INITIAL_MATERIALS = [
     desc: "3가지 리소스 패키지입니다. AI를 이용한 한중 양방향 자동 번역기, 1688 고등급(LV6) 바이어 아이디, 실제 체험단 연계 업체 리스트가 포함되어 있습니다.",
     steps: [
       "[자동번역기] 크롬 확장프로그램 설치 후 사용",
-      "[리스크] 1688 LV6 아이디로 도매가 할인율 확인",
+      "[리스크] 1688 LV6 아이디로 도매가 할인율 확인 (강의 수강생 한정 제공)",
       "[체험단] 리스트에서 업체 컨택후 조건 협의",
       "문의는 업체별 맞춤지는 양식 활용 구체적 방식 안내서 포함"
     ],
@@ -475,28 +475,24 @@ const PRIVACY_CONTENT = `
 `;
 
 const REFUND_CONTENT = `
-<div class="space-y-6 text-gray-800 text-sm md:text-base leading-relaxed word-keep">
-  <div class="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-2xl mb-4">
-    <p class="font-black text-red-700 text-sm sm:text-base mb-1">⚠️ 가장 중요</p>
-    <p class="text-red-600 text-xs sm:text-sm">디지털 콘텐츠 특성상 강의 시청이 시작된 경우 전자상거래법에 따라 청약철회가 제한될 수 있습니다.</p>
-  </div>
+<div class="space-y-6 text-gray-800 text-sm md:text-base leading-relaxed word-keep text-left">
   <div>
     <h4 class="font-black text-lg text-gray-900 mb-2">환불 기준</h4>
     <ul class="list-disc pl-5 space-y-3" style="list-style-type: disc;">
-      <li><strong>결제 후 7일 이내:</strong> 강의 미수강 시 100% 환불</li>
+      <li><strong>강의 시작 전:</strong> 100% 환불</li>
       <li>
         <strong>일부 수강 시:</strong>
-        <ul class="list-circle pl-5 mt-2 space-y-1.5" style="list-style-type: circle;">
-          <li>전체 강의의 20% 이하 수강 : 부분 환불 가능</li>
-          <li>전체 강의의 20% 초과 수강 : <strong class="text-red-600 font-bold">환불 불가</strong></li>
+        <ul class="list-circle pl-5 mt-2 space-y-1.5 font-bold" style="list-style-type: circle;">
+          <li>전체 강의 20% 수강 이전 : <span class="text-[#FF8A00]">총 금액의 2/3</span></li>
+          <li>전체 강의 50% 수강 이전 : <span class="text-[#FF8A00]">총 금액의 1/2</span></li>
+          <li>전체 강의 50% 수강 이후 : <span class="text-red-600 font-black">환불 하지 아니함</span></li>
         </ul>
       </li>
-      <li><strong>자료 다운로드:</strong> PDF, 템플릿, 파일 등을 다운로드한 경우 환불이 제한될 수 있습니다.</li>
     </ul>
   </div>
   <div>
     <h4 class="font-black text-lg text-gray-900 mb-2">환불 신청</h4>
-    <p>환불 신청은 고객센터 또는 이메일을 통해 접수 가능합니다.</p>
+    <p>환불 신청은 카카오톡 1:1 상담 또는 공식 이메일을 통해 접수 가능합니다.</p>
     <p class="mt-1">이메일 : <a href="mailto:4ten.official1@gmail.com" class="text-[#FF8A00] underline font-bold">4ten.official1@gmail.com</a></p>
   </div>
   <div>
@@ -580,20 +576,19 @@ const ReviewsPage = ({ reviewsData, navigate, showModal, onReviewClick }) => {
         <div className="grid md:grid-cols-3 gap-6">
           {reviewsData.map(review => (
             <div key={review.id} className="p-8 rounded-[2rem] bg-[#111111] border border-gray-800 shadow-sm hover:shadow-lg transition-shadow flex flex-col h-[380px] md:h-[420px] cursor-pointer" onClick={() => onReviewClick(review)}>
-              {(() => {
-                const imgList = review.images || (review.image ? [review.image] : []);
-                if (imgList.length === 0) return null;
-                return (
                   <div className="relative mb-6 flex-shrink-0 bg-[#0B0B0B] rounded-2xl border border-gray-800/50 overflow-hidden flex items-center justify-center h-32 md:h-40">
                     <img src={imgList[0]} className="max-w-full max-h-full object-contain" />
+                    {review.link && (
+                      <span className="absolute bottom-3 left-3 bg-[#FF0000] text-white text-[10px] font-black px-2.5 py-1 rounded-md flex items-center gap-1 z-10">
+                        ▶️ YouTube
+                      </span>
+                    )}
                     {imgList.length > 1 && (
                       <span className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-black px-2 py-1 rounded-md flex items-center gap-1">
                         📸 +{imgList.length - 1}
                       </span>
                     )}
                   </div>
-                );
-              })()}
               <div className="mb-4">
                 <div className="flex text-yellow-400">{[...Array(review.rating || 5)].map((_, j) => <Icon key={j} path={ICONS.Star} fill="#facc15" className="w-4 h-4" />)}</div>
               </div>
@@ -647,6 +642,31 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onR
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        } else {
+          entry.target.classList.remove('active');
+        }
+      });
+    }, {
+      threshold: 0.05,
+      rootMargin: "0px 0px -50px 0px"
+    });
+    
+    const timer = setTimeout(() => {
+      const targets = document.querySelectorAll('.scroll-reveal');
+      targets.forEach(target => observer.observe(target));
+    }, 100);
+    
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
   }, []);
 
   const handleCounseling = () => { showModal('alert', '상담 신청 완료', '무료 상담 신청이 완료되었습니다. 담당자가 업무 시간 내에 입력하신 번호로 연락드리겠습니다.'); };
@@ -715,7 +735,7 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onR
 
       <section id="stats" className="py-24 bg-[#EDEDED] text-gray-900 relative">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center mb-16 space-y-3">
+          <div className="text-center mb-16 space-y-3 scroll-reveal">
             <p className="text-[#FF8A00] text-lg sm:text-xl md:text-2xl font-bold">아래 내용만으로 월200만원은 충분합니다.</p>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 leading-tight tracking-tight word-keep">
               그럼에도 불구하고 압도적인 성과를 원하신다면
@@ -747,12 +767,14 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onR
 
       <section id="courses" className="py-16 md:py-24 bg-[#fff7f0] border-b border-[#ffe5c8]">
         <div className="max-w-7xl mx-auto px-6">
-          <p className="text-lg md:text-xl font-bold text-[#FF8A00] mb-3 flex items-center gap-1">
-            이 강의는 지속되지 않습니다 ⚠️
-          </p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#111827] leading-tight mb-8 word-keep">
-            단 4주, 성과 위주 실전압축 강의
-          </h2>
+          <div className="scroll-reveal">
+            <p className="text-lg md:text-xl font-bold text-[#FF8A00] mb-3 flex items-center gap-1">
+              이 강의는 지속되지 않습니다 ⚠️
+            </p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#111827] leading-tight mb-8 word-keep">
+              단 4주, 성과 위주 실전압축 강의
+            </h2>
+          </div>
           <div
             className="inline-block rounded-2xl overflow-hidden shadow-xl cursor-pointer hover:scale-[1.02] transition-transform duration-300"
             onClick={() => navigate('/enrollment')}
@@ -767,7 +789,7 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onR
       <section className="py-24 bg-[#fff7f0] border-b border-[#ffe5c8]">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-12">
-            <div>
+            <div className="scroll-reveal">
               <h2 className="text-3xl md:text-5xl font-black text-[#111827] mb-4 tracking-tight word-keep">더 이상 매출 자랑에 속지마세요</h2>
               <p className="text-lg md:text-xl text-[#5b5b5b] font-medium word-keep">진짜 사업은 마진율에 있습니다.</p>
             </div>
@@ -799,7 +821,7 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onR
       <section className="py-24 bg-[#0B0B0B] text-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-            <div className="text-center md:text-left">
+            <div className="text-center md:text-left scroll-reveal">
               <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight word-keep mb-4">혼자 버티던 셀러들의 변화 🔥</h2>
               <p className="text-gray-400 font-medium text-lg">소싱은 계속하는데, 마진은 줄어들고 광고비는 늘어나고, 포기하지 못해 이어오던 시간들, 새로운 방식으로 재정립해 결과를 만들고 있습니다.</p>
             </div>
@@ -812,6 +834,11 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onR
                 return (
                   <div className="relative mb-6 flex-shrink-0 bg-[#0B0B0B] rounded-2xl border border-gray-800/50 overflow-hidden flex items-center justify-center h-32 md:h-40">
                     <img src={imgList[0]} className="max-w-full max-h-full object-contain" />
+                    {review.link && (
+                      <span className="absolute bottom-3 left-3 bg-[#FF0000] text-white text-[10px] font-black px-2.5 py-1 rounded-md flex items-center gap-1 z-10">
+                        ▶️ YouTube
+                      </span>
+                    )}
                     {imgList.length > 1 && (
                       <span className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-black px-2 py-1 rounded-md flex items-center gap-1">
                         📸 +{imgList.length - 1}
@@ -1037,7 +1064,7 @@ const AuthPage = ({ usersDB, updateDB, navigate, onLoginSuccess, showModal }) =>
     window.FirebaseAuth.saveSession(mockUser);
     const currentUsers = usersDB || [];
     updateDB('users_db', [...currentUsers, mockUser]);
-    onLoginSuccess();
+    onLoginSuccess(mockUser);
   };
 
   const handleKakaoLogin = () => {
@@ -1076,7 +1103,7 @@ const AuthPage = ({ usersDB, updateDB, navigate, onLoginSuccess, showModal }) =>
               window.FirebaseAuth.saveSession(userToSave);
               
               showModal('alert', '카카오 연동 완료', '카카오 간편 로그인이 성공적으로 완료되었습니다.', () => {
-                onLoginSuccess();
+                onLoginSuccess(userToSave);
               });
             },
             fail: function(error) {
@@ -1148,7 +1175,7 @@ const AuthPage = ({ usersDB, updateDB, navigate, onLoginSuccess, showModal }) =>
       window.FirebaseAuth.saveSession(mockUser);
       
       showModal('alert', isLogin ? '로그인 성공' : '가입 완료', isLogin ? "정상적으로 로그인되었습니다." : "회원가입이 완료되었습니다. 돈버는 똘기에 오신것을 환영합니다!", () => {
-        onLoginSuccess();
+        onLoginSuccess(mockUser);
       });
     } catch (error) {
       console.error("Submit Error:", error);
@@ -1767,7 +1794,8 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
       tag: '',
       image: (form.images && form.images.length > 0) ? form.images[0] : null,
       images: form.images || [],
-      comment: form.comment
+      comment: form.comment,
+      link: form.link || ''
     };
     updateDB('reviews', [newItem, ...reviewsData]);
     showModal('alert', '등록 성공', '후기가 등록되었습니다.');
@@ -1907,6 +1935,29 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
               <span className="text-[9px] font-bold text-gray-400">추가</span>
               <input type="file" multiple accept="image/*" onChange={handleMultipleImageFiles} className="hidden" />
             </label>
+          </div>
+        </div>
+        <div>
+          <label className={lbl}>유튜브 / 하이퍼링크 주소</label>
+          <div className="flex gap-2">
+            <input 
+              className={inp + ' flex-1'} 
+              placeholder="예: https://www.youtube.com/watch?v=..." 
+              value={form.link || ''} 
+              onChange={e => setForm(f => ({ ...f, link: e.target.value }))} 
+            />
+            <button
+              onClick={() => {
+                const url = window.prompt("유튜브 또는 웹사이트 링크 주소를 입력하세요:", form.link || "");
+                if (url !== null) {
+                  setForm(f => ({ ...f, link: url }));
+                }
+              }}
+              className="bg-gray-800 text-white font-bold px-4 py-2 rounded-xl text-xs hover:bg-gray-700 transition-colors whitespace-nowrap"
+              type="button"
+            >
+              하이퍼링크 첨부
+            </button>
           </div>
         </div>
         <div>
@@ -2401,6 +2452,24 @@ function App() {
       }
     }
   }, [usersDB, user]);
+
+  React.useEffect(() => {
+    if (materials && materials.length > 0) {
+      const mat3 = materials.find(m => m.id === 'mat-3');
+      if (mat3 && mat3.steps && mat3.steps[1] === '[리스크] 1688 LV6 아이디로 도매가 할인율 확인') {
+        console.log("[Data Upgrade] Upgrading mat-3 steps to include (강의 수강생 한정 제공)...");
+        const updated = materials.map(m => {
+          if (m.id === 'mat-3') {
+            const steps = [...m.steps];
+            steps[1] = '[리스크] 1688 LV6 아이디로 도매가 할인율 확인 (강의 수강생 한정 제공)';
+            return { ...m, steps };
+          }
+          return m;
+        });
+        updateDB('materials', updated);
+      }
+    }
+  }, [materials]);
   
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const getInitialPath = () => {
@@ -2549,11 +2618,26 @@ function App() {
     const ratingStars = '⭐'.repeat(review.rating);
     const imagesList = review.images || (review.image ? [review.image] : []);
     const imageTags = imagesList
-      .map(img => `<img src="${img}" class="w-full rounded-2xl border border-gray-100 shadow-sm mb-4" alt="후기 사진" />`)
+      .map(img => {
+        const imgTag = `<img src="${img}" class="w-full rounded-2xl border border-gray-100 shadow-sm mb-4 hover:scale-[1.01] transition-transform cursor-pointer" alt="후기 사진" />`;
+        return review.link ? `<a href="${review.link}" target="_blank" rel="noopener noreferrer" title="유튜브로 보러가기">${imgTag}</a>` : imgTag;
+      })
       .join('');
     
     const contentHTML = `<div class="space-y-6 text-gray-800 leading-relaxed text-sm md:text-base">
       ${imageTags}
+      ${review.link ? `
+        <div class="bg-red-50 rounded-2xl p-4 border border-red-100 flex items-center justify-between">
+          <div class="flex items-center gap-2 text-left">
+            <span class="text-xl">📺</span>
+            <div>
+              <div class="font-bold text-gray-900 text-sm">유튜브 동영상 후기</div>
+              <div class="text-xs text-gray-500">이미지를 클릭하거나 아래 버튼을 누르면 영상으로 이동합니다.</div>
+            </div>
+          </div>
+          <a href="${review.link}" target="_blank" rel="noopener noreferrer" class="bg-[#FF0000] text-white font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-[#CC0000] transition-colors whitespace-nowrap ml-4">영상 보러가기</a>
+        </div>
+      ` : ''}
       <div class="border-b border-gray-100 pb-4">
         <div class="text-yellow-400 text-lg font-bold">${ratingStars}</div>
       </div>
@@ -2572,7 +2656,7 @@ function App() {
       case '/': View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
       case '/enrollment': View = <EnrollmentPage user={user} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} onEnroll={handleEnroll} courses={courses} />; break;
       case '/course': View = <CourseDetailPage course={courses.find(c=>c.id===routeState?.courseId)} user={user} onEnroll={handleEnroll} navigate={navigate} showModal={showModal} />; break;
-      case '/login': View = <AuthPage usersDB={usersDB} updateDB={updateDB} navigate={navigate} onLoginSuccess={() => { setUser(FirebaseAuth.getCurrentUser()); navigate('/'); }} showModal={showModal} />; break;
+      case '/login': View = <AuthPage usersDB={usersDB} updateDB={updateDB} navigate={navigate} onLoginSuccess={(loggedInUser) => { setUser(loggedInUser || FirebaseAuth.getCurrentUser()); navigate('/'); }} showModal={showModal} />; break;
       case '/write-review': View = <WriteReviewPage user={user} reviewsData={reviewsData} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
       case '/reviews': View = <ReviewsPage reviewsData={reviewsData} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
       case '/revenues': View = <RevenuesPage revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} />; break;
@@ -2678,6 +2762,24 @@ function App() {
         .modal-body p, .modal-body li, .modal-body span, .modal-body div, .modal-body h1, .modal-body h2, .modal-body h3, .modal-body h4 { color: #000000 !important; }
         .modal-body a { color: #000000 !important; }
         .modal-body a[class*="bg-[#FEE500]"] { color: #3A1D1D !important; }
+
+        /* Scroll Reveal Animation Styles */
+        .scroll-reveal > * {
+          opacity: 0;
+          transform: translateY(30px);
+          transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          will-change: transform, opacity;
+          backface-visibility: hidden;
+          transform-style: preserve-3d;
+        }
+        .scroll-reveal.active > * {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        .scroll-reveal.active > *:nth-child(1) { transition-delay: 0ms; }
+        .scroll-reveal.active > *:nth-child(2) { transition-delay: 150ms; }
+        .scroll-reveal.active > *:nth-child(3) { transition-delay: 300ms; }
+        .scroll-reveal.active > *:nth-child(4) { transition-delay: 450ms; }
       `}</style>
     </div>
   );

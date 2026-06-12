@@ -38,7 +38,14 @@ const FirebaseDB = {
   // 데이터 불러오기 (동기 - 마운트 시 즉시 로컬 데이터 조회용)
   loadData: (collectionKey, defaultVal) => {
     try {
-      const data = localStorage.getItem(collectionKey);
+      let data = localStorage.getItem(collectionKey);
+      if (!data && (collectionKey === 'mock_user' || collectionKey.startsWith('enrollments_'))) {
+        try {
+          data = sessionStorage.getItem(collectionKey);
+        } catch (se) {
+          console.warn(`Error reading from sessionStorage for "${collectionKey}":`, se);
+        }
+      }
       if (!data || data === "undefined" || data === "null") {
         return defaultVal;
       }
@@ -60,7 +67,32 @@ const FirebaseDB = {
     try {
       localStorage.setItem(collectionKey, JSON.stringify(val));
     } catch (e) {
-      console.warn(`[LocalStorage] 저장 공간 한도 초과 (${collectionKey}):`, e);
+      console.warn(`[LocalStorage] 저장 공간 한도 초과 (${collectionKey}). 캐시 정리 중...`, e);
+      // Evict non-essential heavy cache keys
+      const heavyKeys = ['community', 'reviews', 'revenues', 'materials'];
+      heavyKeys.forEach(k => {
+        if (k !== collectionKey) {
+          try {
+            localStorage.removeItem(k);
+          } catch (err) {}
+        }
+      });
+      // Try again
+      try {
+        localStorage.setItem(collectionKey, JSON.stringify(val));
+        console.log(`[LocalStorage] 캐시 정리 후 저장 성공: ${collectionKey}`);
+      } catch (retryError) {
+        console.error(`[LocalStorage] 캐시 정리 후에도 저장 실패:`, retryError);
+      }
+    }
+
+    // 2. 세션 필수 정보는 SessionStorage에도 미러링 저장
+    if (collectionKey === 'mock_user' || collectionKey.startsWith('enrollments_')) {
+      try {
+        sessionStorage.setItem(collectionKey, JSON.stringify(val));
+      } catch (se) {
+        console.warn(`[SessionStorage] 세션 데이터 백업 실패:`, se);
+      }
     }
 
     // 2. Firebase가 활성화되어 있고, 로컬 세션 정보인 'mock_user'가 아닐 때 Firestore에 업로드

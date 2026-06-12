@@ -5,18 +5,38 @@
 const FirebaseAuthService = {
   // 로그아웃 처리
   logout: () => {
-    // 임시 Mock 로직 (추후 auth.signOut() 로 교체)
     localStorage.removeItem('mock_user');
+    try {
+      sessionStorage.removeItem('mock_user');
+    } catch (e) {
+      console.warn("sessionStorage logout failed", e);
+    }
   },
   
   // 현재 접속중인 유저 정보 가져오기
   getCurrentUser: () => {
-    return window.FirebaseDB.loadData('mock_user', null);
+    let user = window.FirebaseDB.loadData('mock_user', null);
+    if (!user) {
+      try {
+        const sessionData = sessionStorage.getItem('mock_user');
+        if (sessionData && sessionData !== "undefined" && sessionData !== "null") {
+          user = JSON.parse(sessionData);
+        }
+      } catch (e) {
+        console.warn("Error reading mock_user from sessionStorage:", e);
+      }
+    }
+    return user;
   },
 
   // 세션 저장 처리
   saveSession: (userData) => {
     window.FirebaseDB.saveData('mock_user', userData);
+    try {
+      sessionStorage.setItem('mock_user', JSON.stringify(userData));
+    } catch (e) {
+      console.warn("Error writing mock_user to sessionStorage:", e);
+    }
   }
 };
 
