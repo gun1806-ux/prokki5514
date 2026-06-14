@@ -287,17 +287,14 @@ const Marquee = ({ items, renderItem }) => {
     return <div className="text-center p-10 text-gray-400 font-medium border border-[#f4e4ce] rounded-3xl">등록된 데이터가 없습니다.</div>;
   }
 
-  // Ensure enough items to span multiple screens and loop smoothly
   let displayItems = [...items];
   while (displayItems.length < 10) {
     displayItems = [...displayItems, ...items];
   }
-  // Double the list for seamless marquee loop
   const doubleItems = [...displayItems, ...displayItems];
 
   return (
     <div className="relative w-full overflow-hidden">
-      {/* Edge gradient overlays for beautiful transition */}
       <div className="absolute left-0 top-0 bottom-0 w-8 md:w-24 bg-gradient-to-r from-[#fff7f0] to-transparent z-10 pointer-events-none"></div>
       <div className="absolute right-0 top-0 bottom-0 w-8 md:w-24 bg-gradient-to-l from-[#fff7f0] to-transparent z-10 pointer-events-none"></div>
       
@@ -316,7 +313,6 @@ const Marquee = ({ items, renderItem }) => {
 };
 
 // ============================================================================
-
 // 헤더 & 푸터
 // ============================================================================
 const Header = ({ currentPath, navigate, user, isAdmin, onLogout }) => {
@@ -389,7 +385,6 @@ const Header = ({ currentPath, navigate, user, isAdmin, onLogout }) => {
 };
 
 const TERMS_CONTENT = `
-<div class="space-y-6 text-gray-800 text-sm md:text-base leading-relaxed word-keep">
   <div>
     <h4 class="font-black text-lg text-gray-900 mb-2">제1조 목적</h4>
     <p>본 약관은 브랜드빌더, 돈버는 똘기(이하 "회사")가 제공하는 서비스의 이용조건 및 절차, 회사와 회원 간의 권리·의무를 규정함을 목적으로 합니다.</p>
@@ -590,6 +585,10 @@ const ReviewsPage = ({ reviewsData, navigate, showModal, onReviewClick }) => {
         <div className="grid md:grid-cols-3 gap-6">
           {reviewsData.map(review => (
             <div key={review.id} className="p-8 rounded-[2rem] bg-[#111111] border border-gray-800 shadow-sm hover:shadow-lg transition-shadow flex flex-col h-[380px] md:h-[420px] cursor-pointer" onClick={() => onReviewClick(review)}>
+              {(() => {
+                const imgList = review.images || (review.image ? [review.image] : []);
+                if (imgList.length === 0) return null;
+                return (
                   <div className="relative mb-6 flex-shrink-0 bg-[#0B0B0B] rounded-2xl border border-gray-800/50 overflow-hidden flex items-center justify-center h-32 md:h-40">
                     <img src={imgList[0]} className="max-w-full max-h-full object-contain" />
                     {review.link && (
@@ -603,6 +602,8 @@ const ReviewsPage = ({ reviewsData, navigate, showModal, onReviewClick }) => {
                       </span>
                     )}
                   </div>
+                );
+              })()}
               <div className="mb-4">
                 <div className="flex text-yellow-400">{[...Array(review.rating || 5)].map((_, j) => <Icon key={j} path={ICONS.Star} fill="#facc15" className="w-4 h-4" />)}</div>
               </div>
@@ -1466,7 +1467,6 @@ const QnaPage = ({ qnaList, user, updateDB, navigate, showModal }) => {
                       <span className={`text-[10px] md:text-xs font-black px-2.5 py-1 rounded-md tracking-tight ${hasAnswer ? 'bg-[#FF8A00]/20 text-[#FF8A00]' : 'bg-gray-800 text-gray-400'}`}>
                         {hasAnswer ? '답변 완료' : '답변 대기'}
                       </span>
-                      <span className="text-xs text-gray-500">{q.author} · {q.date}</span>
                     </div>
                     <h3 className="text-base md:text-lg font-bold text-white word-keep tracking-tight leading-snug">
                       {q.question}
@@ -2448,7 +2448,18 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
       <div className="w-full md:w-64 bg-gray-900 text-white flex flex-col flex-shrink-0">
-        <div className="p-5 md:p-8 text-xl font-black border-b border-gray-800 tracking-tighter">ADMIN</div>
+        <div className="p-5 md:p-8 text-xl font-black border-b border-gray-800 tracking-tighter flex items-center justify-between">
+          <span>ADMIN</span>
+          {window.FirebaseDB.isFirebaseActive() ? (
+            <span className="text-[10px] bg-green-950 text-green-400 border border-green-800/50 px-2 py-0.5 rounded font-bold">
+              DB 연동됨
+            </span>
+          ) : (
+            <span className="text-[10px] bg-red-950 text-red-400 border border-red-800/50 px-2 py-0.5 rounded font-bold">
+              로컬 모드
+            </span>
+          )}
+        </div>
         <nav className="flex flex-row md:flex-col overflow-x-auto p-3 md:p-6 gap-2 text-sm font-bold">
           {tabsList.map(({key, label}) => (
             <button key={key} onClick={()=>{setTab(key);resetForm();}} className={`flex-shrink-0 text-left px-5 py-3 rounded-xl transition-colors ${tab===key?'bg-[#FF8A00] text-black':'text-gray-400 hover:text-white hover:bg-gray-800'}`}>{label}</button>
@@ -2677,10 +2688,33 @@ function App() {
   // Firebase 실시간 데이터 구독 (Firestore 연동 시)
   React.useEffect(() => {
     if (window.FirebaseDB.isFirebaseActive()) {
-      const unsubReviews = window.FirebaseDB.subscribe('reviews', (data) => setReviewsData(data));
-      const unsubRevenues = window.FirebaseDB.subscribe('revenues', (data) => setRevenuesData(data));
+      const unsubReviews = window.FirebaseDB.subscribe('reviews', (data) => {
+        if (!data || data.length === 0) {
+          const mock = generateMockReviews();
+          window.FirebaseDB.saveData('reviews', mock);
+          setReviewsData(mock);
+        } else {
+          setReviewsData(data);
+        }
+      });
+      const unsubRevenues = window.FirebaseDB.subscribe('revenues', (data) => {
+        if (!data || data.length === 0) {
+          const mock = generateMockRevenues();
+          window.FirebaseDB.saveData('revenues', mock);
+          setRevenuesData(mock);
+        } else {
+          setRevenuesData(data);
+        }
+      });
       const unsubUsers = window.FirebaseDB.subscribe('users_db', (data) => setUsersDB(data));
-      const unsubCommunity = window.FirebaseDB.subscribe('community', (data) => setCommunity(data));
+      const unsubCommunity = window.FirebaseDB.subscribe('community', (data) => {
+        if (!data || data.length === 0) {
+          window.FirebaseDB.saveData('community', INITIAL_COMMUNITY);
+          setCommunity(INITIAL_COMMUNITY);
+        } else {
+          setCommunity(data);
+        }
+      });
       const unsubMaterials = window.FirebaseDB.subscribe('materials', (data) => {
         if (!data || data.length === 0) {
           window.FirebaseDB.saveData('materials', INITIAL_MATERIALS);

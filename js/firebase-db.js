@@ -187,8 +187,12 @@ const FirebaseDB = {
             return idB.localeCompare(idA);
           });
 
-          // 로컬 캐시 동기화 후 콜백 호출
-          localStorage.setItem(collectionKey, JSON.stringify(list));
+          // 로컬 캐시 동기화 후 콜백 호출 (용량 초과 오류 방지를 위해 try-catch 처리)
+          try {
+            localStorage.setItem(collectionKey, JSON.stringify(list));
+          } catch (e) {
+            console.warn(`[LocalStorage] 캐시 저장 실패 (${collectionKey}):`, e);
+          }
           callback(list);
         }, err => {
           console.error(`[Firestore] 컬렉션 구독 오류 (${collectionKey}):`, err);
@@ -199,7 +203,11 @@ const FirebaseDB = {
           if (doc.exists) {
             const data = doc.data();
             if (data && Array.isArray(data.list)) {
-              localStorage.setItem(collectionKey, JSON.stringify(data.list));
+              try {
+                localStorage.setItem(collectionKey, JSON.stringify(data.list));
+              } catch (e) {
+                console.warn(`[LocalStorage] 캐시 저장 실패 (${collectionKey}):`, e);
+              }
               callback(data.list);
             }
           } else {
