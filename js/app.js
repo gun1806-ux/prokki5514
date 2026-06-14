@@ -39,7 +39,8 @@ const ICONS = {
   Award: '<circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />',
   Zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />',
   FileText: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>',
-  Edit: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>'
+  Edit: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
+  Play: '<polygon points="6 3 20 12 6 21 6 3" fill="currentColor" />'
 };
 
 const generateMockReviews = () => [];
@@ -93,9 +94,22 @@ const compressImage = (file, maxWidth = 800, maxHeight = 800, quality = 0.7) => 
 });
 
 const INITIAL_COURSES = [
-  { id: "course-1", title: "[초급] 치열한 경쟁에서 살아남는 '진짜' 생존 소싱법", summary: "[무료 클래스] 이커머스 어떻게 판매하는지, 진짜를 보여드립니다.", description: "이커머스 어떻게 판매하는지, 진짜를 보여드립니다.\n[중간]\n공유하지 마세요.\n이런게 진짜입니다.", price: 0, thumbnail: "[https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80)", studentCount: 1250, category: "생존 소 소싱", curriculum: ["1장: 무작정 열심히 하지 마라 (마인드셋)", "2장: 상품 2개로 3억을 만든 틈새 발굴 로직", "3장: 실패 없는 도매처 협상과 리스크 제로 소싱", "4장: 마진율을 극대화하는 가격 방어 전략"] },
-  { id: "course-2", title: "[초&중급] 실제 소싱 노하우, 수익 구조화, 돈되는 셀링", summary: "[초&중급]처음 소싱부터,상품등록 , 수입방법, 광고 셋팅까지", description: "지속할 수 있는 판매 노하우의 정석을 담고 있습니다.", price: 499000, thumbnail: "[https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80)", studentCount: 890, category: "설득 기획", curriculum: ["1장: 상세페이지의 본질, 3초 안에 사로잡기", "2장: 섹션별 필수 구성: 고객의 불안 완벽 해소", "3장: 인간적인 스토리텔링 녹여내기", "4장: 구매 전환율 3배 올리는 카피라이팅 템플릿 실습"] },
-  { id: "course-3", title: "[고급] 지속 가능한 이커머스, 스토어 매각(Exit) 4억 달성법", summary: "장사꾼에서 사업가로. 내 스토어를 가치 있는 자산으로 만들고 엑싯(Exit)하는 시스템 경영 전략.", description: "단기적인 매출에 만족하지 마십시오. 장기적인 비전이 있어야 살아남습니다.\n시스템을 구축하고, 스토어 자체의 브랜드 가치를 높여 4억 원에 매각한 저의 모든 경험과 데이터를 나눕니다.\n\n지속 가능한 이커머스 비즈니스의 최종 단계를 목표로 하는 1인 기업가들을 위한 심화 강의입니다.", price: 350000, thumbnail: "[https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80)", studentCount: 420, category: "브랜드 엑싯", curriculum: ["1장: 내 스토어의 가치 평가: 브랜드 몸값 올리기", "2장: 매각(Exit)을 위한 재무 및 오토 자동화 시스템 세팅", "3장: 구매자(양수자)를 설득하는 완벽한 데이터 준비", "4장: 1인 셀러를 넘어 지속 가능한 경영자로의 도약"] }
+  {
+    id: "course-1",
+    title: "실전 압축 강의 쿠팡부터 브랜딩까지",
+    summary: "[실전 클래스] 이커머스 어떻게 판매하는지, 진짜를 보여드립니다.",
+    description: "이커머스 어떻게 판매하는지, 진짜를 보여드립니다.\n\n[진짜] 공유하지 마세요.\n이런게 진짜입니다.",
+    price: 499000,
+    thumbnail: "assets/images/5.png",
+    studentCount: 1250,
+    category: "실전 압축",
+    curriculum: [
+      "1주차: 스마트스토어 & 쿠팡 마켓 분석 및 타겟 소싱법",
+      "2주차: 구매 전환율을 극대화하는 상세페이지 설득 설계",
+      "3주차: 마진율을 올리는 도매 협상 및 해외 직소싱 실전",
+      "4주차: 1인 기업 탈출 및 오토 브랜드 구축 (Exit 전략)"
+    ]
+  }
 ];
 const INITIAL_COMMUNITY = [
   { id: "comm-1", title: "유튜브 보고 왔다가 인생이 바뀌었습니다.", author: "초보셀러", date: "2026-05-20", content: "무작정 상품 등록만 하다가 건강만 상했는데, 똘기님 강의 듣고 똑똑하게 일하는 법을 배웠어요. 진심으로 감사드립니다." },
@@ -1632,7 +1646,35 @@ const MaterialDetailPage = ({ matId, enrolledCourses, materials, navigate, showM
   );
 };
 
-const MyPage = ({ user, enrolledCourses, navigate, isAdmin }) => {
+const MyPage = ({ user, enrolledCourses, navigate, isAdmin, showModal, courses }) => {
+  const [activeClassroomCourse, setActiveClassroomCourse] = useState(null);
+  const [completedLessons, setCompletedLessons] = useState([]);
+
+  React.useEffect(() => {
+    if (user) {
+      if (window.FirebaseDB.isFirebaseActive()) {
+        const unsub = window.FirebaseDB.subscribe(`completed_lessons_${user.uid}`, (list) => {
+          setCompletedLessons(list || []);
+        });
+        return () => unsub();
+      } else {
+        const list = loadLocalData(`completed_lessons_${user.uid}`, []);
+        setCompletedLessons(list || []);
+      }
+    } else {
+      setCompletedLessons([]);
+    }
+  }, [user]);
+
+  const markLessonCompleted = (lessonKey) => {
+    if (!user) return;
+    if (!completedLessons.includes(lessonKey)) {
+      const updated = [...completedLessons, lessonKey];
+      setCompletedLessons(updated);
+      saveLocalData(`completed_lessons_${user.uid}`, updated);
+    }
+  };
+
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 pt-48 pb-20 flex justify-center text-center">
@@ -1648,6 +1690,80 @@ const MyPage = ({ user, enrolledCourses, navigate, isAdmin }) => {
 
   const isStudent = user.role === 'student' || isAdmin;
 
+  // 강의실 세부 목차 뷰
+  if (activeClassroomCourse) {
+    const course = activeClassroomCourse;
+    const links = course.links || {};
+    
+    return (
+      <div className="min-h-screen bg-gray-50 pt-32 pb-20 text-gray-900">
+        <div className="max-w-4xl mx-auto px-6">
+          <button 
+            onClick={() => setActiveClassroomCourse(null)} 
+            className="flex items-center gap-2 text-gray-500 hover:text-gray-900 font-bold mb-8 transition-colors text-sm"
+          >
+            <Icon path={ICONS.ChevronLeft} className="w-5 h-5" />
+            내 강의실 목록으로 돌아가기
+          </button>
+          
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 mb-8">
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="text-xs text-indigo-600 font-extrabold bg-indigo-50 px-3 py-1 rounded-full">{course.category}</span>
+              <span className="text-xs font-black text-indigo-600 bg-white border border-indigo-100 px-3 py-1 rounded-full">평생 소장 클래스</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight word-keep mb-4 leading-tight">{course.title}</h1>
+            <p className="text-gray-500 text-sm md:text-base font-medium mb-0 leading-relaxed whitespace-pre-line">{course.summary || course.description}</p>
+          </div>
+          
+          <h3 className="text-lg font-black text-gray-900 mb-6 px-2">강의 목차 (4주 완성 과정)</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[1, 2, 3, 4].map(week => (
+              <div key={week} className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm">
+                <h4 className="font-black text-base text-[#FF8A00] mb-4 pb-2 border-b border-gray-100">{week}주차 과정</h4>
+                <div className="space-y-3">
+                  {[1, 2, 3].map(lesson => {
+                    const key = `${week}-${lesson}`;
+                    const url = links[key];
+                    const hasLink = !!url;
+                    
+                    return (
+                      <div 
+                        key={key}
+                        onClick={() => {
+                          if (hasLink) {
+                            markLessonCompleted(`${course.id}_${key}`);
+                            window.open(url, '_blank', 'noopener,noreferrer');
+                          } else {
+                            showModal('alert', '안내', `${week}주차 ${lesson}교시 강의 영상은 준비 중입니다. 업로드 후 순차적으로 공개됩니다.`);
+                          }
+                        }}
+                        className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
+                          hasLink 
+                            ? 'border-indigo-50 hover:border-indigo-200 bg-indigo-50/20 hover:bg-indigo-50/40 cursor-pointer group' 
+                            : 'border-gray-100 bg-gray-50/50 cursor-not-allowed opacity-60'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="font-bold text-sm text-gray-900">{week}-{lesson}교시</span>
+                        </div>
+                        {hasLink ? (
+                          <span className="text-[10px] font-black text-indigo-600 bg-white border border-indigo-100 px-2 py-1 rounded-md group-hover:bg-indigo-500 group-hover:text-white group-hover:border-indigo-500 transition-colors">강의보기</span>
+                        ) : (
+                          <span className="text-[10px] font-bold text-gray-400 bg-gray-100 border border-gray-200 px-2 py-1 rounded-md">준비 중</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 pt-32 pb-20">
       <div className="max-w-4xl mx-auto px-6">
@@ -1656,7 +1772,7 @@ const MyPage = ({ user, enrolledCourses, navigate, isAdmin }) => {
         <div className="bg-white rounded-[2.5rem] p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex items-center gap-8 mb-12">
           <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-blue-50 rounded-full flex items-center justify-center text-indigo-600 shadow-inner"><Icon path={ICONS.User} className="w-10 h-10"/></div>
           <div>
-            <h2 className="text-2xl font-black mb-2 tracking-tight">{user.name || user.email}님</h2>
+            <h2 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">{user.name || user.email}님</h2>
             <p className="text-gray-500 text-sm font-bold">
               회원 등급: <span className="text-[#FF8A00] font-black">{isStudent ? '수강생' : '일반회원'}</span>
             </p>
@@ -1667,20 +1783,34 @@ const MyPage = ({ user, enrolledCourses, navigate, isAdmin }) => {
         
         {isStudent ? (
           <div className="space-y-6">
-            {enrolledCourses.length === 0 ? (
+            {(!courses || courses.length === 0) ? (
               <div className="text-center py-24 text-gray-400 font-bold border border-gray-100 rounded-[2rem] bg-white">아직 시작한 클래스가 없습니다.</div>
             ) : (
-              enrolledCourses.map(course => (
-                 <div key={course.id} className="bg-white rounded-[2rem] p-6 md:p-8 border border-gray-100 flex flex-col md:flex-row items-center md:items-start gap-8 shadow-sm hover:shadow-md transition-shadow">
-                    <img src={course.thumbnail} className="w-full md:w-48 rounded-2xl object-cover aspect-video shadow-sm" />
-                    <div className="text-center md:text-left flex-1 w-full pt-2">
-                      <div className="inline-block text-xs text-indigo-600 font-extrabold bg-indigo-50 px-3 py-1 rounded-full mb-3">평생 소장</div>
-                      <h4 className="text-xl font-black word-keep tracking-tight mb-4">{course.title}</h4>
-                      <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden mb-2"><div className="bg-indigo-500 w-[15%] h-full rounded-full"></div></div>
-                      <div className="text-right text-xs font-bold text-gray-400">학습 진행률 15%</div>
-                    </div>
-                 </div>
-              ))
+              courses.map(course => {
+                const completedCount = completedLessons.filter(k => k.startsWith(`${course.id}_`)).length;
+                const progressPercent = Math.min(100, Math.round((completedCount / 12) * 100));
+                
+                return (
+                  <div 
+                    key={course.id} 
+                    onClick={() => setActiveClassroomCourse(course)}
+                    className="bg-white rounded-[2rem] p-6 md:p-8 border border-gray-100 flex flex-col md:flex-row items-center md:items-start gap-8 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group"
+                  >
+                     <img src={course.thumbnail} className="w-full md:w-48 rounded-2xl object-cover aspect-video shadow-sm" />
+                     <div className="text-center md:text-left flex-1 w-full pt-2">
+                       <div className="inline-block text-xs text-indigo-600 font-extrabold bg-indigo-50 px-3 py-1 rounded-full mb-3">평생 소장</div>
+                       <h4 className="text-xl font-black text-gray-900 word-keep tracking-tight mb-4 group-hover:text-[#FF8A00] transition-colors">{course.title}</h4>
+                       <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden mb-2">
+                         <div className="bg-indigo-500 h-full rounded-full transition-all duration-500" style={{ width: `${progressPercent}%` }}></div>
+                       </div>
+                       <div className="flex justify-between items-center text-xs font-bold text-gray-600 mt-1">
+                         <span>학습 진행률 {progressPercent}%</span>
+                         <span className="text-[#FF8A00] font-black group-hover:translate-x-1 transition-transform flex items-center gap-1">강의실 입장하기 <Icon path={ICONS.ArrowRight} className="w-3.5 h-3.5" /></span>
+                       </div>
+                     </div>
+                  </div>
+                );
+              })
             )}
           </div>
         ) : (
@@ -1720,6 +1850,19 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
     });
     updateDB('users_db', updatedUsers);
     showModal('alert', '등급 변경 완료', `'${userItem.name}'님의 등급이 '${newRole === 'student' ? '수강생' : '일반회원'}'으로 변경되었습니다.`);
+  };
+
+  const openCourseLinksModal = (course) => {
+    showModal(
+      'courseLinks', 
+      `'${course.title}' 강의 목차/링크 관리`, 
+      '', 
+      null, 
+      '', 
+      false, 
+      [], 
+      { courseId: course.id, linksData: course.links || {} }
+    );
   };
 
   React.useEffect(() => {
@@ -2156,6 +2299,14 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
           title = item.title;
           sub = `${item.category} · ${formatPrice(item.price)} · 수강생 ${item.studentCount}명`;
           badgeText = '강의';
+          extraAction = (
+            <button 
+              onClick={() => openCourseLinksModal(item)}
+              className="mr-2 flex-shrink-0 text-indigo-500 hover:text-indigo-700 font-bold text-xs px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors border border-indigo-100 hover:border-indigo-200"
+            >
+              목차/링크 관리
+            </button>
+          );
         } else if (type === 'materials') {
           title = item.title;
           sub = item.desc || '';
@@ -2366,12 +2517,12 @@ function App() {
     }
   }, []);
   
-  const showModal = (type, title, message, onConfirm = null, placeholder = '', isPassword = false, fields = []) => {
+  const showModal = (type, title, message, onConfirm = null, placeholder = '', isPassword = false, fields = [], extra = {}) => {
     let msg = message;
     if (type === 'postView') {
       msg = moveImageToTop(message);
     }
-    setModal({ isOpen: true, type, title, message: msg, onConfirm, placeholder, isPassword, fields });
+    setModal({ isOpen: true, type, title, message: msg, onConfirm, placeholder, isPassword, fields, ...extra });
   };
 
   const handleModalConfirm = () => {
@@ -2411,7 +2562,11 @@ function App() {
   const [user, setUser] = useState(() => FirebaseAuth.getCurrentUser());
   const [courses, setCourses] = useState(() => {
     const local = loadLocalData('courses', INITIAL_COURSES);
-    return (!local || local.length === 0) ? INITIAL_COURSES : local;
+    if (!local || local.length === 0 || local.length > 1 || local[0].id !== 'course-1' || local[0].title !== '실전 압축 강의 쿠팡부터 브랜딩까지' || local[0].thumbnail !== 'assets/images/5.png') {
+      saveLocalData('courses', INITIAL_COURSES);
+      return INITIAL_COURSES;
+    }
+    return local;
   });
   const [materials, setMaterials] = useState(() => {
     const local = loadLocalData('materials', INITIAL_MATERIALS);
@@ -2535,7 +2690,7 @@ function App() {
         }
       });
       const unsubCourses = window.FirebaseDB.subscribe('courses', (data) => {
-        if (!data || data.length === 0) {
+        if (!data || data.length === 0 || data.length > 1 || data[0].id !== 'course-1' || data[0].title !== '실전 압축 강의 쿠팡부터 브랜딩까지' || data[0].thumbnail !== 'assets/images/5.png') {
           window.FirebaseDB.saveData('courses', INITIAL_COURSES);
           setCourses(INITIAL_COURSES);
         } else {
@@ -2614,6 +2769,30 @@ function App() {
 
   const handleLogout = () => { FirebaseAuth.logout(); setUser(null); setIsAdminSession(false); navigate('/'); };
 
+  const handleSaveCourseLinks = (courseId) => {
+    const updatedLinks = {};
+    for (let w = 1; w <= 4; w++) {
+      for (let l = 1; l <= 3; l++) {
+        const key = `${w}-${l}`;
+        const input = document.getElementById(`link-input-${key}`);
+        if (input) {
+          updatedLinks[key] = input.value.trim();
+        }
+      }
+    }
+
+    const updatedCourses = courses.map(c => {
+      if (c.id === courseId) {
+        return { ...c, links: updatedLinks };
+      }
+      return c;
+    });
+
+    updateDB('courses', updatedCourses);
+    closeModal();
+    showModal('alert', '저장 완료', '강의 목차별 비메오 링크가 성공적으로 저장되었습니다.');
+  };
+
   const handleReviewClick = (review) => {
     const ratingStars = '⭐'.repeat(review.rating);
     const imagesList = review.images || (review.image ? [review.image] : []);
@@ -2660,7 +2839,7 @@ function App() {
       case '/write-review': View = <WriteReviewPage user={user} reviewsData={reviewsData} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
       case '/reviews': View = <ReviewsPage reviewsData={reviewsData} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
       case '/revenues': View = <RevenuesPage revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} />; break;
-      case '/mypage': View = <MyPage user={user} enrolledCourses={enrolledCourses} navigate={navigate} isAdmin={isAdminSession} />; break;
+      case '/mypage': View = <MyPage user={user} enrolledCourses={enrolledCourses} navigate={navigate} isAdmin={isAdminSession} showModal={showModal} courses={courses} />; break;
       case '/community': View = <CommunityPage communityPosts={community} user={user} onAddPost={(p)=>updateDB('community', [p, ...community])} showModal={showModal} />; break;
       case '/qna': View = <QnaPage qnaList={qna} user={user} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
       case '/materials': View = <MaterialsPage enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} user={user} isAdmin={isAdminSession} />; break;
@@ -2699,6 +2878,44 @@ function App() {
               >
                 닫기
               </button>
+            </div>
+          ) : modal.type === 'courseLinks' ? (
+            <div className="bg-white rounded-2xl md:rounded-[2rem] w-full max-w-3xl max-h-[85vh] shadow-2xl animate-fade-in-up border border-gray-100 flex flex-col overflow-hidden text-gray-900 modal-body">
+              <div className="flex justify-between items-start p-6 md:p-8 pb-4 border-b border-gray-100 bg-white">
+                <h3 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight leading-snug pr-4 word-keep">{modal.title}</h3>
+                <button onClick={closeModal} className="text-gray-400 hover:text-gray-900 bg-gray-50 rounded-full p-2 flex-shrink-0 transition-colors"><Icon path={ICONS.X} className="w-5 h-5"/></button>
+              </div>
+              <div className="p-6 md:p-8 pt-4 overflow-y-auto flex-1 hide-scroll pb-8 bg-white">
+                <p className="text-xs text-gray-400 mb-6 font-bold">* 각 주차별 1~3교시의 동영상 링크(Vimeo 등)를 입력해 주세요. 링크를 비워두면 학생들이 해당 교시를 클릭해도 이동하지 않고 준비 중 상태로 표시됩니다.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[1, 2, 3, 4].map(week => (
+                    <div key={week} className="bg-gray-50 p-5 rounded-2xl border border-gray-200">
+                      <h4 className="font-extrabold text-sm text-[#FF8A00] mb-3">{week}주차 강의 링크</h4>
+                      <div className="space-y-3">
+                        {[1, 2, 3].map(lesson => {
+                          const key = `${week}-${lesson}`;
+                          return (
+                            <div key={key}>
+                              <label className="block text-[10px] font-bold text-gray-400 mb-1">{week}-{lesson}교시 동영상 URL (Vimeo)</label>
+                              <input 
+                                type="text" 
+                                id={`link-input-${key}`}
+                                placeholder="https://vimeo.com/..." 
+                                defaultValue={modal.linksData?.[key] || ''} 
+                                className="w-full text-xs border border-gray-200 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white outline-none font-bold text-gray-900" 
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="p-6 border-t border-gray-100 bg-white flex justify-end gap-3">
+                <Button variant="outline" size="sm" onClick={closeModal} className="py-3 px-6 text-gray-700 border-gray-200 hover:bg-gray-50">취소</Button>
+                <Button size="sm" className="py-3 px-8 bg-[#FF8A00] text-black hover:opacity-90 border-none" onClick={() => handleSaveCourseLinks(modal.courseId)}>저장하기</Button>
+              </div>
             </div>
           ) : modal.type === 'postView' ? (
             <div className="bg-white rounded-2xl md:rounded-[2rem] w-full max-w-2xl max-h-[85vh] shadow-2xl animate-fade-in-up border border-gray-100 flex flex-col overflow-hidden">
