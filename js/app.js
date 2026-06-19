@@ -1086,57 +1086,67 @@ const AuthPage = ({ usersDB, updateDB, navigate, onLoginSuccess, showModal }) =>
   };
 
   const handleKakaoLogin = () => {
+    console.log("handleKakaoLogin clicked");
     if (window.Kakao && window.Kakao.isInitialized()) {
-      window.Kakao.Auth.login({
-        success: function(authObj) {
-          window.Kakao.API.request({
-            url: '/v2/user/me',
-            success: function(res) {
-              const kakaoAccount = res.kakao_account;
-              const profile = kakaoAccount.profile;
-              const targetUid = `uid_kakao_${res.id}`;
-              const targetEmail = kakaoAccount.email || `kakao_${res.id}@user.com`;
-              
-              const currentUsers = usersDB || [];
-              const existingUser = currentUsers.find(u => u.uid === targetUid || u.email === targetEmail);
-              
-              let userToSave;
-              if (existingUser) {
-                userToSave = existingUser;
-              } else {
-                userToSave = {
-                  email: targetEmail,
-                  uid: targetUid,
-                  name: profile.nickname || '카카오 회원',
-                  profileName: profile.nickname || `Kakao_${res.id.toString().slice(-4)}`,
-                  region: '미지정',
-                  phone: '미지정',
-                  kakaoId: profile.nickname || `kakao_${res.id.toString().slice(-6)}`,
-                  isKakao: true,
-                  role: 'member'
-                };
-                updateDB('users_db', [...currentUsers, userToSave]);
+      try {
+        window.Kakao.Auth.login({
+          success: function(authObj) {
+            console.log("Kakao Auth Login Success:", authObj);
+            window.Kakao.API.request({
+              url: '/v2/user/me',
+              success: function(res) {
+                console.log("Kakao User Info:", res);
+                const kakaoAccount = res.kakao_account || {};
+                const profile = kakaoAccount.profile || {};
+                const targetUid = `uid_kakao_${res.id}`;
+                const targetEmail = kakaoAccount.email || `kakao_${res.id}@user.com`;
+                
+                const currentUsers = usersDB || [];
+                const existingUser = currentUsers.find(u => u.uid === targetUid || u.email === targetEmail);
+                
+                let userToSave;
+                if (existingUser) {
+                  userToSave = existingUser;
+                } else {
+                  userToSave = {
+                    email: targetEmail,
+                    uid: targetUid,
+                    name: profile.nickname || '카카오 회원',
+                    profileName: profile.nickname || `Kakao_${res.id.toString().slice(-4)}`,
+                    region: '미지정',
+                    phone: '미지정',
+                    kakaoId: profile.nickname || `kakao_${res.id.toString().slice(-6)}`,
+                    isKakao: true,
+                    role: 'member'
+                  };
+                  updateDB('users_db', [...currentUsers, userToSave]);
+                }
+                
+                window.FirebaseAuth.saveSession(userToSave);
+                
+                showModal('alert', '카카오 연동 완료', '카카오 간편 로그인이 성공적으로 완료되었습니다.', () => {
+                  onLoginSuccess(userToSave);
+                });
+              },
+              fail: function(error) {
+                console.error("Kakao API Request Fail:", error);
+                showModal('alert', '안내', '카카오 사용자 정보를 가져오는 중 오류가 발생했습니다: ' + JSON.stringify(error));
               }
-              
-              window.FirebaseAuth.saveSession(userToSave);
-              
-              showModal('alert', '카카오 연동 완료', '카카오 간편 로그인이 성공적으로 완료되었습니다.', () => {
-                onLoginSuccess(userToSave);
-              });
-            },
-            fail: function(error) {
-              console.error(error);
-              showModal('alert', '안내', '카카오 사용자 정보를 가져오는 중 오류가 발생했습니다.');
-            }
-          });
-        },
-        fail: function(err) {
-          console.error(err);
-          showModal('alert', '안내', '카카오 SDK 로그인 연동을 실패하였습니다. 가입 테스트 진행을 위해 임시 로그인 모드로 가입을 완료합니다.', () => {
-            triggerMockKakaoLogin();
-          });
-        }
-      });
+            });
+          },
+          fail: function(err) {
+            console.error("Kakao Auth Login Fail:", err);
+            showModal('alert', '안내', '카카오 로그인 연동 실패: ' + JSON.stringify(err) + '\n임시 로그인으로 가입을 완료합니다.', () => {
+              triggerMockKakaoLogin();
+            });
+          }
+        });
+      } catch (e) {
+        console.error("Kakao Auth.login Exception:", e);
+        showModal('alert', '안내', '카카오 로그인 호출 중 오류가 발생했습니다: ' + e.message + '\n임시 로그인으로 가입을 진행합니다.', () => {
+          triggerMockKakaoLogin();
+        });
+      }
     } else {
       showModal('alert', '안내', '카카오 SDK가 준비되지 않았습니다. 임시 로그인으로 가입을 진행합니다.', () => {
         triggerMockKakaoLogin();
