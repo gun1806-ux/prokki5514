@@ -1,7 +1,12 @@
 // ============================================================================
-// [1] Firebase API 키 등록 공간
-// 차후 실제 Firebase 프로젝트를 생성하신 후 아래 설정값들을 교체하세요.
+// [1] API 연동 키 설정 (의뢰인 수정 영역)
+// 발급받으신 각 서비스의 키 값을 아래 따옴표 안에 넣어주세요.
 // ============================================================================
+
+// 1. 카카오 로그인 API JavaScript 키 (카카오 디벨로퍼스 앱 설정에서 발급)
+const KAKAO_JS_KEY = "6298d79a9b447a3eca3dfedd80a08e4a"; 
+
+// 2. 파이어베이스 웹 앱 설정 키 (파이어베이스 콘솔 앱 설정에서 발급)
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyAZ98poir8qwUBBnlH71LdU_mN0-t85EF0",
   authDomain: "ttolgi-analyzer.firebaseapp.com",
@@ -12,13 +17,11 @@ const FIREBASE_CONFIG = {
 };
 
 // ============================================================================
-// [2] 카카오 / 토스 결제 API 키 설정 공간
+// [2] 시스템 자동 바인딩 설정 (절대 수정 금지)
 // ============================================================================
 const USER_CONFIG = {
   FIREBASE: FIREBASE_CONFIG,
-  KAKAO_JS_KEY: "1234567890abcdef1234567890abcdef", 
-  TOSS_CLIENT_KEY: "test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq" 
+  KAKAO_JS_KEY: KAKAO_JS_KEY
 };
 
-// 전역 객체로 내보내기 (app.js에서 접근)
 window.USER_CONFIG = USER_CONFIG;

@@ -7,7 +7,6 @@ const APP_CONFIG = window.USER_CONFIG || {};
 const loadLocalData = window.FirebaseDB.loadData;
 const saveLocalData = window.FirebaseDB.saveData;
 const FirebaseAuth = window.FirebaseAuth;
-const PaymentService = window.PaymentService;
 
 // SDK 초기화 연동 유지
 if (window.Kakao && !window.Kakao.isInitialized()) {
@@ -553,9 +552,18 @@ const Footer = ({ showModal, onAdminSecretLogin }) => {
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-t border-gray-100 pt-8 text-xs md:text-sm mt-4 relative z-10 text-gray-500 gap-4 md:gap-0">
           <div>
-            <p className="mb-2 word-keep">주식회사 브랜드빌더 돈버는똘기 | 대표: 현역 유튜버 | 사업자등록번호: 123-45-67890</p>
-            <p className="mb-4 word-keep">서울특별시 강남구 테헤란로 123 | 개인정보보호책임자: 돈버는똘기</p>
-            <p>© 2026 브랜드빌더, 돈버는 똘기. All rights reserved.</p>
+            <p className="mb-2 font-bold text-gray-800 text-sm">Business Registration Information</p>
+            <p className="mb-0.5">Business Registration No. 893-18-02647</p>
+            <p className="mb-0.5">Business Name Donbeoneun Ttolgi</p>
+            <p className="mb-4">Representative Sangjun Kim</p>
+
+            <p className="mb-2 font-bold text-gray-800 text-sm">Business Address</p>
+            <p className="mb-4 word-keep">STUDIO3, Room 202, 2F, Building 1, 20-1, Daegongwon-ro 99beon-gil, Nam-gu, Ulsan, Republic of Korea</p>
+
+            <p className="mb-2 font-bold text-gray-800 text-sm">Business Type</p>
+            <p className="mb-6 word-keep">Education Service / Professional, Scientific and Technical Services</p>
+
+            <p>© 2026 Donbeoneun Ttolgi. All rights reserved.</p>
           </div>
           
           <button onClick={handleHiddenAdmin} className="text-[#FF8A00] hover:text-[#c96a00] text-sm font-black transition-colors cursor-pointer px-4 py-2 pointer-events-auto focus:outline-none">
@@ -991,11 +999,6 @@ const EnrollmentPage = ({ user, enrolledCourses, materials, navigate, showModal,
 
 const CourseDetailPage = ({ course, user, onEnroll, navigate, showModal }) => {
   if (!course) return <div className="pt-32 text-center h-screen font-bold">강의를 찾을 수 없습니다.</div>;
-
-  const handlePaymentRequest = () => {
-    // 이제 외부 모듈인 PaymentService를 호출하여 결제 로직을 처리합니다.
-    window.PaymentService.requestCoursePayment(course, user, onEnroll, showModal, navigate);
-  };
 
   return (
     <div className="bg-gray-50 min-h-screen pt-16">
