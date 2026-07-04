@@ -110,10 +110,7 @@ const INITIAL_COURSES = [
     ]
   }
 ];
-const INITIAL_COMMUNITY = [
-  { id: "comm-1", title: "유튜브 보고 왔다가 인생이 바뀌었습니다.", author: "초보셀러", date: "2026-05-20", content: "무작정 상품 등록만 하다가 건강만 상했는데, 똘기님 강의 듣고 똑똑하게 일하는 법을 배웠어요. 진심으로 감사드립니다." },
-  { id: "comm-2", title: "스토어 매각 목표로 달리고 있습니다!", author: "실행력갑", date: "2026-05-21", content: "단기 매출이 아니라 사업으로 접근하라는 말씀, 뼈에 새기고 있습니다. 템플릿 잘 활용하고 있어요." } 
-];
+const INITIAL_COMMUNITY = [];
 const INITIAL_MATERIALS = [
   {
     id: "mat-1",
@@ -179,12 +176,7 @@ const INITIAL_MATERIALS = [
   }
 ];
 
-const INITIAL_QNA = [
-  { id: "qna-1", question: "초보자도 수업을 따라갈 수 있나요?", answer: "네, 가능합니다. 본 강의는 아이템 소싱의 본질부터 시장 분석, 브랜딩 설계까지 단계별 실전 과정으로 구성되어 있습니다. 완전 초보자분들도 단계적으로 실천하며 성과를 낼 수 있도록 1:1 밀착 피드백을 제공합니다.", date: "2026-06-10", author: "관리자" },
-  { id: "qna-2", question: "자료실에 있는 프로그램과 자료들은 언제까지 이용할 수 있나요?", answer: "수강신청을 완료한 수강생분들에게는 평생 소장 권한이 부여되며, 업데이트되는 자료실의 프로그램과 리소스도 기간 제한 없이 무료로 계속 이용하실 수 있습니다.", date: "2026-06-10", author: "관리자" },
-  { id: "qna-3", question: "노트북 사양이 좋아야 하나요?", answer: "일반적인 인터넷 검색 및 문서 작업이 가능한 수준의 노트북이나 PC라면 사양에 관계없이 수업 참여와 소싱 프로그램 구동이 가능합니다.", date: "2026-06-10", author: "관리자" },
-  { id: "qna-4", question: "중도 환불이 가능한가요?", answer: "환불 규정에 의거하여 강의 시작 전에는 100% 환불이 가능하며, 시작 이후에는 수강 진행률에 따라 정산 후 환불이 진행됩니다. 자세한 환불 문의는 고객센터로 연락 주시기 바랍니다.", date: "2026-06-10", author: "관리자" }
-];
+const INITIAL_QNA = [];
 
 const formatPrice = (price) => price === 0 ? '무료' : new Intl.NumberFormat('ko-KR').format(price) + '원';
 const Badge = ({ children, className = "" }) => (<span className={`px-3 py-1.5 text-[11px] md:text-xs font-extrabold rounded-full bg-[#1D1D1D] text-[#FF8A00] shadow-sm shadow-black/20 inline-block tracking-tight ${className}`}>{children}</span>);
@@ -2554,25 +2546,61 @@ const MarginCalculatorPage = ({ marginCalcs, user, updateDB, navigate, showModal
   const [calcName, setCalcName] = React.useState('');
   const [exchangeStatus, setExchangeStatus] = React.useState('(실시간 환율 로딩 중...)');
 
-  React.useEffect(() => {
-    fetch('https://open.er-api.com/v6/latest/CNY')
-      .then(res => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then(data => {
-        const krwRate = data.rates && data.rates.KRW;
+  const fetchNaverExchangeRate = async (isManual = false) => {
+    if (isManual) {
+      setExchangeStatus('(환율 업데이트 중...)');
+    } else {
+      setExchangeStatus('(네이버 환율 로딩 중...)');
+    }
+    try {
+      const targetUrl = 'https://finance.naver.com/marketindex/exchangeList.naver';
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}&_=` + Date.now();
+      const res = await fetch(proxyUrl);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const html = data.contents || '';
+      const match = html.match(/marketindexCd=FX_CNYKRW.*?<td class="sale">([\d\.,]+)<\/td>/s);
+      if (match) {
+        const rate = parseFloat(match[1].replace(/,/g, ''));
+        setInputs(prev => ({ ...prev, exchangeRate: rate }));
+        setExchangeStatus(`(실시간: ¥1 = ${rate}원)`);
+        if (isManual) {
+          showModal('alert', '환율 업데이트 완료', `네이버 실시간 위안화 환율(${rate}원)이 계산기에 적용되었습니다.`);
+        }
+        return;
+      }
+      throw new Error();
+    } catch (err) {
+      console.warn("Failed to fetch Naver exchange rate, falling back to ER-API...", err);
+      try {
+        const fallbackRes = await fetch('https://open.er-api.com/v6/latest/CNY');
+        if (!fallbackRes.ok) throw new Error();
+        const fallbackData = await fallbackRes.json();
+        const krwRate = fallbackData.rates && fallbackData.rates.KRW;
         if (krwRate) {
           const rate = parseFloat(krwRate.toFixed(2));
           setInputs(prev => ({ ...prev, exchangeRate: rate }));
-          setExchangeStatus(`(실시간: ¥1 = ${rate}원)`);
+          setExchangeStatus(`(실시간: ¥1 = ${rate}원 - 백업망)`);
+          if (isManual) {
+            showModal('alert', '환율 업데이트 완료 (백업망)', `실시간 위안화 환율(${rate}원)이 백업망을 통해 적용되었습니다.`);
+          }
         } else {
-          setExchangeStatus('(실시간 환율 조회 실패 - 기본값)');
+          setExchangeStatus('(환율 조회 실패 - 기본값)');
+          if (isManual) {
+            showModal('alert', '환율 조회 실패', '환율 정보를 가져오지 못했습니다. 수동으로 입력해 주세요.');
+          }
         }
-      })
-      .catch(() => {
-        setExchangeStatus('(실시간 환율 조회 실패 - 기본값)');
-      });
+      } catch (fallbackErr) {
+        setExchangeStatus('(환율 조회 실패 - 기본값)');
+        if (isManual) {
+          showModal('alert', '환율 조회 실패', '환율 정보를 가져오지 못했습니다. 수동으로 입력해 주세요.');
+        }
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    fetchNaverExchangeRate(false);
   }, []);
 
   const handleInputChange = (e) => {
@@ -2589,7 +2617,7 @@ const MarginCalculatorPage = ({ marginCalcs, user, updateDB, navigate, showModal
     const inp = item.inputs;
     const pPrice = inp.foreignCost * inp.exchangeRate * (1 + (inp.purchaseFeeRate / 100));
     const tCost = pPrice * inp.importedQty;
-    const baseF = { S: 3000, M: 4500, L: 5500, W: 0 }[inp.size] || 0;
+    const baseF = { XS: 2400, S: 3000, M: 3700, L1: 4200, L2: 6000, XL: 7500, W: 0 }[inp.size] || 0;
     const fFee = baseF * 1.1;
     const cPerBox = (inp.width * inp.length * inp.height) / 1000000;
     const tCbm = cPerBox * inp.totalBoxQty;
@@ -2604,12 +2632,55 @@ const MarginCalculatorPage = ({ marginCalcs, user, updateDB, navigate, showModal
     return inp.sellingPrice > 0 ? (nMargin / inp.sellingPrice) * 100 : 0;
   };
 
+  const getRecordCalculatedData = (item) => {
+    if (!item || !item.inputs) return {
+      exchangeRate: 0,
+      totalProductCost: 0,
+      finalCostPerUnit: 0,
+      totalExpenses: 0,
+      netMargin: 0,
+      marginRate: 0,
+      marginRateCost: 0,
+      breakEvenRoas: 0
+    };
+    const inp = item.inputs;
+    const pPrice = inp.foreignCost * inp.exchangeRate * (1 + (inp.purchaseFeeRate / 100));
+    const tCost = pPrice * inp.importedQty;
+    const baseF = { XS: 2400, S: 3000, M: 3700, L1: 4200, L2: 6000, XL: 7500, W: 0 }[inp.size] || 0;
+    const fFee = baseF * 1.1;
+    const cPerBox = (inp.width * inp.length * inp.height) / 1000000;
+    const tCbm = cPerBox * inp.totalBoxQty;
+    const chCbm = Math.ceil(tCbm * 10) / 10;
+    const sShippingFee = chCbm >= 1.0 ? chCbm * 78000 : 0;
+    const cDuty = tCost * (inp.dutyRate / 100);
+    const vFee = (tCost + sShippingFee + inp.coFee + inp.blFee + cDuty) * 0.1;
+    const mExpenses = sShippingFee + inp.handlingFee + inp.coFee + inp.blFee + cDuty + vFee + inp.customsBrokerFee + inp.inspectionFee + inp.domesticLogisticsFee + inp.milkRunFee + inp.otherExpenses;
+    const totalExpenses = mExpenses + tCost;
+    const sFeeAmount = inp.sellingPrice * (inp.salesFeeRate / 100);
+    const lFeePerUnit = inp.importedQty > 0 ? (mExpenses / inp.importedQty) : 0;
+    const netMargin = inp.sellingPrice - sFeeAmount - pPrice - fFee - lFeePerUnit;
+    const marginRate = inp.sellingPrice > 0 ? (netMargin / inp.sellingPrice) * 100 : 0;
+    const finalCostPerUnit = inp.importedQty > 0 ? (totalExpenses / inp.importedQty) : 0;
+    const marginRateCost = finalCostPerUnit > 0 ? (netMargin / finalCostPerUnit) * 100 : 0;
+    const breakEvenRoas = netMargin > 0 ? (inp.sellingPrice / netMargin) * 100 : 0;
+    return {
+      exchangeRate: inp.exchangeRate,
+      totalProductCost: tCost,
+      finalCostPerUnit: finalCostPerUnit,
+      totalExpenses: totalExpenses,
+      netMargin: netMargin,
+      marginRate: marginRate,
+      marginRateCost: marginRateCost,
+      breakEvenRoas: breakEvenRoas
+    };
+  };
+
   // 1. 매입가 계산
   const purchasePrice = inputs.foreignCost * inputs.exchangeRate * (1 + (inputs.purchaseFeeRate / 100));
   const totalProductCost = purchasePrice * inputs.importedQty;
 
   // 2. 입출고비용 계산 (VAT포함)
-  const sizePrices = { S: 3000, M: 4500, L: 5500, W: 0 };
+  const sizePrices = { XS: 2400, S: 3000, M: 3700, L1: 4200, L2: 6000, XL: 7500, W: 0 };
   const baseFulfillmentFee = sizePrices[inputs.size] || 0;
   const fulfillmentFee = baseFulfillmentFee * 1.1;
 
@@ -2711,15 +2782,96 @@ const MarginCalculatorPage = ({ marginCalcs, user, updateDB, navigate, showModal
           <p className="text-gray-500 font-medium text-base md:text-lg">로켓그로스 입출고비용 및 해운 물류비까지 반영한 진짜 마진율을 검산해보세요.</p>
         </div>
 
+        {/* PC버전 상단 계산결과 목록 */}
+        <div className="hidden lg:block bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 rounded-3xl mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-base font-black text-gray-900 flex items-center gap-2">
+              <span className="w-2.5 h-6 bg-[#FF8A00] rounded-full inline-block"></span>
+              <span>계산결과 목록</span>
+              <span className="text-[10px] bg-orange-50 text-[#FF8A00] px-2.5 py-0.5 rounded-md font-black tracking-tight">전체 {userCalcs.length}개</span>
+            </h3>
+            <span className="text-xs text-gray-400 font-medium">저장된 행을 선택하면 계산 입력값을 다시 불러옵니다.</span>
+          </div>
+          
+          {!user ? (
+            <div className="text-center py-8 border border-dashed border-gray-200 rounded-2xl">
+              <p className="text-xs text-gray-400 font-bold">로그인하시면 기존 저장 리스트가 노출됩니다.</p>
+            </div>
+          ) : userCalcs.length === 0 ? (
+            <div className="text-center py-8 border border-dashed border-gray-200 rounded-2xl">
+              <p className="text-xs text-gray-400 font-bold">저장된 마진 계산 내역이 없습니다.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs font-bold text-gray-600 border-collapse">
+                <thead>
+                  <tr className="border-b border-gray-100 text-gray-400 text-left bg-gray-50/50">
+                    <th className="py-3 px-4 rounded-l-2xl">생성일</th>
+                    <th className="py-3 px-4">제목</th>
+                    <th className="py-3 px-4 text-right">환율</th>
+                    <th className="py-3 px-4 text-right">수입원가 총 합계</th>
+                    <th className="py-3 px-4 text-right">개당 수입단가</th>
+                    <th className="py-3 px-4 text-right">총 지출비용</th>
+                    <th className="py-3 px-4 text-right">개당 판매이익금</th>
+                    <th className="py-3 px-4 text-right">판매가 대비 이익률</th>
+                    <th className="py-3 px-4 text-right">원가 대비 이익률</th>
+                    <th className="py-3 px-4 text-right">최소 광고수익률</th>
+                    <th className="py-3 px-4 text-center rounded-r-2xl">기능</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {userCalcs.map(item => {
+                    const calculated = getRecordCalculatedData(item);
+                    return (
+                      <tr 
+                        key={item.id} 
+                        onClick={() => handleLoadRecord(item)}
+                        className="border-b border-gray-50 hover:bg-orange-50/20 cursor-pointer transition-colors"
+                      >
+                        <td className="py-3.5 px-4 text-gray-400 font-normal">{item.date}</td>
+                        <td className="py-3.5 px-4 text-gray-900 font-black truncate max-w-[150px]">{item.name}</td>
+                        <td className="py-3.5 px-4 text-right text-gray-800">¥ {calculated.exchangeRate.toFixed(2)}</td>
+                        <td className="py-3.5 px-4 text-right text-gray-900">{formatPrice(calculated.totalProductCost)}</td>
+                        <td className="py-3.5 px-4 text-right text-gray-800">{formatPrice(calculated.finalCostPerUnit)}</td>
+                        <td className="py-3.5 px-4 text-right text-gray-800">{formatPrice(calculated.totalExpenses)}</td>
+                        <td className="py-3.5 px-4 text-right text-[#FF8A00] font-black">{formatPrice(calculated.netMargin)}</td>
+                        <td className="py-3.5 px-4 text-right text-green-600">{calculated.marginRate.toFixed(1)}%</td>
+                        <td className="py-3.5 px-4 text-right text-indigo-600">{calculated.marginRateCost.toFixed(1)}%</td>
+                        <td className="py-3.5 px-4 text-right text-[#FF8A00]">{calculated.breakEvenRoas.toFixed(0)}%</td>
+                        <td className="py-3.5 px-4 text-center">
+                          <button 
+                            onClick={(e) => handleDeleteRecord(e, item.id)}
+                            className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100/50 px-2.5 py-1.5 rounded-lg text-[10px] transition-colors font-bold"
+                          >
+                            삭제
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
         <div className="grid lg:grid-cols-3 gap-8 items-start">
           {/* Left panel: Input Forms (Span 2) */}
           <div className="lg:col-span-2 space-y-6">
             
             {/* 1. 상품 및 매입 설정 */}
             <div className="bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 rounded-3xl">
-              <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
+              <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2 flex-wrap">
                 <span className="w-2.5 h-6 bg-[#FF8A00] rounded-full inline-block"></span>
-                상품 및 매입 설정
+                <span>상품 및 매입 설정</span>
+                <button
+                  onClick={() => fetchNaverExchangeRate(true)}
+                  className="ml-2 bg-[#FF8A00] hover:bg-[#E07A00] text-black font-extrabold text-xs px-3 py-1.5 rounded-xl transition-all active:scale-95 flex items-center gap-1 shadow-sm focus:outline-none"
+                  type="button"
+                >
+                  환율 가져오기
+                </button>
+                <span className="text-[10px] text-gray-400 font-bold ml-1">(네이버 실시간 위안화 기준)</span>
               </h3>
               <div className="grid md:grid-cols-3 gap-5">
                 <div>
@@ -2757,9 +2909,16 @@ const MarginCalculatorPage = ({ marginCalcs, user, updateDB, navigate, showModal
 
             {/* 2. 판매 설정 */}
             <div className="bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 rounded-3xl">
-              <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
+              <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2 flex-wrap">
                 <span className="w-2.5 h-6 bg-[#FF8A00] rounded-full inline-block"></span>
-                판매 정보 설정
+                <span>판매 정보 설정</span>
+                <button
+                  onClick={() => showModal('postView', '입고사이즈 규격기준', '<img src="assets/images/13.webp" class="max-w-full h-auto mx-auto rounded-xl shadow-md" />')}
+                  className="ml-2 bg-gray-900 hover:bg-gray-800 text-white font-extrabold text-xs px-3 py-1.5 rounded-xl transition-all active:scale-95 flex items-center gap-1 shadow-sm focus:outline-none"
+                  type="button"
+                >
+                  입고사이즈 규격기준 📋
+                </button>
               </h3>
               <div className="grid md:grid-cols-3 gap-5">
                 <div>
@@ -2769,9 +2928,12 @@ const MarginCalculatorPage = ({ marginCalcs, user, updateDB, navigate, showModal
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase">입고 사이즈 규격</label>
                   <select name="size" value={inputs.size} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#FF8A00] focus:bg-white transition-colors text-sm font-bold outline-none">
-                    <option value="S">소형 (S) - 3,000원</option>
-                    <option value="M">중형 (M) - 4,500원</option>
-                    <option value="L">대형 (L) - 5,500원</option>
+                    <option value="XS">극소형 (XS) - 2,000원~2,400원</option>
+                    <option value="S">소형 (S) - 2,500원~3,000원</option>
+                    <option value="M">중형 (M) - 3,300원~3,700원</option>
+                    <option value="L1">대형 1 (L1) - 3,800원~4,200원</option>
+                    <option value="L2">대형 2 (L2) - 5,500원~6,000원</option>
+                    <option value="XL">특대형 (XL) - 7,000원~7,500원</option>
                     <option value="W">직접배송 (Wing) - 0원</option>
                   </select>
                 </div>
@@ -2998,7 +3160,7 @@ const MarginCalculatorPage = ({ marginCalcs, user, updateDB, navigate, showModal
             </div>
 
             {/* 저장 목록 히스토리 */}
-            <div className="bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 rounded-3xl">
+            <div className="lg:hidden bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 rounded-3xl">
               <h3 className="text-sm font-black text-gray-500 mb-4 uppercase tracking-wider">저장된 마진 목록 ({userCalcs.length})</h3>
               {!user ? (
                 <p className="text-xs text-gray-400 font-bold text-center py-4">로그인하시면 기존 저장 리스트가 노출됩니다.</p>
