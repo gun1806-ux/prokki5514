@@ -116,7 +116,7 @@ const INITIAL_MATERIALS = [
     id: "mat-1",
     title: "경쟁사 판매량 분석프로그램",
     type: "프로그램",
-    icon: "assets/images/9.png",
+    icon: "assets/images/9.webp",
     desc: "쿠팡, 스마트스토어에서 경쟁 셀러의 실제 판매량을 추적하는 프로그램입니다. 상위 노출 상품의 월별 매출량을 일일이 확인하여 안정적인 아이템을 선별할 수 있습니다.",
     steps: [
       "프로그램 다운로드 후 실행",
@@ -132,7 +132,7 @@ const INITIAL_MATERIALS = [
     id: "mat-2",
     title: "외부링크 추적 프로그램",
     type: "프로그램",
-    icon: "assets/images/10.png",
+    icon: "assets/images/10.webp",
     desc: "외부 링크(블로그, SNS, 카페 등)에서 유입되는 트래фик을 추적하는 툴입니다. 어떤 링크가 실제 매출로 이어지는지 데이터로 확인할 수 있습니다.",
     steps: [
       "프로그램 설치 후 실행",
@@ -148,7 +148,7 @@ const INITIAL_MATERIALS = [
     id: "mat-3",
     title: "AI 양방향 자동번역기 + 1688 LV6 아이디 + 체험단 업체",
     type: "리소스",
-    icon: "assets/images/11.png",
+    icon: "assets/images/11.webp",
     desc: "3가지 리소스 패키지입니다. AI를 이용한 한중 양방향 자동 번역기, 1688 고등급(LV6) 바이어 아이디, 실제 체험단 연계 업체 리스트가 포함되어 있습니다.",
     steps: [
       "[자동번역기] 크롬 확장프로그램 설치 후 사용",
@@ -163,7 +163,7 @@ const INITIAL_MATERIALS = [
     id: "mat-4",
     title: "수입대행 & 3PL 동시운영 업체",
     type: "업체정보",
-    icon: "assets/images/12.png",
+    icon: "assets/images/12.webp",
     desc: "중국산 제품 수입 대행과 3PL(창고/배송) 업무를 동시에 운영하는 업체 리스트입니다. 똘기가 직접 겪어보고 신뢰할 수 있는 파트너입니다.",
     steps: [
       "업체 리스트 다운로드",
@@ -217,12 +217,12 @@ const AnimatedCount = ({ target, suffix = '', format }) => {
 };
 
 const HERO_VIDEO_SRC = new URL('assets/videos/1.mp4', document.baseURI).href;
-const HERO_VIDEO_FALLBACK_IMAGE = new URL('assets/images/2.png', document.baseURI).href;
+const HERO_VIDEO_FALLBACK_IMAGE = new URL('assets/images/2.webp', document.baseURI).href;
 
 // ============================================================================
 // 좌우 화살표가 장착된 향상된 슬라이더(Carousel) 컴포넌트
 // ============================================================================
-const Carousel = ({ items, renderItem }) => {
+const Carousel = ({ items, renderItem, loading }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
@@ -239,6 +239,15 @@ const Carousel = ({ items, renderItem }) => {
     }, 4000); 
     return () => clearInterval(timer);
   }, [items]);
+
+  if (loading) {
+    return (
+      <div className="text-center p-20 text-gray-400 font-medium border border-gray-800 rounded-[2rem] bg-[#111111] animate-pulse flex flex-col items-center justify-center gap-2">
+        <div className="w-8 h-8 border-4 border-[#FF8A00] border-t-transparent rounded-full animate-spin"></div>
+        <span className="text-xs font-black mt-2 text-gray-500">수강생 후기를 불러오는 중...</span>
+      </div>
+    );
+  }
 
   if (!items || items.length === 0) {
     return <div className="text-center p-10 text-gray-400 font-medium border border-gray-100 rounded-3xl">등록된 데이터가 없습니다.</div>;
@@ -273,7 +282,15 @@ const Carousel = ({ items, renderItem }) => {
   );
 };
 
-const Marquee = ({ items, renderItem }) => {
+const Marquee = ({ items, renderItem, loading }) => {
+  if (loading) {
+    return (
+      <div className="text-center p-16 text-gray-400 font-medium border border-[#f4e4ce] rounded-3xl bg-white/50 animate-pulse flex flex-col items-center justify-center gap-2">
+        <div className="w-8 h-8 border-4 border-[#FF8A00] border-t-transparent rounded-full animate-spin"></div>
+        <span className="text-xs font-black mt-2 text-gray-500">수익 인증 목록을 불러오는 중...</span>
+      </div>
+    );
+  }
   if (!items || items.length === 0) {
     return <div className="text-center p-10 text-gray-400 font-medium border border-[#f4e4ce] rounded-3xl">등록된 데이터가 없습니다.</div>;
   }
@@ -571,7 +588,17 @@ const Footer = ({ showModal, onAdminSecretLogin }) => {
 // ============================================================================
 // 새로운 페이지 뷰: 전체 리뷰 / 전체 수익인증
 // ============================================================================
-const ReviewsPage = ({ reviewsData, navigate, showModal, onReviewClick }) => {
+const ReviewsPage = ({ reviewsData, navigate, showModal, onReviewClick, loading }) => {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#fffcf7] pt-32 pb-24 flex items-center justify-center">
+        <div className="text-center flex flex-col items-center gap-3">
+          <div className="w-12 h-12 border-4 border-[#FF8A00] border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-black text-sm">수강후기 데이터를 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50 pt-32 pb-24">
       <div className="max-w-7xl mx-auto px-6">
@@ -618,7 +645,17 @@ const ReviewsPage = ({ reviewsData, navigate, showModal, onReviewClick }) => {
   );
 };
 
-const RevenuesPage = ({ revenuesData, navigate, showModal }) => {
+const RevenuesPage = ({ revenuesData, navigate, showModal, loading }) => {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 pt-32 pb-24 flex items-center justify-center">
+        <div className="text-center flex flex-col items-center gap-3">
+          <div className="w-12 h-12 border-4 border-[#FF8A00] border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-400 font-black text-sm">수익인증 데이터를 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-900 pt-32 pb-24">
       <div className="max-w-7xl mx-auto px-6">
@@ -627,22 +664,28 @@ const RevenuesPage = ({ revenuesData, navigate, showModal }) => {
           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight word-keep mb-3">더 이상 매출 자랑에 속지마세요</h1>
           <p className="text-gray-400 font-medium text-lg">진짜 사업은 마진율에 있습니다.</p>
         </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          {revenuesData.map(rev => (
-            <div key={rev.id} className="bg-[#111111] rounded-3xl overflow-hidden border border-gray-800 shadow-lg hover:shadow-xl transition-shadow flex flex-col h-[360px] cursor-pointer" onClick={() => showModal('postView', rev.title, rev.content)}>
-               <div className="h-48 overflow-hidden relative border-b border-gray-800">
-                  <img src={rev.thumbnail} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute top-4 left-4 bg-[#FF8A00] text-black font-black px-3 py-1 rounded-lg shadow-md word-keep text-xs">{rev.cohort || rev.amount}</div>
-               </div>
-               <div className="p-6 flex-1 flex flex-col justify-between bg-[#111111]">
-                  <h3 className="font-bold text-base md:text-lg text-white mb-2 line-clamp-2 word-keep">{rev.title}</h3>
-                  <div className="mt-auto text-xs text-gray-400 font-medium">
-                     <span>{rev.author}</span>
-                  </div>
-               </div>
-            </div>
-          ))}
-        </div>
+        {(!revenuesData || revenuesData.length === 0) ? (
+          <div className="text-center p-20 text-gray-400 font-medium border border-gray-800 rounded-3xl bg-[#111111]/30">
+            등록된 수익인증글이 없습니다.
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-3 gap-6">
+            {revenuesData.map(rev => (
+              <div key={rev.id} className="bg-[#111111] rounded-3xl overflow-hidden border border-gray-800 shadow-lg hover:shadow-xl transition-shadow flex flex-col h-[360px] cursor-pointer" onClick={() => showModal('postView', rev.title, rev.content)}>
+                 <div className="h-48 overflow-hidden relative border-b border-gray-800">
+                    <img src={rev.thumbnail} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                    <div className="absolute top-4 left-4 bg-[#FF8A00] text-black font-black px-3 py-1 rounded-lg shadow-md word-keep text-xs">{rev.cohort || rev.amount}</div>
+                 </div>
+                 <div className="p-6 flex-1 flex flex-col justify-between bg-[#111111]">
+                    <h3 className="font-bold text-base md:text-lg text-white mb-2 line-clamp-2 word-keep">{rev.title}</h3>
+                    <div className="mt-auto text-xs text-gray-400 font-medium">
+                       <span>{rev.author}</span>
+                    </div>
+                 </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -651,7 +694,7 @@ const RevenuesPage = ({ revenuesData, navigate, showModal }) => {
 // ============================================================================
 // 메인 페이지 뷰
 // ============================================================================
-const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onReviewClick }) => {
+const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onReviewClick, isReviewsLoading, isRevenuesLoading }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
@@ -764,7 +807,7 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onR
             {[
               { src: 'assets/images/6.webp', title: '권리금 수익만 4.5억 + 이상', desc: <>찐 이커머스 판에서 검증 완료된<br/>전문가</>, link: 'https://newneek.co/@windly/article/38837' },
               { src: 'assets/images/7.webp', title: 'CEO저널 언론사 인터뷰', desc: '돈버는 똘기의 철학과 가치관이 담겨있어요.', link: 'https://www.ceojhn.com/news/articleView.html?idxno=9181' },
-              { src: 'assets/images/8.png', title: '시작하신다면 위 영상 정주행!', desc: '시리즈 정주행이면 월200충분', link: 'https://www.youtube.com/@156cmm' }
+              { src: 'assets/images/8.webp', title: '시작하신다면 위 영상 정주행!', desc: '시리즈 정주행이면 월200충분', link: 'https://www.youtube.com/@156cmm' }
             ].map((item, i) => (
               <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className="block text-center px-4 hover:-translate-y-2 transition-transform duration-300 group">
                 <div className="flex justify-center mb-6">
@@ -795,7 +838,7 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onR
             className="inline-block rounded-2xl overflow-hidden shadow-xl cursor-pointer hover:scale-[1.02] transition-transform duration-300"
             onClick={() => navigate('/enrollment')}
           >
-            <img src="assets/images/5.jpg" alt="수강신청 바로가기" className="w-auto max-w-xs sm:max-w-sm md:max-w-md h-auto object-cover block" />
+            <img src="assets/images/5.png" alt="수강신청 바로가기" className="w-auto max-w-xs sm:max-w-sm md:max-w-md h-auto object-cover block" />
           </div>
           <p className="text-xs md:text-sm text-gray-400 font-medium mt-3">쿠팡부터, 스마트스토어, 브랜드까지</p>
         </div>
@@ -824,7 +867,7 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onR
                   </div>
                </div>
             </div>
-          )} />
+          )} loading={isRevenuesLoading} />
           <div className="mt-8 text-center md:hidden">
              <Button variant="outline" className="w-full" onClick={()=>navigate('/revenues')}>수익인증 전체보기</Button>
           </div>
@@ -869,7 +912,7 @@ const HomePage = ({ courses, reviewsData, revenuesData, navigate, showModal, onR
               <p className="text-gray-300 text-sm md:text-base font-medium leading-relaxed mb-6 flex-1 word-keep overflow-hidden">"{review.comment}"</p>
               <div className="border-t border-gray-800 pt-5 mt-auto"><div className="font-bold text-white text-sm word-keep">{review.name} 수강생</div></div>
             </div>
-          )} />
+          )} loading={isReviewsLoading} />
         </div>
       </section>
     </div>
@@ -972,7 +1015,7 @@ const EnrollmentPage = ({ user, enrolledCourses, materials, navigate, showModal,
         {/* Large Image Button */}
         <div className="w-full max-w-2xl bg-[#111111] rounded-[2rem] p-6 border border-[#FF8A00]/30 shadow-[0_0_30px_rgba(255,138,0,0.15)] flex flex-col items-center hover:scale-[1.01] transition-transform duration-300">
           <a href="https://pf.kakao.com/_bPinX/friend" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.preventDefault(); handleApplyClick(); }} className="block w-full focus:outline-none">
-            <img src="assets/images/5.jpg" alt="지원서 접수하기" className="w-full h-auto object-cover rounded-2xl cursor-pointer shadow-md hover:opacity-95 transition-opacity" />
+            <img src="assets/images/5.png" alt="지원서 접수하기" className="w-full h-auto object-cover rounded-2xl cursor-pointer shadow-md hover:opacity-95 transition-opacity" />
           </a>
           <div className="mt-6 text-center w-full">
             <p className="text-xs text-[#FF8A00] font-bold mb-4">★ 1:1 밀착 코칭 및 실전 압축 실습 ★</p>
@@ -1546,7 +1589,7 @@ const MaterialsPage = ({ enrolledCourses, materials, navigate, user, isAdmin }) 
             >
               <div className="flex items-center gap-5">
                 <div className="w-14 h-14 rounded-2xl overflow-hidden flex-shrink-0 shadow-inner group-hover:opacity-90 transition-opacity">
-                  <img src={mat.icon} alt={mat.title} className="w-full h-full object-cover" />
+                  <img src={mat.icon ? mat.icon.replace('.png', '.webp') : ''} alt={mat.title} className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900 word-keep mb-1 tracking-tight text-base">{mat.title}</h3>
@@ -1589,7 +1632,7 @@ const MaterialDetailPage = ({ matId, enrolledCourses, materials, navigate, showM
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8 pb-8 border-b border-gray-100">
             <div className="flex items-center gap-5">
               <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-inner flex-shrink-0">
-                <img src={mat.icon} alt={mat.title} className="w-full h-full object-cover" />
+                <img src={mat.icon ? mat.icon.replace('.png', '.webp') : ''} alt={mat.title} className="w-full h-full object-cover" />
               </div>
               <div>
                 <span className="text-xs bg-orange-50 text-[#FF8A00] px-3 py-1 rounded-full font-black tracking-tight mb-2 inline-block">
@@ -1985,7 +2028,7 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
       description: form.description || '',
       price: Number(form.price || 0),
       studentCount: Number(form.studentCount || 0),
-      thumbnail: form.thumbnail || 'assets/images/5.jpg',
+      thumbnail: form.thumbnail || 'assets/images/5.png',
       curriculum: (form.curriculum || '').split('\n').map(l => l.trim()).filter(Boolean)
     };
     updateDB('courses', [...courses, newItem]);
@@ -2004,7 +2047,7 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
       steps: (form.steps || '').split('\n').map(l => l.trim()).filter(Boolean),
       downloadLabel: form.downloadLabel || '다운로드',
       downloadUrl: form.downloadUrl || '#',
-      icon: form.icon || 'assets/images/9.png'
+      icon: form.icon || 'assets/images/9.webp'
     };
     updateDB('materials', [...materials, newItem]);
     showModal('alert', '등록 성공', '자료가 성공적으로 등록되었습니다.');
@@ -3291,6 +3334,8 @@ function App() {
   });
   const [reviewsData, setReviewsData] = useState(() => loadLocalData('reviews', generateMockReviews()));
   const [revenuesData, setRevenuesData] = useState(() => loadLocalData('revenues', generateMockRevenues()));
+  const [isReviewsLoading, setIsReviewsLoading] = useState(() => window.FirebaseDB.isFirebaseActive());
+  const [isRevenuesLoading, setIsRevenuesLoading] = useState(() => window.FirebaseDB.isFirebaseActive());
   const [usersDB, setUsersDB] = useState(() => loadLocalData('users_db', []));
   const [shuffledRevenues, setShuffledRevenues] = useState([]);
 
@@ -3322,17 +3367,23 @@ function App() {
 
   React.useEffect(() => {
     if (materials && materials.length > 0) {
-      const mat3 = materials.find(m => m.id === 'mat-3');
-      if (mat3 && mat3.steps && mat3.steps[1] === '[리스크] 1688 LV6 아이디로 도매가 할인율 확인') {
-        console.log("[Data Upgrade] Upgrading mat-3 steps to include (강의 수강생 한정 제공)...");
-        const updated = materials.map(m => {
-          if (m.id === 'mat-3') {
-            const steps = [...m.steps];
-            steps[1] = '[리스크] 1688 LV6 아이디로 도매가 할인율 확인 (강의 수강생 한정 제공)';
-            return { ...m, steps };
-          }
-          return m;
-        });
+      let changed = false;
+      const updated = materials.map(m => {
+        let updatedMat = { ...m };
+        if (m.id === 'mat-3' && m.steps && m.steps[1] === '[리스크] 1688 LV6 아이디로 도매가 할인율 확인') {
+          changed = true;
+          const steps = [...m.steps];
+          steps[1] = '[리스크] 1688 LV6 아이디로 도매가 할인율 확인 (강의 수강생 한정 제공)';
+          updatedMat.steps = steps;
+        }
+        if (m.icon && m.icon.endsWith('.png') && (m.icon.includes('9.png') || m.icon.includes('10.png') || m.icon.includes('11.png') || m.icon.includes('12.png'))) {
+          changed = true;
+          updatedMat.icon = m.icon.replace('.png', '.webp');
+        }
+        return updatedMat;
+      });
+      if (changed) {
+        console.log("[Data Upgrade] Upgrading materials data (steps & icon paths) in DB...");
         updateDB('materials', updated);
       }
     }
@@ -3390,6 +3441,7 @@ function App() {
   React.useEffect(() => {
     if (window.FirebaseDB.isFirebaseActive()) {
       const unsubReviews = window.FirebaseDB.subscribe('reviews', (data) => {
+        setIsReviewsLoading(false);
         if (!data || data.length === 0) {
           const mock = generateMockReviews();
           window.FirebaseDB.saveData('reviews', mock);
@@ -3399,6 +3451,7 @@ function App() {
         }
       });
       const unsubRevenues = window.FirebaseDB.subscribe('revenues', (data) => {
+        setIsRevenuesLoading(false);
         if (!data || data.length === 0) {
           const mock = generateMockRevenues();
           window.FirebaseDB.saveData('revenues', mock);
@@ -3574,20 +3627,20 @@ function App() {
     View = <MaterialDetailPage matId={matId} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} user={user} isAdmin={isAdminSession} />;
   } else {
     switch (currentPath) {
-      case '/': View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
+      case '/': View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} isReviewsLoading={isReviewsLoading} isRevenuesLoading={isRevenuesLoading} />; break;
       case '/enrollment': View = <EnrollmentPage user={user} enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} showModal={showModal} onEnroll={handleEnroll} courses={courses} />; break;
       case '/course': View = <CourseDetailPage course={courses.find(c=>c.id===routeState?.courseId)} user={user} onEnroll={handleEnroll} navigate={navigate} showModal={showModal} />; break;
       case '/login': View = <AuthPage usersDB={usersDB} updateDB={updateDB} navigate={navigate} onLoginSuccess={(loggedInUser) => { setUser(loggedInUser || FirebaseAuth.getCurrentUser()); navigate('/'); }} showModal={showModal} />; break;
       case '/write-review': View = <WriteReviewPage user={user} reviewsData={reviewsData} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
-      case '/reviews': View = <ReviewsPage reviewsData={reviewsData} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
-      case '/revenues': View = <RevenuesPage revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} />; break;
+      case '/reviews': View = <ReviewsPage reviewsData={reviewsData} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} loading={isReviewsLoading} />; break;
+      case '/revenues': View = <RevenuesPage revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} loading={isRevenuesLoading} />; break;
       case '/mypage': View = <MyPage user={user} enrolledCourses={enrolledCourses} navigate={navigate} isAdmin={isAdminSession} showModal={showModal} courses={courses} />; break;
       case '/community': View = <CommunityPage communityPosts={community} user={user} onAddPost={(p)=>updateDB('community', [p, ...community])} showModal={showModal} />; break;
       case '/qna': View = <QnaPage qnaList={qna} user={user} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
       case '/margin-calculator': View = <MarginCalculatorPage marginCalcs={marginCalcs} user={user} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
       case '/materials': View = <MaterialsPage enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} user={user} isAdmin={isAdminSession} />; break;
-      case '/admin': View = isAdminSession ? <AdminDashboard courses={courses} materials={materials} community={community} qna={qna} reviewsData={reviewsData} revenuesData={revenuesData} usersDB={usersDB} updateDB={updateDB} navigate={navigate} showModal={showModal} /> : <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
-      default: View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />;
+      case '/admin': View = isAdminSession ? <AdminDashboard courses={courses} materials={materials} community={community} qna={qna} reviewsData={reviewsData} revenuesData={revenuesData} usersDB={usersDB} updateDB={updateDB} navigate={navigate} showModal={showModal} /> : <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} isReviewsLoading={isReviewsLoading} isRevenuesLoading={isRevenuesLoading} />; break;
+      default: View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} isReviewsLoading={isReviewsLoading} isRevenuesLoading={isRevenuesLoading} />;
     }
   }
 
