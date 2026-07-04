@@ -356,6 +356,7 @@ const Header = ({ currentPath, navigate, user, isAdmin, onLogout }) => {
               <button onClick={() => navigate('/reviews')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">수강생후기</button>
               <button onClick={() => navigate('/revenues')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">수익인증</button>
               <button onClick={() => handleNav('/materials')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">자료실</button>
+              <button onClick={() => navigate('/margin-calculator')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">마진율계산기</button>
               <button onClick={() => handleNav('/qna')} className="hover:text-[#FF8A00] transition-colors py-2 px-1">Q&A</button>
               <button onClick={() => handleNav('/mypage')} className="hover:text-[#FF8A00] transition-colors py-2 px-1 md:hidden">마이페이지</button>
               
@@ -2521,7 +2522,531 @@ const AdminDashboard = ({ courses, materials, community, qna, reviewsData, reven
   );
 };
 
-// ============================================================================
+const MarginCalculatorPage = ({ marginCalcs, user, updateDB, navigate, showModal }) => {
+  const [inputs, setInputs] = React.useState({
+    productName: '',
+    optionName: '',
+    productLink: '',
+    foreignCost: 0,
+    exchangeRate: 190,
+    purchaseFeeRate: 1.03,
+    sellingPrice: 0,
+    size: 'S', // S, M, L, W
+    salesFeeRate: 12,
+    width: 0,
+    length: 0,
+    height: 0,
+    totalBoxQty: 0,
+    importedQty: 1,
+    handlingFee: 0,
+    coFee: 0,
+    blFee: 0,
+    dutyRate: 0,
+    customsBrokerFee: 0,
+    inspectionFee: 0,
+    domesticLogisticsFee: 0,
+    milkRunFee: 0,
+    otherExpenses: 0,
+    expectedSalesQty: 0,
+    adSpend: 0
+  });
+
+  const [calcName, setCalcName] = React.useState('');
+  const [exchangeStatus, setExchangeStatus] = React.useState('(실시간 환율 로딩 중...)');
+
+  React.useEffect(() => {
+    fetch('https://open.er-api.com/v6/latest/CNY')
+      .then(res => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then(data => {
+        const krwRate = data.rates && data.rates.KRW;
+        if (krwRate) {
+          const rate = parseFloat(krwRate.toFixed(2));
+          setInputs(prev => ({ ...prev, exchangeRate: rate }));
+          setExchangeStatus(`(실시간: ¥1 = ${rate}원)`);
+        } else {
+          setExchangeStatus('(실시간 환율 조회 실패 - 기본값)');
+        }
+      })
+      .catch(() => {
+        setExchangeStatus('(실시간 환율 조회 실패 - 기본값)');
+      });
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value, type } = e.target;
+    if (type === 'number') {
+      setInputs(prev => ({ ...prev, [name]: parseFloat(value) || 0 }));
+    } else {
+      setInputs(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const calculateRecordMarginRate = (item) => {
+    if (!item || !item.inputs) return 0;
+    const inp = item.inputs;
+    const pPrice = inp.foreignCost * inp.exchangeRate * (1 + (inp.purchaseFeeRate / 100));
+    const tCost = pPrice * inp.importedQty;
+    const baseF = { S: 3000, M: 4500, L: 5500, W: 0 }[inp.size] || 0;
+    const fFee = baseF * 1.1;
+    const cPerBox = (inp.width * inp.length * inp.height) / 1000000;
+    const tCbm = cPerBox * inp.totalBoxQty;
+    const chCbm = Math.ceil(tCbm * 10) / 10;
+    const sShippingFee = chCbm >= 1.0 ? chCbm * 78000 : 0;
+    const cDuty = tCost * (inp.dutyRate / 100);
+    const vFee = (tCost + sShippingFee + inp.coFee + inp.blFee + cDuty) * 0.1;
+    const mExpenses = sShippingFee + inp.handlingFee + inp.coFee + inp.blFee + cDuty + vFee + inp.customsBrokerFee + inp.inspectionFee + inp.domesticLogisticsFee + inp.milkRunFee + inp.otherExpenses;
+    const sFeeAmount = inp.sellingPrice * (inp.salesFeeRate / 100);
+    const lFeePerUnit = inp.importedQty > 0 ? (mExpenses / inp.importedQty) : 0;
+    const nMargin = inp.sellingPrice - sFeeAmount - pPrice - fFee - lFeePerUnit;
+    return inp.sellingPrice > 0 ? (nMargin / inp.sellingPrice) * 100 : 0;
+  };
+
+  // 1. 매입가 계산
+  const purchasePrice = inputs.foreignCost * inputs.exchangeRate * (1 + (inputs.purchaseFeeRate / 100));
+  const totalProductCost = purchasePrice * inputs.importedQty;
+
+  // 2. 입출고비용 계산 (VAT포함)
+  const sizePrices = { S: 3000, M: 4500, L: 5500, W: 0 };
+  const baseFulfillmentFee = sizePrices[inputs.size] || 0;
+  const fulfillmentFee = baseFulfillmentFee * 1.1;
+
+  // 3. CBM 및 해운물류비 계산
+  const cbmPerBox = (inputs.width * inputs.length * inputs.height) / 1000000;
+  const totalCbm = cbmPerBox * inputs.totalBoxQty;
+  const chargedCbm = Math.ceil(totalCbm * 10) / 10; // ROUNDUP to 1 decimal place
+  const seaShippingFee = chargedCbm >= 1.0 ? chargedCbm * 78000 : 0;
+
+  // 4. 관세 및 부가세 계산
+  const calculatedDuty = totalProductCost * (inputs.dutyRate / 100);
+  const vatFee = (totalProductCost + seaShippingFee + inputs.coFee + inputs.blFee + calculatedDuty) * 0.1;
+
+  // 5. 지출비(잡비) 및 총지출비용 계산
+  const miscExpenses = seaShippingFee + inputs.handlingFee + inputs.coFee + inputs.blFee + calculatedDuty + vatFee + inputs.customsBrokerFee + inputs.inspectionFee + inputs.domesticLogisticsFee + inputs.milkRunFee + inputs.otherExpenses;
+  const totalExpenses = miscExpenses + totalProductCost;
+
+  // 6. 개당 순마진 및 마진율 계산
+  const salesFeeAmount = inputs.sellingPrice * (inputs.salesFeeRate / 100);
+  const logisticsFeePerUnit = inputs.importedQty > 0 ? (miscExpenses / inputs.importedQty) : 0;
+  const netMargin = inputs.sellingPrice - salesFeeAmount - purchasePrice - fulfillmentFee - logisticsFeePerUnit;
+  const marginRate = inputs.sellingPrice > 0 ? (netMargin / inputs.sellingPrice) * 100 : 0;
+
+  // 7. 최종 원가 및 잡비제외 원가
+  const finalCostPerUnit = inputs.importedQty > 0 ? (totalExpenses / inputs.importedQty) : 0;
+  const costPerUnitExcludingMisc = inputs.importedQty > 0 ? ((totalExpenses - inputs.milkRunFee - inputs.otherExpenses) / inputs.importedQty) : 0;
+
+  // 8. 손익분기점(BEP) 수량
+  const bepDenominator = inputs.sellingPrice - salesFeeAmount - fulfillmentFee;
+  const adSpendWithVat = inputs.adSpend * 1.1;
+  const bepQty = bepDenominator > 0 ? (totalExpenses + adSpendWithVat) / bepDenominator : 0;
+
+  // 9. 예상 실적 추정
+  const estRevenue = inputs.expectedSalesQty * inputs.sellingPrice;
+  const estProductCost = finalCostPerUnit * inputs.expectedSalesQty;
+  const estSalesFee = salesFeeAmount * inputs.expectedSalesQty;
+  const estFulfillmentFee = fulfillmentFee * inputs.expectedSalesQty;
+  const estProfit = estRevenue - estProductCost - estSalesFee - estFulfillmentFee - adSpendWithVat;
+  const estProfitRate = estRevenue > 0 ? (estProfit / estRevenue) * 100 : 0;
+  const estRoas = adSpendWithVat > 0 ? (estRevenue / adSpendWithVat) * 100 : 0;
+
+  const palletQty = (inputs.width > 0 && inputs.length > 0 && inputs.height > 0) ? Math.floor((110 * 110 * 162) / (inputs.width * inputs.length * inputs.height)) : 0;
+  const breakEvenRoas = netMargin > 0 ? (inputs.sellingPrice / netMargin) * 100 : 0;
+
+  // 정산금액 계산 (판매가 - 수수료)
+  const settlementAmount = inputs.sellingPrice - salesFeeAmount;
+
+  const handleSave = () => {
+    if (!user) {
+      showModal('alert', '로그인 필요', '마진 계산 내역을 저장하려면 로그인이 필요합니다.', () => navigate('/login'));
+      return;
+    }
+    if (!calcName.trim()) {
+      showModal('alert', '안내', '저장할 계산 내역의 이름을 입력해주세요.');
+      return;
+    }
+    const newRecord = {
+      id: `calc-${Date.now()}`,
+      name: calcName.trim(),
+      email: user.email,
+      uid: user.uid,
+      inputs: { ...inputs },
+      date: new Date().toISOString().split('T')[0]
+    };
+    const currentList = marginCalcs || [];
+    const updated = [newRecord, ...currentList.filter(item => !(item.uid === user.uid && item.name === newRecord.name))];
+    updateDB('margin_calcs', updated);
+    setCalcName('');
+    showModal('alert', '저장 완료', '마진 계산 기록이 성공적으로 저장되었습니다.');
+  };
+
+  const handleLoadRecord = (record) => {
+    setInputs(record.inputs);
+    showModal('alert', '불러오기 완료', `'${record.name}' 계산 기록을 불러왔습니다.`);
+  };
+
+  const handleDeleteRecord = (e, recordId) => {
+    e.stopPropagation();
+    showModal('confirm', '삭제 확인', '이 마진 계산 기록을 정말 삭제하시겠습니까?', () => {
+      const currentList = marginCalcs || [];
+      const updated = currentList.filter(item => item.id !== recordId);
+      updateDB('margin_calcs', updated);
+    });
+  };
+
+  const formatPrice = (val) => {
+    return Math.round(val).toLocaleString('ko-KR') + ' 원';
+  };
+
+  const userCalcs = (marginCalcs || []).filter(item => item.uid === user?.uid || item.email === user?.email);
+
+  return (
+    <div className="min-h-screen bg-[#fffcf7] pt-32 pb-24 font-sans">
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
+        {/* Header Title */}
+        <div className="mb-10 text-center md:text-left">
+          <Badge className="mb-4">로켓그로스 & 윙</Badge>
+          <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight word-keep mb-3">마진율 계산기 🚀</h1>
+          <p className="text-gray-500 font-medium text-base md:text-lg">로켓그로스 입출고비용 및 해운 물류비까지 반영한 진짜 마진율을 검산해보세요.</p>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-8 items-start">
+          {/* Left panel: Input Forms (Span 2) */}
+          <div className="lg:col-span-2 space-y-6">
+            
+            {/* 1. 상품 및 매입 설정 */}
+            <div className="bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 rounded-3xl">
+              <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
+                <span className="w-2.5 h-6 bg-[#FF8A00] rounded-full inline-block"></span>
+                상품 및 매입 설정
+              </h3>
+              <div className="grid md:grid-cols-3 gap-5">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase">상품명</label>
+                  <input type="text" name="productName" value={inputs.productName} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#FF8A00] focus:bg-white transition-colors text-sm font-bold" placeholder="예시 상품" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase">옵션명</label>
+                  <input type="text" name="optionName" value={inputs.optionName} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#FF8A00] focus:bg-white transition-colors text-sm font-bold" placeholder="옵션 A" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase">상품링크</label>
+                  <input type="text" name="productLink" value={inputs.productLink} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#FF8A00] focus:bg-white transition-colors text-sm font-bold" placeholder="https://..." />
+                </div>
+              </div>
+              <div className="grid md:grid-cols-3 gap-5 mt-5">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase">해외 원가 (위안 ¥)</label>
+                  <input type="number" name="foreignCost" value={inputs.foreignCost || ''} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#FF8A00] focus:bg-white transition-colors text-sm font-bold" placeholder="0" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase">환율 (원) <span className="text-[#FF8A00] text-[10px] ml-1 font-bold">{exchangeStatus}</span></label>
+                  <input type="number" name="exchangeRate" value={inputs.exchangeRate || ''} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#FF8A00] focus:bg-white transition-colors text-sm font-bold" placeholder="190" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase">매입 수수료 (%)</label>
+                  <input type="number" step="0.01" name="purchaseFeeRate" value={inputs.purchaseFeeRate || ''} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#FF8A00] focus:bg-white transition-colors text-sm font-bold" placeholder="1.03" />
+                </div>
+              </div>
+              <div className="mt-6 p-4 bg-[#fffaf5] rounded-2xl border border-[#ffeed8] flex justify-between items-center text-sm">
+                <span className="font-bold text-gray-600">계산된 원화 매입가 (개당)</span>
+                <span className="font-black text-[#FF8A00]">{formatPrice(purchasePrice)}</span>
+              </div>
+            </div>
+
+            {/* 2. 판매 설정 */}
+            <div className="bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 rounded-3xl">
+              <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
+                <span className="w-2.5 h-6 bg-[#FF8A00] rounded-full inline-block"></span>
+                판매 정보 설정
+              </h3>
+              <div className="grid md:grid-cols-3 gap-5">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase">최종 판매가 (원)</label>
+                  <input type="number" name="sellingPrice" value={inputs.sellingPrice || ''} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#FF8A00] focus:bg-white transition-colors text-sm font-bold" placeholder="0" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase">입고 사이즈 규격</label>
+                  <select name="size" value={inputs.size} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#FF8A00] focus:bg-white transition-colors text-sm font-bold outline-none">
+                    <option value="S">소형 (S) - 3,000원</option>
+                    <option value="M">중형 (M) - 4,500원</option>
+                    <option value="L">대형 (L) - 5,500원</option>
+                    <option value="W">직접배송 (Wing) - 0원</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase">쇼핑몰 판매 수수료 (%)</label>
+                  <input type="number" name="salesFeeRate" value={inputs.salesFeeRate || ''} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#FF8A00] focus:bg-white transition-colors text-sm font-bold" placeholder="12" />
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-5 mt-5">
+                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex justify-between items-center text-sm">
+                  <span className="font-bold text-gray-600">입출고비용 (Vat 포함)</span>
+                  <span className="font-black text-gray-800">{formatPrice(fulfillmentFee)}</span>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex justify-between items-center text-sm">
+                  <span className="font-bold text-gray-600">판매 수수료 (Vat 포함)</span>
+                  <span className="font-black text-gray-800">{formatPrice(salesFeeAmount)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. 물류 규격 및 기타 잡비 설정 */}
+            <div className="bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 rounded-3xl">
+              <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
+                <span className="w-2.5 h-6 bg-[#FF8A00] rounded-full inline-block"></span>
+                물류 및 수입 비용 설정
+              </h3>
+              
+              <div className="bg-[#fffaf5] p-5 rounded-2xl border border-[#ffeed8] mb-6">
+                <h4 className="text-xs font-black text-[#FF8A00] mb-4 uppercase tracking-wider">CBM 및 박스 규격 계산</h4>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase">가로 (cm)</label>
+                    <input type="number" name="width" value={inputs.width || ''} onChange={handleInputChange} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold" placeholder="0" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase">세로 (cm)</label>
+                    <input type="number" name="length" value={inputs.length || ''} onChange={handleInputChange} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold" placeholder="0" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase">높이 (cm)</label>
+                    <input type="number" name="height" value={inputs.height || ''} onChange={handleInputChange} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold" placeholder="0" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase">총 박스 수량</label>
+                    <input type="number" name="totalBoxQty" value={inputs.totalBoxQty || ''} onChange={handleInputChange} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold" placeholder="0" />
+                  </div>
+                  <div className="col-span-2 md:col-span-1">
+                    <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase">총 수입 수량 (pcs)</label>
+                    <input type="number" name="importedQty" value={inputs.importedQty || ''} onChange={handleInputChange} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold" placeholder="1" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4 pt-4 border-t border-[#ffeed8]/60 text-xs font-bold text-gray-600">
+                  <div>개당 CBM: <span className="text-gray-900 font-black">{cbmPerBox.toFixed(4)}</span></div>
+                  <div>총 CBM: <span className="text-gray-900 font-black">{totalCbm.toFixed(3)}</span></div>
+                  <div>책정 CBM: <span className="text-[#FF8A00] font-black">{chargedCbm.toFixed(1)}</span></div>
+                  <div>해운물류비: <span className="text-[#FF8A00] font-black">{formatPrice(seaShippingFee)}</span></div>
+                  <div className="col-span-2 md:col-span-1">파레트 적재: <span className="text-[#FF8A00] font-black">{palletQty > 0 ? palletQty.toLocaleString() + ' 개' : '-'}</span></div>
+                </div>
+              </div>
+
+              <h4 className="text-xs font-black text-gray-400 mb-4 uppercase tracking-wider">세부 관부가세 및 대행/국내비용</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-500 mb-1">작업비 (원)</label>
+                  <input type="number" name="handlingFee" value={inputs.handlingFee || ''} onChange={handleInputChange} className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold" placeholder="0" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-500 mb-1">원산지증명서 (원)</label>
+                  <input type="number" name="coFee" value={inputs.coFee || ''} onChange={handleInputChange} className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold" placeholder="0" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-500 mb-1">B/L 발급비 (원)</label>
+                  <input type="number" name="blFee" value={inputs.blFee || ''} onChange={handleInputChange} className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold" placeholder="0" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-500 mb-1">관세율 (%)</label>
+                  <input type="number" name="dutyRate" value={inputs.dutyRate || ''} onChange={handleInputChange} className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold" placeholder="0" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-500 mb-1">관세사 수수료 (원)</label>
+                  <input type="number" name="customsBrokerFee" value={inputs.customsBrokerFee || ''} onChange={handleInputChange} className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold" placeholder="0" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-500 mb-1">검사비 (원)</label>
+                  <input type="number" name="inspectionFee" value={inputs.inspectionFee || ''} onChange={handleInputChange} className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold" placeholder="0" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-500 mb-1">국내 이송 물류비 (원)</label>
+                  <input type="number" name="domesticLogisticsFee" value={inputs.domesticLogisticsFee || ''} onChange={handleInputChange} className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold" placeholder="0" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-500 mb-1">밀크런/택배비 (원)</label>
+                  <input type="number" name="milkRunFee" value={inputs.milkRunFee || ''} onChange={handleInputChange} className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold" placeholder="0" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-500 mb-1">기타 지출 잡비 (원)</label>
+                  <input type="number" name="otherExpenses" value={inputs.otherExpenses || ''} onChange={handleInputChange} className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold" placeholder="0" />
+                </div>
+                <div className="flex items-end text-xs font-bold text-gray-600 pb-2">
+                  <div>자동산출 관세: <span className="text-gray-900 mr-4">{formatPrice(calculatedDuty)}</span></div>
+                  <div>자동산출 부가세: <span className="text-gray-900">{formatPrice(vatFee)}</span></div>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. 광고 및 판매 수량 */}
+            <div className="bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 rounded-3xl">
+              <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
+                <span className="w-2.5 h-6 bg-[#FF8A00] rounded-full inline-block"></span>
+                수익 시뮬레이션 설정 (예상 수량 & 광고비)
+              </h3>
+              <div className="grid md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase">예상 판매 수량 (개)</label>
+                  <input type="number" name="expectedSalesQty" value={inputs.expectedSalesQty || ''} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#FF8A00] focus:bg-white transition-colors text-sm font-bold" placeholder="0" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase">집행할 광고비 (원 - Vat 별도)</label>
+                  <input type="number" name="adSpend" value={inputs.adSpend || ''} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#FF8A00] focus:bg-white transition-colors text-sm font-bold" placeholder="0" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right panel: Margin Analysis Dashboard (Span 1) */}
+          <div className="space-y-6">
+            
+            {/* 핵심 지표 카드 */}
+            <div className="bg-[#111111] text-white p-6 md:p-8 shadow-xl rounded-[2rem] border border-gray-800 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#FF8A00] to-transparent opacity-10 rounded-full blur-2xl"></div>
+              
+              <h3 className="text-sm font-black text-gray-400 mb-6 uppercase tracking-wider">실시간 마진 요약</h3>
+              
+              {/* 마진율 게이지 */}
+              <div className="flex flex-col items-center justify-center py-6 border-b border-gray-800">
+                <span className="text-xs font-bold text-gray-400 mb-2">개당 예상 마진율</span>
+                <span className={`text-4xl md:text-5xl font-black ${marginRate > 30 ? 'text-green-400' : marginRate > 15 ? 'text-[#FF8A00]' : 'text-red-400'} tracking-tight`}>
+                  {marginRate.toFixed(1)}%
+                </span>
+                <span className="text-[10px] text-gray-500 mt-2 font-bold">(최종 판매가 대비 순수익 비율)</span>
+              </div>
+              
+              {/* 세부 수치 */}
+              <div className="space-y-4 pt-6 text-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 font-bold">정산 금액</span>
+                  <span className="font-black text-gray-200">{formatPrice(settlementAmount)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 font-bold">개당 순마진</span>
+                  <span className="font-black text-[#FF8A00]">{formatPrice(netMargin)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 font-bold">최종 원가 (개당)</span>
+                  <span className="font-black text-gray-200">{formatPrice(finalCostPerUnit)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 font-bold">원가 (잡비제외)</span>
+                  <span className="font-black text-gray-300">{formatPrice(costPerUnitExcludingMisc)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 font-bold">손익분기점 판매량</span>
+                  <span className="font-black text-green-400">{Math.ceil(bepQty).toLocaleString('ko-KR')} 개</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 예상 실적 요약 카드 */}
+            <div className="bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 rounded-3xl">
+              <h3 className="text-sm font-black text-gray-500 mb-6 uppercase tracking-wider">시뮬레이션 예상 실적</h3>
+              <div className="space-y-4 text-sm font-bold">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">예상 매출 총액</span>
+                  <span className="text-gray-900 font-black">{formatPrice(estRevenue)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">예상 원가 합계</span>
+                  <span className="text-gray-900 font-bold">{formatPrice(estProductCost)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">광고비 집행액 (vat포함)</span>
+                  <span className="text-gray-900 font-bold">{formatPrice(adSpendWithVat)}</span>
+                </div>
+                <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
+                  <span className="text-gray-600 font-black">최종 예상 순수익</span>
+                  <span className={`text-lg font-black ${estProfit >= 0 ? 'text-[#FF8A00]' : 'text-red-500'}`}>
+                    {formatPrice(estProfit)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-gray-500">예상 수익률 / ROAS</span>
+                  <span className="text-gray-800 font-black">
+                    {estProfitRate.toFixed(1)}% / {estRoas.toFixed(0)}%
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-gray-500">한계 ROAS (손익분기)</span>
+                  <span className="text-[#FF8A00] font-black">
+                    {breakEvenRoas.toFixed(0)}%
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 마진 계산 데이터 저장 폼 */}
+            <div className="bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 rounded-3xl">
+              <h3 className="text-sm font-black text-gray-500 mb-4 uppercase tracking-wider">이 계산 내역 저장하기</h3>
+              <div className="space-y-3">
+                <input 
+                  type="text" 
+                  value={calcName} 
+                  onChange={(e) => setCalcName(e.target.value)} 
+                  placeholder="예: 여름 신상품 A 마진 검토" 
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-[#FF8A00] focus:bg-white transition-colors"
+                />
+                <Button variant="primary" onClick={handleSave} className="w-full py-3 bg-[#FF8A00] text-black font-black border-none shadow-sm hover:opacity-90">
+                  저장하기
+                </Button>
+              </div>
+            </div>
+
+            {/* 저장 목록 히스토리 */}
+            <div className="bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 rounded-3xl">
+              <h3 className="text-sm font-black text-gray-500 mb-4 uppercase tracking-wider">저장된 마진 목록 ({userCalcs.length})</h3>
+              {!user ? (
+                <p className="text-xs text-gray-400 font-bold text-center py-4">로그인하시면 기존 저장 리스트가 노출됩니다.</p>
+              ) : userCalcs.length === 0 ? (
+                <p className="text-xs text-gray-400 font-bold text-center py-4">저장된 마진 계산 내역이 없습니다.</p>
+              ) : (
+                <div className="space-y-2 max-h-60 overflow-y-auto pr-1 hide-scroll">
+                  {userCalcs.map(item => (
+                    <div 
+                      key={item.id} 
+                      onClick={() => handleLoadRecord(item)}
+                      className="p-3 bg-gray-50 border border-gray-100 rounded-2xl hover:border-[#FF8A00] hover:bg-white cursor-pointer transition-all duration-300 flex justify-between items-center group"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-black text-gray-800 truncate">{item.name}</div>
+                        <div className="text-[10px] text-gray-400 font-bold mt-1">{item.date} | 마진 {calculateRecordMarginRate(item).toFixed(1)}%</div>
+                      </div>
+                      <button 
+                        onClick={(e) => handleDeleteRecord(e, item.id)}
+                        className="text-gray-400 hover:text-red-500 p-1 flex-shrink-0 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                      >
+                        <Icon path={ICONS.Trash2} className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 마진 계산 공식 안내 (사진 벤치마킹) */}
+            <div className="bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 rounded-3xl">
+              <h3 className="text-sm font-black text-gray-500 mb-4 uppercase tracking-wider">마진율은 이렇게 계산됩니다.</h3>
+              <p className="text-[11px] font-bold text-gray-400 mb-4">입출고 비용 및 해운물류비의 VAT가 포함된 가격으로 작성해보세요.</p>
+              <ul className="text-xs space-y-2.5 font-bold text-gray-600 list-disc pl-4" style={{ listStyleType: 'disc' }}>
+                <li><span className="text-gray-900">개당 마진율</span> = 개당 순마진 / 최종 판매가 x 100</li>
+                <li><span className="text-gray-900">개당 순마진</span> = 판매가 - 수수료 - 매입가 - 입출고비용 - 개당 물류잡비</li>
+                <li><span className="text-gray-900">자동 부가세</span> = (총매입가 + 해운비 + CO비 + BL비 + 관세) x 10%</li>
+                <li><span className="text-gray-900">정산 금액</span> = 판매가격 - 쇼핑몰 판매 수수료</li>
+                <li><span className="text-gray-900">예상 순이익</span> = 예상 매출 - 예상 원가합계 - 예상 수수료 - 예상 출고비 - 광고비(VAT포함)</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // ============================================================================
 // 메인 라우터 앱 & 커스텀 모달 매니저
@@ -2583,6 +3108,7 @@ function App() {
   const closeModal = () => setModal(prev => ({ ...prev, isOpen: false }));
 
   // 외부 모듈(firebase-db.js / firebase-auth.js)을 사용한 데이터 로드
+  const [marginCalcs, setMarginCalcs] = useState(() => loadLocalData('margin_calcs', []));
   const [user, setUser] = useState(() => FirebaseAuth.getCurrentUser());
   const [courses, setCourses] = useState(() => {
     const local = loadLocalData('courses', INITIAL_COURSES);
@@ -2752,6 +3278,11 @@ function App() {
           setQna(data);
         }
       });
+      const unsubMarginCalcs = window.FirebaseDB.subscribe('margin_calcs', (data) => {
+        if (data) {
+          setMarginCalcs(data);
+        }
+      });
       
       return () => {
         unsubReviews();
@@ -2761,6 +3292,7 @@ function App() {
         unsubMaterials();
         unsubCourses();
         unsubQna();
+        unsubMarginCalcs();
       };
     }
   }, []);
@@ -2791,6 +3323,7 @@ function App() {
     if(key === 'reviews') setReviewsData(data);
     if(key === 'revenues') setRevenuesData(data);
     if(key === 'users_db') setUsersDB(data);
+    if(key === 'margin_calcs') setMarginCalcs(data);
   };
 
   const navigate = (path, state = null) => {
@@ -2889,6 +3422,7 @@ function App() {
       case '/mypage': View = <MyPage user={user} enrolledCourses={enrolledCourses} navigate={navigate} isAdmin={isAdminSession} showModal={showModal} courses={courses} />; break;
       case '/community': View = <CommunityPage communityPosts={community} user={user} onAddPost={(p)=>updateDB('community', [p, ...community])} showModal={showModal} />; break;
       case '/qna': View = <QnaPage qnaList={qna} user={user} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
+      case '/margin-calculator': View = <MarginCalculatorPage marginCalcs={marginCalcs} user={user} updateDB={updateDB} navigate={navigate} showModal={showModal} />; break;
       case '/materials': View = <MaterialsPage enrolledCourses={enrolledCourses} materials={materials} navigate={navigate} user={user} isAdmin={isAdminSession} />; break;
       case '/admin': View = isAdminSession ? <AdminDashboard courses={courses} materials={materials} community={community} qna={qna} reviewsData={reviewsData} revenuesData={revenuesData} usersDB={usersDB} updateDB={updateDB} navigate={navigate} showModal={showModal} /> : <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />; break;
       default: View = <HomePage courses={courses} reviewsData={reviewsData} revenuesData={shuffledRevenues} navigate={navigate} showModal={showModal} onReviewClick={handleReviewClick} />;

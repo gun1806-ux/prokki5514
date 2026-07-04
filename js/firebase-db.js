@@ -29,7 +29,7 @@ if (
 }
 
 // 1MB 제한을 피하기 위해 각 항목을 단일 문서로 저장할 키 목록 (이미지 업로드 포함 가능 컬렉션)
-const COLLECTION_KEYS = ['reviews', 'revenues', 'community', 'users_db', 'courses', 'materials', 'qna'];
+const COLLECTION_KEYS = ['reviews', 'revenues', 'community', 'users_db', 'courses', 'materials', 'qna', 'margin_calcs'];
 
 const FirebaseDB = {
   // Firebase가 실제 활성화되어있는지 확인
