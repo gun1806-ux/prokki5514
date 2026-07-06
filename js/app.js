@@ -521,11 +521,24 @@ const REFUND_CONTENT = `
 `;
 
 const Footer = ({ showModal, onAdminSecretLogin }) => {
+  const [adminClickCount, setAdminClickCount] = React.useState(0);
+
   const handleHiddenAdmin = () => {
-    showModal('prompt', '관리자 인증', '관리자 비밀번호를 입력하세요. (초기비밀번호: 6789)', (pwd) => {
+    showModal('prompt', '관리자 인증', '관리자 비밀번호를 입력하세요.', (pwd) => {
       if (pwd === "6789") { onAdminSecretLogin(); } 
       else { showModal('alert', '인증 실패', '비밀번호가 일치하지 않습니다.'); }
     }, '비밀번호 입력', true);
+  };
+
+  const handleTitleClick = () => {
+    setAdminClickCount(prev => {
+      const next = prev + 1;
+      if (next >= 5) {
+        onAdminSecretLogin();
+        return 0;
+      }
+      return next;
+    });
   };
   
   return (
@@ -533,7 +546,7 @@ const Footer = ({ showModal, onAdminSecretLogin }) => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid md:grid-cols-4 gap-10 mb-12">
           <div className="md:col-span-2">
-            <div className="text-3xl font-black mb-6 text-[#FF8A00] tracking-tight">브랜드빌더, 돈버는 똘기</div>
+            <div onClick={handleTitleClick} className="text-3xl font-black mb-6 text-[#FF8A00] tracking-tight cursor-pointer select-none">브랜드빌더, 돈버는 똘기</div>
             <p className="text-sm md:text-base leading-relaxed mb-6 word-keep text-gray-600">
               언제까지 소싱만 하실래요?<br/>
               자본이 없으면 소싱은 의미가 없습니다.<br/>
